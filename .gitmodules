@@ -1,0 +1,3 @@
+[submodule "openvpn"]
+	path = openvpn
+	url = https://github.com/mullvad/openvpn
