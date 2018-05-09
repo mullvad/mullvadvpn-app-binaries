@@ -39,7 +39,6 @@ lz4:
 	mkdir -p $(BUILD_DIR)
 	cd lz4 ; \
 	$(MAKE) clean ; \
-	PREFIX=$(BUILD_DIR) $(MAKE) $(MAKE_EXTRA_ARGS) ; \
 	PREFIX=$(BUILD_DIR) $(MAKE) install $(MAKE_EXTRA_ARGS)
 	# lz4 always installs a shared library. Unless it's removed
 	# OpenVPN will link against it.
@@ -57,8 +56,9 @@ lzo:
 
 openssl:
 	@echo "Building OpenSSL"
+	mkdir -p $(BUILD_DIR)
 	cd openssl; \
-	./config no-shared \
+	KERNEL_BITS=64 ./config no-shared \
 		--prefix=$(BUILD_DIR) \
 		--openssldir=$(BUILD_DIR) \
 		$(OPENSSL_CONFIG) ; \
@@ -68,6 +68,7 @@ openssl:
 
 openvpn: lz4 lzo openssl
 	@echo "Building OpenVPN"
+	mkdir -p $(BUILD_DIR)
 	cd openvpn ; \
 	autoreconf -i -v ; \
 	./configure \
