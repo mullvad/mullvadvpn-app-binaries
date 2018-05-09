@@ -27,12 +27,14 @@ ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
 endif
 
-all: build/sbin/openvpn
+.PHONY: all clean lz4 lzo openssl openvpn
+
+all: openvpn
 
 clean:
 	rm -rf build
 
-build/lib/liblz4.a:
+lz4:
 	@echo "Building lz4"
 	mkdir -p $(BUILD_DIR)
 	cd lz4 ; \
@@ -43,7 +45,7 @@ build/lib/liblz4.a:
 	# OpenVPN will link against it.
 	rm $(BUILD_DIR)/lib/liblz4.*$(SHARED_LIB_EXT)
 
-build/lib/liblzo2.a:
+lzo:
 	@echo "Building lzo"
 	mkdir -p $(BUILD_DIR)
 	rm -rf $(LZO_VERSION)
@@ -53,7 +55,7 @@ build/lib/liblzo2.a:
 	make ; \
 	make install
 
-build/lib/libssl.a build/lib/libcrypto.a:
+openssl:
 	@echo "Building OpenSSL"
 	cd openssl; \
 	./config no-shared \
@@ -64,7 +66,7 @@ build/lib/libssl.a build/lib/libcrypto.a:
 	make build_libs build_apps ; \
 	make install_sw
 
-build/sbin/openvpn: build/lib/liblz4.a build/lib/liblzo2.a build/lib/libssl.a build/lib/libcrypto.a
+openvpn: lz4 lzo openssl
 	@echo "Building OpenVPN"
 	cd openvpn ; \
 	autoreconf -i -v ; \
