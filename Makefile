@@ -98,7 +98,7 @@ openvpn: lz4 lzo openssl
 	make install
 
 windows: clean
-	rm -rf "$(WINDOWS_BUILDROOT)"
+	rm -r "$(WINDOWS_BUILDROOT)"
 	mkdir -p $(WINDOWS_BUILDROOT)
 	mkdir -p $(WINDOWS_SOURCEROOT)
 	ln -sf $(PWD)/$(LZO_VERSION).tar.gz $(WINDOWS_BUILDROOT)/../sources/$(LZO_VERSION).tar.gz
@@ -106,6 +106,7 @@ windows: clean
 	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/$(OPENVPN_VERSION)
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		EXTRA_OPENSSL_CONFIG="-static-libgcc no-shared $(OPENSSL_CONFIG)" \
+		EXTRA_TARGET_LDFLAGS="-Wl,-Bstatic" \
 		CHOST=x86_64-w64-mingw32 \
 		CBUILD=x86_64-pc-linux-gnu \
 		DO_STATIC=1 \
