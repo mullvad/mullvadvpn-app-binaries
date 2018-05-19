@@ -9,4 +9,4 @@
 	url = git://git.openssl.org/openssl.git
 [submodule "openvpn-build"]
 	path = openvpn-build
-	url = git@github.com:mullvad/openvpn-build.git
+	url = https://github.com/mullvad/openvpn-build.git
