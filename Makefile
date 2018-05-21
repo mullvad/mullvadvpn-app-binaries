@@ -92,6 +92,7 @@ openvpn: lz4 lzo openssl
 	$(MAKE) clean ; \
 	$(MAKE) ; \
 	$(MAKE) install
+	strip $(BUILD_DIR)/sbin/openvpn
 
 windows: clean
 	rm -r "$(WINDOWS_BUILDROOT)"
