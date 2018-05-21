@@ -18,13 +18,9 @@ LZO_VERSION = lzo-2.10
 LZO_CONFIG = --enable-static --disable-debug
 
 
-# Here platforms can append specific generic make parameters if needed
-MAKE_EXTRA_ARGS =
-
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	MAKE_EXTRA_ARGS += LIBS="-all-static"
 	OPENSSL_CONFIG += -static
 	SHARED_LIB_EXT = so*
 endif
@@ -52,7 +48,7 @@ lz4:
 	mkdir -p $(BUILD_DIR)
 	cd lz4 ; \
 	$(MAKE) clean ; \
-	PREFIX=$(BUILD_DIR) $(MAKE) install $(MAKE_EXTRA_ARGS)
+	PREFIX=$(BUILD_DIR) $(MAKE) install LIBS="-all-static"
 	# lz4 always installs a shared library. Unless it's removed
 	# OpenVPN will link against it.
 	rm $(BUILD_DIR)/lib/liblz4.*$(SHARED_LIB_EXT)
@@ -94,7 +90,7 @@ openvpn: lz4 lzo openssl
 		LZO_LIBS="-L$(BUILD_DIR)/lib -llzo2" \
 		LZ4_LIBS="-L$(BUILD_DIR)/lib -llz4" ; \
 	make clean ; \
-	make $(MAKE_EXTRA_ARGS) ; \
+	make ; \
 	make install
 
 windows: clean
