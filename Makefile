@@ -60,8 +60,8 @@ lzo:
 	tar xzf $(LZO_VERSION).tar.gz
 	cd $(LZO_VERSION) ; \
 	./configure --prefix=$(BUILD_DIR) $(LZO_CONFIG) ; \
-	make ; \
-	make install
+	$(MAKE) ; \
+	$(MAKE) install
 
 openssl:
 	@echo "Building OpenSSL"
@@ -71,9 +71,9 @@ openssl:
 		--prefix=$(BUILD_DIR) \
 		--openssldir=$(BUILD_DIR) \
 		$(OPENSSL_CONFIG) ; \
-	make clean ; \
-	make build_libs build_apps ; \
-	make install_sw
+	$(MAKE) clean ; \
+	$(MAKE) build_libs build_apps ; \
+	$(MAKE) install_sw
 
 openvpn: lz4 lzo openssl
 	@echo "Building OpenVPN"
@@ -89,9 +89,9 @@ openvpn: lz4 lzo openssl
 		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto" \
 		LZO_LIBS="-L$(BUILD_DIR)/lib -llzo2" \
 		LZ4_LIBS="-L$(BUILD_DIR)/lib -llz4" ; \
-	make clean ; \
-	make ; \
-	make install
+	$(MAKE) clean ; \
+	$(MAKE) ; \
+	$(MAKE) install
 
 windows: clean
 	rm -r "$(WINDOWS_BUILDROOT)"
