@@ -22,6 +22,7 @@ LZO_CONFIG = --enable-static --disable-debug
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	OPENSSL_CONFIG += -static
+	OPENVPN_CONFIG += --enable-iproute2
 	SHARED_LIB_EXT = so*
 endif
 ifeq ($(UNAME_S),Darwin)
