@@ -29,9 +29,12 @@ ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
 endif
 
-.PHONY: all clean clean-build clean-submodules lz4 lzo openssl openvpn windows
+.PHONY: help clean clean-build clean-submodules lz4 lzo openssl openvpn windows libmnl libnftnl
 
-all: openvpn
+help:
+	@echo "Please run a more specific target"
+	@echo "'make openvpn' will build a statically linked OpenVPN binary"
+	@echo "'make libnftnl' will build static libraries of libmnl and libnftnl and copy to linux/"
 
 clean: clean-build clean-submodules
 
@@ -110,3 +113,23 @@ windows: clean
 		DO_STATIC=1 \
 		IMAGEROOT="$(BUILD_DIR)" \
 		./openvpn-build/generic/build
+
+libmnl:
+	@echo "Building libmnl"
+	cd libmnl; \
+	./autogen.sh; \
+	./configure --enable-static --disable-shared; \
+	$(MAKE) clean; \
+	$(MAKE)
+	cp libmnl/src/.libs/libmnl.a linux/
+
+libnftnl: libmnl
+	@echo "Building libnftnl"
+	cd libnftnl; \
+	./autogen.sh; \
+	LIBMNL_LIBS="-L$(PWD)/libmnl/src/.libs -lmnl" \
+		LIBMNL_CFLAGS="-I$(PWD)/libmnl/include" \
+		./configure --enable-static --disable-shared; \
+	$(MAKE) clean; \
+	$(MAKE)
+	cp libnftnl/src/.libs/libnftnl.a linux/
