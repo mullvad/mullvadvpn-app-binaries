@@ -10,3 +10,9 @@
 [submodule "openvpn-build"]
 	path = openvpn-build
 	url = https://github.com/mullvad/openvpn-build.git
+[submodule "libmnl"]
+	path = libmnl
+	url = git://git.netfilter.org/libmnl
+[submodule "libnftnl"]
+	path = libnftnl
+	url = git://git.netfilter.org/libnftnl
