@@ -129,6 +129,7 @@ libnftnl: libmnl
 	./autogen.sh; \
 	LIBMNL_LIBS="-L$(PWD)/libmnl/src/.libs -lmnl" \
 		LIBMNL_CFLAGS="-I$(PWD)/libmnl/include" \
+		CFLAGS="-g -O2 -mcmodel=large" \
 		./configure --enable-static --disable-shared; \
 	$(MAKE) clean; \
 	$(MAKE)
