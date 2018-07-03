@@ -17,7 +17,6 @@ OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-serv
 LZO_VERSION = lzo-2.10
 LZO_CONFIG = --enable-static --disable-debug
 
-
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
@@ -97,7 +96,7 @@ openvpn: lz4 lzo openssl
 	autoreconf -i -v ; \
 	./configure \
 		--prefix=$(BUILD_DIR) \
-		$(OPENVPN_CONFIG) \
+		$(OPENVPN_CONFIG) $(PLATFORM_OPENVPN_CONFIG) \
 		OPENSSL_CFLAGS="-I$(BUILD_DIR)/include" \
 		LZO_CFLAGS="-I$(BUILD_DIR)/include" \
 		LZ4_CFLAGS="-I$(BUILD_DIR)/include" \
