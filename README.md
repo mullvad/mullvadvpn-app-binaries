@@ -9,6 +9,7 @@ The `openvpn` submodule is tracking our [`mullvad-patches`] branch that contain 
 changes needed by the [Mullvad VPN app].
 
 ## Building
+Currently, building is only supported on Debian 9.
 
 ### Linux + macOS
 
