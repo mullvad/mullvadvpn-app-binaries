@@ -1,7 +1,9 @@
 # Custom Mullvad VPN build of OpenVPN
 
-This repository holds our custom OpenVPN binaries used in the [Mullvad VPN
-app], and other binary artifacts, and scripts that help building them.
+This repository holds our custom OpenVPN binaries , statically linkable OpenSSL
+libraries for all of our target platforms, and `libmnl` and `libnftnl` for
+Linux, all of which are used in the [Mullvad VPN app].
+
 
 ## Custom changes
 
@@ -12,14 +14,20 @@ changes needed by the [Mullvad VPN app].
 Currently, building is only supported on Debian 9.
 
 ### Linux + macOS
+Before building, one has to ensure that the build host has all the required
+dependencies installed, as outlined in [OpenVPN's buildslave documentation].
 
-Building the binary should be as simple as running `make`, which should produce the binary at
+Building the OpenVPN binary should be as simple as running `make`, which should produce the binary at
 `./build/sbin/openvpn`.
+
+To update the statically linkable OpenSSL library, run `make update_openssl`.
 
 ### Windows
 
 Building `openvpn.exe` for Windows is done by cross-compiling from Linux using a mingw-w64
-toolchain. You need to do this build on a recent Debian or Ubuntu release.
+toolchain. You need to do this build on a recent Debian or Ubuntu release, one
+should generally follow the instructions laid out in the [OpenVPN's build
+system docs].
 
 1. Install the dependencies and cross-compile toolchain:
    ```bash
@@ -59,3 +67,5 @@ for the platforms we need. These exist under directories for each platform:
 
 [Mullvad VPN app]: https://github.com/mullvad/mullvadvpn-app
 [`mullvad-patches`]: https://github.com/mullvad/openvpn/tree/mullvad-patches
+[OpenVPN's build system docs]: https://community.openvpn.net/openvpn/wiki/SettingUpGenericBuildsystem
+[OpenVPN's buildslave documentation]: https://community.openvpn.net/openvpn/wiki/SettingUpBuildslave
