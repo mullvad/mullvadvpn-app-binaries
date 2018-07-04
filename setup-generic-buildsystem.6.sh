@@ -2,7 +2,7 @@
 #
 # Script to setup the environment for openvpn-build/generic and openvpn-build/windows-nsis 
 
-BUILD_DEPS="mingw-w64 man2html dos2unix nsis unzip wget curl autoconf libtool gcc-arm-linux-gnueabi"
+BUILD_DEPS="mingw-w64 man2html dos2unix nsis unzip wget curl autoconf libtool gcc-arm-linux-gnueabi libpam-dev"
 OSSLSIGNCODE_DEPS="libssl-dev libcurl4-openssl-dev build-essential"
 OSSLSIGNCODE_URL="http://sourceforge.net/projects/osslsigncode/files/latest/download"
 OSSLSIGNCODE_PACKAGE="osslsigncode-latest.tar.gz"
