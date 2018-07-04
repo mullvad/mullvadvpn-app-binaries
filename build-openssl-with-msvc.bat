@@ -8,12 +8,16 @@ set OPENSSL_CONFIG =   enable-capieng ^
   no-idea ^
   no-seed ^
   no-shared ^
-  -FIWindows.h
+
+:: Sourcing environment form Visual Studio to be able to compile with MSVC and
+:: all the system libraries and headers
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+
 perl Configure VC-WIN64A ^
   --prefix=%cd%\..\msvc-openssl ^
   --openssldir=%cd%\..\msvc-openssl ^
   %OPENSSL_CONFIG%
+  -FIWindows.h
 
 nmake clean
 nmake build_generated

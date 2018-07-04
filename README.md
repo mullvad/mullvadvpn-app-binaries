@@ -1,4 +1,4 @@
-# Custom third party binearies for Mullvad VPN app
+# Custom third party binaries for the Mullvad VPN app
 This repository holds our custom OpenVPN binaries, statically linkable OpenSSL
 libraries for all of our target platforms, and `libmnl` and `libnftnl` for
 Linux, all of which are used in the [Mullvad VPN app].
@@ -24,10 +24,11 @@ Currently, the Linux distro of choice for building OpenVPN currently is Debian
 
 
 ### Windows
-Building `openvpn.exe` for Windows is done by cross-compiling from Linux using a mingw-w64
-toolchain. You need to do this build on a recent Debian or Ubuntu release, one
-should generally follow the instructions laid out in the [OpenVPN's build
-system docs]. Currently, this has only been tested with Debian 9.
+Building `openvpn.exe` for Windows is done by cross-compiling from Linux using
+a mingw-w64 toolchain. You need to do this build on a recent Debian or Ubuntu
+release, one should generally follow the instructions laid out in the
+[OpenVPN's build system docs]. Currently, this has only been tested with Debian 9.
+
 
 1. Install the dependencies and cross-compile toolchain:
    ```bash
@@ -43,16 +44,18 @@ You should now have the final product in `./build/openvpn/bin/openvpn.exe`
 
 
 ## Building OpenSSL
+To build the MullvadVPN app, one has to have statically linkable OpenSSL libraries.
+
 ### Linux + macOS
 To build statically linkable OpenSSL libraries on macOS and Linux, just run
-`make openssl`. To do so, one has to make sure to have all the required build
-dependencies on the build host. To update the statically linkable OpenSSL
-library, run `make update_openssl`.
+`make update_openssl`. To do so, one has to make sure to have all the required
+build dependencies on the build host. Refer to OpenSSL's documentation, but
+usually it requires a recent version of Perl 5 and a good C compiler and
+standard library.
 
 
 ### Windows
-To build the daemon on Windows, one has to build statically linkable OpenSSL libraries.
-This requires a few things:
+Building a static OpenSSL library on Windows requires the following:
 - Perl 5.11 and above (Strawberry Perl distribution works)
 - Build Tools for Visual Studio 2017 (a regular installation of Visual Studio
 2017 Community Edition works).
