@@ -1,6 +1,5 @@
-# Custom Mullvad VPN build of OpenVPN
-
-This repository holds our custom OpenVPN binaries , statically linkable OpenSSL
+# Custom third party binearies for Mullvad VPN app
+This repository holds our custom OpenVPN binaries, statically linkable OpenSSL
 libraries for all of our target platforms, and `libmnl` and `libnftnl` for
 Linux, all of which are used in the [Mullvad VPN app].
 
@@ -10,24 +9,25 @@ Linux, all of which are used in the [Mullvad VPN app].
 The `openvpn` submodule is tracking our [`mullvad-patches`] branch that contain a few custom
 changes needed by the [Mullvad VPN app].
 
-## Building
-Currently, building is only supported on Debian 9.
+## Building OpenVPN
 
 ### Linux + macOS
 Before building, one has to ensure that the build host has all the required
 dependencies installed, as outlined in [OpenVPN's buildslave documentation].
 
-Building the OpenVPN binary should be as simple as running `make`, which should produce the binary at
-`./build/sbin/openvpn`.
+Building the OpenVPN binary should be as simple as running `make openvpn`.
 
-To update the statically linkable OpenSSL library, run `make update_openssl`.
+
+#### Linux
+Currently, the Linux distro of choice for building OpenVPN currently is Debian
+9, issues have been experienced on other distributions.
+
 
 ### Windows
-
 Building `openvpn.exe` for Windows is done by cross-compiling from Linux using a mingw-w64
 toolchain. You need to do this build on a recent Debian or Ubuntu release, one
 should generally follow the instructions laid out in the [OpenVPN's build
-system docs].
+system docs]. Currently, this has only been tested with Debian 9.
 
 1. Install the dependencies and cross-compile toolchain:
    ```bash
@@ -36,25 +36,39 @@ system docs].
 
 1. Compile:
    ```bash
-   make openvpn/windows
+   make openvpn_windows
    ```
 
 You should now have the final product in `./build/openvpn/bin/openvpn.exe`
 
-#### Statically linkable OpenSSL
+
+## Building OpenSSL
+### Linux + macOS
+To build statically linkable OpenSSL libraries on macOS and Linux, just run
+`make openssl`. To do so, one has to make sure to have all the required build
+dependencies on the build host. To update the statically linkable OpenSSL
+library, run `make update_openssl`.
+
+
+### Windows
 To build the daemon on Windows, one has to build statically linkable OpenSSL libraries.
 This requires a few things:
 - Perl 5.11 and above (Strawberry Perl distribution works)
 - Build Tools for Visual Studio 2017 (a regular installation of Visual Studio
 2017 Community Edition works).
 - [NASM](https://www.nasm.us/)
+
 To compile OpenSSL for Windows with MSVC, run the following script:
 ```
-build_openssl_msvc.bat
+build-openssl-with-msbvc.bat
 ```
 The result of a successful build should be newly created `libssl.lib` and
 `libcrypto.lib` libraries in `.\windows\` and headers in
 `.\windows\include`.
+
+## `libmnl` and `libnftnl`
+These libraries are only required for Linux and are required by our app to
+apply firewall rules. To produce the required libraries, run `make libnftnl`.
 
 ## Storage of binaries
 
