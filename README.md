@@ -1,7 +1,9 @@
 # Custom Mullvad VPN build of OpenVPN
 
-This repository holds our custom OpenVPN binaries used in the [Mullvad VPN
-app], and other binary artifacts, and scripts that help building them.
+This repository holds our custom OpenVPN binaries , statically linkable OpenSSL
+libraries for all of our target platforms, and `libmnl` and `libnftnl` for
+Linux, all of which are used in the [Mullvad VPN app].
+
 
 ## Custom changes
 
@@ -13,8 +15,10 @@ Currently, building is only supported on Debian 9.
 
 ### Linux + macOS
 
-Building the binary should be as simple as running `make`, which should produce the binary at
+Building the OpenVPN binary should be as simple as running `make`, which should produce the binary at
 `./build/sbin/openvpn`.
+
+To update the statically linkable OpenSSL library, run `make update_openssl`.
 
 ### Windows
 
