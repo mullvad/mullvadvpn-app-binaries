@@ -17,16 +17,17 @@ OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-serv
 LZO_VERSION = lzo-2.10
 LZO_CONFIG = --enable-static --disable-debug
 
-
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	OPENSSL_CONFIG += -static
-	OPENVPN_CONFIG += --enable-iproute2
+	PLATFORM_OPENSSL_CONFIG = -static
+	PLATFORM_OPENVPN_CONFIG = --enable-iproute2
 	SHARED_LIB_EXT = so*
+	TARGET_OUTPUT_DIR = "linux"
 endif
 ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
+	TARGET_OUTPUT_DIR = "macos"
 endif
 
 .PHONY: help clean clean-build clean-submodules lz4 lzo openssl openvpn windows libmnl libnftnl
@@ -74,10 +75,19 @@ openssl:
 	KERNEL_BITS=64 ./config no-shared \
 		--prefix=$(BUILD_DIR) \
 		--openssldir=$(BUILD_DIR) \
-		$(OPENSSL_CONFIG) ; \
+	$(PLATFORM_OPENSSL_CONFIG) \
+	$(OPENSSL_CONFIG) ; \
 	$(MAKE) clean ; \
 	$(MAKE) build_libs build_apps ; \
 	$(MAKE) install_sw
+
+update_openssl: openssl
+	# Copy libraries and header files to target output directory for openssl.
+	# This is not required for OpenVPN, but will be used to link openssl
+	# statically in our other utilities.
+	mkdir -p $(TARGET_OUTPUT_DIR)/include/openssl ; \
+	cp openssl/lib{crypto,ssl}.a $(TARGET_OUTPUT_DIR)/ ; \
+	cp openssl/include/openssl/openssl{conf,v}.h $(TARGET_OUTPUT_DIR)/include/openssl/
 
 openvpn: lz4 lzo openssl
 	@echo "Building OpenVPN"
@@ -86,7 +96,7 @@ openvpn: lz4 lzo openssl
 	autoreconf -i -v ; \
 	./configure \
 		--prefix=$(BUILD_DIR) \
-		$(OPENVPN_CONFIG) \
+		$(OPENVPN_CONFIG) $(PLATFORM_OPENVPN_CONFIG) \
 		OPENSSL_CFLAGS="-I$(BUILD_DIR)/include" \
 		LZO_CFLAGS="-I$(BUILD_DIR)/include" \
 		LZ4_CFLAGS="-I$(BUILD_DIR)/include" \
@@ -97,14 +107,16 @@ openvpn: lz4 lzo openssl
 	$(MAKE) ; \
 	$(MAKE) install
 	strip $(BUILD_DIR)/sbin/openvpn
+	cp $(BUILD_DIR)/sbin/openvpn $(TARGET_OUTPUT_DIR)/
 
-windows: clean
+openvpn_windows: clean
 	rm -r "$(WINDOWS_BUILDROOT)"
 	mkdir -p $(WINDOWS_BUILDROOT)
 	mkdir -p $(WINDOWS_SOURCEROOT)
 	ln -sf $(PWD)/$(LZO_VERSION).tar.gz $(WINDOWS_BUILDROOT)/../sources/$(LZO_VERSION).tar.gz
 	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/$(OPENSSL_VERSION)
 	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/$(OPENVPN_VERSION)
+	cd openvpn; autoreconf -f -v
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		EXTRA_OPENSSL_CONFIG="-static-libgcc no-shared $(OPENSSL_CONFIG)" \
 		EXTRA_TARGET_LDFLAGS="-Wl,-Bstatic" \
@@ -113,6 +125,7 @@ windows: clean
 		DO_STATIC=1 \
 		IMAGEROOT="$(BUILD_DIR)" \
 		./openvpn-build/generic/build
+	cp openvpn/src/openvpn/openvpn.exe ./windows/
 
 libmnl:
 	@echo "Building libmnl"
