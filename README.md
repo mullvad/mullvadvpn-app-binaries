@@ -36,7 +36,7 @@ system docs].
 
 1. Compile:
    ```bash
-   make windows
+   make openvpn/windows
    ```
 
 You should now have the final product in `./build/openvpn/bin/openvpn.exe`

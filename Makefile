@@ -107,8 +107,9 @@ openvpn: lz4 lzo openssl
 	$(MAKE) ; \
 	$(MAKE) install
 	strip $(BUILD_DIR)/sbin/openvpn
+	cp $(BUILD_DIR)/sbin/openvpn $(TARGET_OUTPUT_DIR)/
 
-windows: clean
+openvpn_windows: clean
 	rm -r "$(WINDOWS_BUILDROOT)"
 	mkdir -p $(WINDOWS_BUILDROOT)
 	mkdir -p $(WINDOWS_SOURCEROOT)
@@ -124,6 +125,7 @@ windows: clean
 		DO_STATIC=1 \
 		IMAGEROOT="$(BUILD_DIR)" \
 		./openvpn-build/generic/build
+	cp openvpn/src/openvpn/openvpn.exe ./windows/
 
 libmnl:
 	@echo "Building libmnl"
