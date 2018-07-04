@@ -85,8 +85,8 @@ update_openssl: openssl
 	# Copy libraries and header files to target output directory for openssl.
 	# This is not required for OpenVPN, but will be used to link openssl
 	# statically in our other utilities.
-	mkdir -p $(TARGET_OUTPUT_DIR)/include/openssl && \
-	cp openssl/lib{crypto,ssl}.a $(TARGET_OUTPUT_DIR)/ && \
+	mkdir -p $(TARGET_OUTPUT_DIR)/include/openssl ; \
+	cp openssl/lib{crypto,ssl}.a $(TARGET_OUTPUT_DIR)/ ; \
 	cp openssl/include/openssl/openssl{conf,v}.h $(TARGET_OUTPUT_DIR)/include/openssl/
 
 openvpn: lz4 lzo openssl
@@ -116,7 +116,7 @@ openvpn_windows: clean
 	ln -sf $(PWD)/$(LZO_VERSION).tar.gz $(WINDOWS_BUILDROOT)/../sources/$(LZO_VERSION).tar.gz
 	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/$(OPENSSL_VERSION)
 	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/$(OPENVPN_VERSION)
-	cd openvpn && autoreconf -f -v;
+	cd openvpn; autoreconf -f -v
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		EXTRA_OPENSSL_CONFIG="-static-libgcc no-shared $(OPENSSL_CONFIG)" \
 		EXTRA_TARGET_LDFLAGS="-Wl,-Bstatic" \
