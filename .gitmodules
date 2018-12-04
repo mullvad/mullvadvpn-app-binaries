@@ -16,3 +16,6 @@
 [submodule "libnftnl"]
 	path = libnftnl
 	url = git://git.netfilter.org/libnftnl
+[submodule "wireguard-go/wireguard-go"]
+	path = wireguard-go/wireguard-go
+	url = https://git.zx2c4.com/wireguard-go/
