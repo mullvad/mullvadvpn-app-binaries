@@ -42,6 +42,11 @@ release, one should generally follow the instructions laid out in the
 
 You should now have the final product in `./build/openvpn/bin/openvpn.exe`
 
+## Building Wireguard-Go
+Building the wireugard-go static library requires only a go compiler, the
+version used at the time of writing is `go1.11.2`.
+
+Currently, only MacOS and Linux are supported.
 
 ## Building OpenSSL
 To build the MullvadVPN app, one has to have statically linkable OpenSSL libraries.
