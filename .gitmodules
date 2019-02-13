@@ -19,3 +19,6 @@
 [submodule "wireguard-go/wireguard-go"]
 	path = wireguard-go/wireguard-go
 	url = https://git.zx2c4.com/wireguard-go/
+[submodule "libsodium"]
+	path = libsodium
+	url = https://github.com/jedisct1/libsodium.git

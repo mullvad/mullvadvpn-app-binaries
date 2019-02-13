@@ -78,6 +78,20 @@ The result of a successful build should be newly created `libssl.lib` and
 These libraries are only required for Linux and are required by our app to
 apply firewall rules. To produce the required libraries, run `make libnftnl`.
 
+## Building libsodium
+Libsodium is used by e.g. Shadowsocks, a proxy software bundled with the MullvadVPN app.
+
+### Linux + MacOS
+???
+
+### Windows
+When wishing to build libsodium on Windows it's recommended that you use one of the prepared
+Visual Studio solutions. E.g. for building a statically linkable libsodium, using Visual Studio 2017
+Community Edition, pick the solution file at `.\libsodium\builds\msvc\vs2017\libsodium.sln`.
+Inside the solution, select the (`StaticRelease`, `x64`) configuration.
+
+The static library is created as: `.\libsodium\bin\x64\Release\v141\static\libsodium.lib`.
+
 ## Storage of binaries
 
 This repository, apart from having the scripts used to build OpenVPN, also holds the built binaries

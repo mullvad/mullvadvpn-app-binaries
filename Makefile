@@ -30,7 +30,7 @@ ifeq ($(UNAME_S),Darwin)
 	TARGET_OUTPUT_DIR = "macos"
 endif
 
-.PHONY: help clean clean-build clean-submodules lz4 lzo openssl openvpn windows libmnl libnftnl wireguard-go
+.PHONY: help clean clean-build clean-submodules lz4 lzo openssl openvpn windows libmnl libnftnl wireguard-go libsodium
 
 help:
 	@echo "Please run a more specific target"
@@ -155,3 +155,12 @@ wireguard-go:
 	cd wireguard-go/wireguard-go; \
   go build -v -o libwg.a -buildmode c-archive
 	cp wireguard-go/wireguard-go/libwg.a $(TARGET_OUTPUT_DIR)
+
+libsodium:
+	@echo "Building libsodium"
+	cd libsodium; \
+	./autogen.sh; \
+	./configure --disable-shared --enable-static=yes; \
+	$(MAKE) clean; \
+	$(MAKE)
+	cp libsodium/src/libsodium/.libs/libsodium.a $(TARGET_OUTPUT_DIR)/
