@@ -29,8 +29,11 @@ ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
 	TARGET_OUTPUT_DIR = "macos"
 endif
+ifneq (,$(findstring MINGW,$(UNAME_S)))
+	TARGET_OUTPUT_DIR = "windows"
+endif
 
-.PHONY: help clean clean-build clean-submodules lz4 lzo openssl openvpn windows libmnl libnftnl wireguard-go libsodium
+.PHONY: help clean clean-build clean-submodules lz4 lzo openssl openvpn windows libmnl libnftnl wireguard-go libsodium shadowsocks
 
 help:
 	@echo "Please run a more specific target"
@@ -164,3 +167,17 @@ libsodium:
 	$(MAKE) clean; \
 	$(MAKE)
 	cp libsodium/src/libsodium/.libs/libsodium.a $(TARGET_OUTPUT_DIR)/
+
+shadowsocks:
+	@echo "Building shadowsocks"
+	cd shadowsocks-rust; \
+	unset CARGO_TARGET_DIR; \
+	SODIUM_STATIC=1 \
+		SODIUM_LIB_DIR=$(PWD)/$(TARGET_OUTPUT_DIR) \
+		OPENSSL_STATIC=1 \
+		OPENSSL_LIB_DIR=$(PWD)/$(TARGET_OUTPUT_DIR) \
+		OPENSSL_INCLUDE_DIR="$(PWD)/$(TARGET_OUTPUT_DIR)/include" \
+		CARGO_INCREMENTAL=0 \
+		cargo +stable build --no-default-features --features sodium --release --bin sslocal
+	strip shadowsocks-rust/target/release/sslocal
+	cp shadowsocks-rust/target/release/sslocal $(TARGET_OUTPUT_DIR)/
