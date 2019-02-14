@@ -29,6 +29,9 @@ ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
 	TARGET_OUTPUT_DIR = "macos"
 endif
+ifneq (,$(findstring MINGW,$(UNAME_S)))
+	TARGET_OUTPUT_DIR = "windows"
+endif
 
 .PHONY: help clean clean-build clean-submodules lz4 lzo openssl openvpn windows libmnl libnftnl wireguard-go libsodium shadowsocks
 
