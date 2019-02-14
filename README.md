@@ -92,6 +92,32 @@ Inside the solution, select the (`StaticRelease`, `x64`) configuration.
 
 The static library is created as: `.\libsodium\bin\x64\Release\v141\static\libsodium.lib`.
 
+## Building Shadowsocks
+
+### Linux + MacOS
+`make shadowsocks`
+
+### Windows
+If using `Git Bash`, you first need to install `make`. You can use `make` from `ezwinports`,
+e.g. `make-4.2.1-without-guile-w32-bin.zip`. Extract and merge the archive's contents into:
+`C:\Program Files\git\mingw64`.
+
+Next, temporarily modify `shadowsocks-rust` to statically link as many dependencies as possible.
+Create `.\shadowsocks-rust\.cargo\config` with the following content:
+
+```
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-Ctarget-feature=+crt-static"]
+```
+
+Temporarily rename `.\windows\libsodium.lib` into `.\windows\sodium.lib`. This allows us to
+work around a bug in the `libsodium-ffi` crate.
+
+Then run `make shadowsocks` and wait for it to build. You'll notice the make process is aborted
+when it comes to `strip`, but this is fine, as `strip` is not available nor applicable in this case.
+
+Grab the built binary from `.\shadowsocks-rust\target\release\sslocal.exe`
+
 ## Storage of binaries
 
 This repository, apart from having the scripts used to build OpenVPN, also holds the built binaries
