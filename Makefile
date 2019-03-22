@@ -153,11 +153,9 @@ libnftnl: libmnl
 
 wireguard-go:
 	@echo "Building wireguard-go"
-	rm wireguard-go/wireguard-go/donotuseon_linux.go || true
-	cp wireguard-go/libwg.go wireguard-go/wireguard-go/
-	cd wireguard-go/wireguard-go; \
-  go build -v -o libwg.a -buildmode c-archive
-	cp wireguard-go/wireguard-go/libwg.a $(TARGET_OUTPUT_DIR)
+	cd wireguard-go && \
+	go build -v -o libwg.a -buildmode c-archive
+	cp wireguard-go/libwg.a $(TARGET_OUTPUT_DIR)
 
 libsodium:
 	@echo "Building libsodium"

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0
  *
- * Copyright (C) 2017-2018 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+ * Copyright (C) 2017-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
  */
 
 package main
@@ -8,6 +8,7 @@ package main
 import (
 	"C"
 	"bufio"
+	"io"
 	"io/ioutil"
 	"log"
 	"math"
@@ -17,20 +18,22 @@ import (
 	"runtime"
 	"strings"
 
-	"git.zx2c4.com/wireguard-go/tun"
 	"golang.org/x/sys/unix"
+
+	"golang.zx2c4.com/wireguard/device"
+	"golang.zx2c4.com/wireguard/ipc"
+	"golang.zx2c4.com/wireguard/tun"
 )
-import "io"
 
 type TunnelHandle struct {
-	device *Device
+	device *device.Device
 	uapi   net.Listener
 }
 
 var tunnelHandles map[int32]TunnelHandle
 
 func init() {
-	roamingDisabled = true
+	device.RoamingDisabled = true
 	tunnelHandles = make(map[int32]TunnelHandle)
 	signals := make(chan os.Signal)
 	signal.Notify(signals, unix.SIGUSR2)
@@ -48,8 +51,8 @@ func init() {
 }
 
 // Adjust logger to use the passed file descriptor for all output if the filedescriptor is valid
-func newLogger(loggingFd int, level int) *Logger {
-	logger := new(Logger)
+func newLogger(loggingFd int, level int) *device.Logger {
+	logger := new(device.Logger)
 	outputFile := os.NewFile(uintptr(loggingFd), "")
 	var output io.Writer
 	if outputFile != nil {
@@ -59,13 +62,13 @@ func newLogger(loggingFd int, level int) *Logger {
 	}
 
 	logErr, logInfo, logDebug := func() (io.Writer, io.Writer, io.Writer) {
-		if level >= LogLevelDebug {
+		if level >= device.LogLevelDebug {
 			return output, output, output
 		}
-		if level >= LogLevelInfo {
+		if level >= device.LogLevelInfo {
 			return output, output, ioutil.Discard
 		}
-		if level >= LogLevelError {
+		if level >= device.LogLevelError {
 			return output, ioutil.Discard, ioutil.Discard
 		}
 		return ioutil.Discard, ioutil.Discard, ioutil.Discard
@@ -111,15 +114,15 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 		return -1
 	}
 
-	device := NewDevice(tun, logger)
+	device := device.NewDevice(tun, logger)
 
 	var uapi net.Listener
 
-	uapiFile, err := UAPIOpen(ifaceName)
+	uapiFile, err := ipc.UAPIOpen(ifaceName)
 	if err != nil {
 		logger.Error.Println(err)
 	} else {
-		uapi, err = UAPIListen(ifaceName, uapiFile)
+		uapi, err = ipc.UAPIListen(ifaceName, uapiFile)
 		if err != nil {
 			uapiFile.Close()
 			logger.Error.Println("Failed to start the UAPI")
@@ -131,14 +134,13 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 					if err != nil {
 						return
 					}
-					go ipcHandle(device, conn)
+					go device.IpcHandle(conn)
 				}
 			}()
 		}
 	}
 
-	bufferedSettings := bufio.NewReadWriter(bufio.NewReader(strings.NewReader(settings)), bufio.NewWriter(ioutil.Discard))
-	setError := ipcSetOperation(device, bufferedSettings)
+	setError := device.IpcSetOperation(bufio.NewReader(strings.NewReader(settings)))
 	if setError != nil {
 		tun.Close()
 		logger.Error.Println(setError)
@@ -155,6 +157,7 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 		return -1
 	}
 	tunnelHandles[i] = TunnelHandle{device: device, uapi: uapi}
+	device.Up()
 	return i
 }
 
@@ -173,5 +176,7 @@ func wgTurnOff(tunnelHandle int32) {
 
 //export wgVersion
 func wgVersion() *C.char {
-	return C.CString(WireGuardGoVersion)
+	return C.CString(device.WireGuardGoVersion)
 }
+
+func main() {}
