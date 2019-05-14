@@ -43,13 +43,39 @@ release, one should generally follow the instructions laid out in the
 You should now have the final product in `./build/openvpn/bin/openvpn.exe`
 
 ## Building Wireguard-Go
+The userspace implementation of Wireguard using Go is used in the app. For Linux and macOS, a static
+library must be built to include support for Wireguard, while in Android a shared library is built
+from the official Wireguard app for Android [repository][wireguard-android].
+
+[wireguard-android]: https://github.com/WireGuard/wireguard-android/
+
+### Android
+The libwg-go.so shared library is cross-compiled using a custom Docker image. You can build the
+image with the final binaries and extract them to the appropriate sub-directory in the repository
+using the following command:
+
+```bash
+make android
+```
+
+### Linux + macOS
 Building the wireugard-go static library requires only a go compiler, the
 version used at the time of writing is `go1.11.2`.
 
-Currently, only MacOS and Linux are supported.
+### Windows
+Currently, Windows is not supported.
 
 ## Building OpenSSL
 To build the MullvadVPN app, one has to have statically linkable OpenSSL libraries.
+
+### Android
+The OpenSSL static binaries are cross-compiled using a custom Docker image. You can build the image
+with the final binaries and extract them to the appropriate sub-directory in the repository using
+the following command:
+
+```bash
+make android
+```
 
 ### Linux + macOS
 To build statically linkable OpenSSL libraries on macOS and Linux, just run
@@ -122,8 +148,9 @@ Grab the built binary from `.\shadowsocks-rust\target\release\sslocal.exe`
 
 This repository, apart from having the scripts used to build OpenVPN, also holds the built binaries
 for the platforms we need. These exist under directories for each platform:
-* `macos/`
+* `android/`
 * `linux/`
+* `macos/`
 * `windows/`
 
 
