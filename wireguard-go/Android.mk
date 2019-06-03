@@ -14,13 +14,13 @@ NDK_GO_ARCH_MAP_mips64 := mips64x
 
 CLANG_FLAGS := --target=$(ANDROID_LLVM_TRIPLE) --gcc-toolchain=$(ANDROID_TOOLCHAIN_ROOT) --sysroot=$(ANDROID_SYSROOT)
 export CGO_CFLAGS := $(CLANG_FLAGS) $(CFLAGS)
-export CGO_LDFLAGS := $(CLANG_FLAGS) $(LDFLAGS)
+export CGO_LDFLAGS := $(CLANG_FLAGS) $(LDFLAGS) -L/opt/android/toolchains/android28-aarch64/sysroot/usr/lib/aarch64-linux-android/28 -v
 export CC := $(ANDROID_C_COMPILER)
 export GOARCH := $(NDK_GO_ARCH_MAP_$(ANDROID_ARCH_NAME))
 export GOOS := android
 export CGO_ENABLED := 1
 
-default: $(DESTDIR)/libwg-go.so
+default: $(DESTDIR)/libwg.so
 
 GOBUILDARCH := $(NDK_GO_ARCH_MAP_$(shell uname -m))
 GOBUILDOS := $(shell uname -s | tr '[:upper:]' '[:lower:]')
@@ -40,9 +40,9 @@ $(GOROOT)/bin/go:
 	curl "$(GOBUILDTARBALL)" | tar -C "$(GOROOT)" --strip-components=1 -xzf - || { rm -rf "$(GOROOT)"; exit 1; }
 	patch -p1 -f -N -r- -d "$(GOROOT)" < goruntime-boottime-over-monotonic.diff || { rm -rf "$(GOROOT)"; exit 1; }
 
-$(shell test "$$(cat $(BUILDDIR)/.gobuildversion 2>/dev/null)" = "$(GOBUILDVERSION_CURRENT)" || rm -f "$(DESTDIR)/libwg-go.so")
+$(shell test "$$(cat $(BUILDDIR)/.gobuildversion 2>/dev/null)" = "$(GOBUILDVERSION_CURRENT)" || rm -f "$(DESTDIR)/libwg.so")
 
-$(DESTDIR)/libwg-go.so: $(GOROOT)/bin/go
+$(DESTDIR)/libwg.so: $(GOROOT)/bin/go
 	go get -tags linux || { chmod -fR +w "$(GOPATH)/pkg/mod"; rm -rf "$(GOPATH)/pkg/mod"; exit 1; }
 	chmod -fR +w "$(GOPATH)/pkg/mod"
 	go build -tags linux -ldflags="-X main.socketDirectory=/data/data/$(ANDROID_PACKAGE_NAME)/cache/wireguard" -v -o "$@" -buildmode c-shared
