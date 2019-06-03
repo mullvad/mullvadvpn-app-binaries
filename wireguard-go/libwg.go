@@ -174,6 +174,32 @@ func wgTurnOff(tunnelHandle int32) {
 	handle.device.Close()
 }
 
+//export wgGetSocketV4
+func wgGetSocketV4(tunnelHandle int32) int32 {
+	handle, ok := tunnelHandles[tunnelHandle]
+	if !ok {
+		return -1
+	}
+	fd, err := handle.device.PeekLookAtSocketFd4()
+	if err != nil {
+		return -1
+	}
+	return int32(fd)
+}
+
+//export wgGetSocketV6
+func wgGetSocketV6(tunnelHandle int32) int32 {
+	handle, ok := tunnelHandles[tunnelHandle]
+	if !ok {
+		return -1
+	}
+	fd, err := handle.device.PeekLookAtSocketFd6()
+	if err != nil {
+		return -1
+	}
+	return int32(fd)
+}
+
 //export wgVersion
 func wgVersion() *C.char {
 	return C.CString(device.WireGuardGoVersion)
