@@ -22,6 +22,3 @@
 [submodule "shadowsocks-rust"]
 	path = shadowsocks-rust
 	url = https://github.com/shadowsocks/shadowsocks-rust
-[submodule "wireguard-android"]
-	path = wireguard-android
-	url = https://github.com/WireGuard/wireguard-android.git
