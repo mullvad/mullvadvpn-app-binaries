@@ -23,10 +23,9 @@ cp /opt/openssl/include/openssl/opensslconf.h android/include/openssl/opensslcon
 cp /opt/openssl/include/openssl/opensslv.h android/include/openssl/opensslv.h
 
 # Build Wireguard-Go
-pushd wireguard-android/app/tools/libwg-go/
-sed -i -e '/export CGO_LDFLAGS/ s|$| -L/opt/android/toolchains/android28-aarch64/sysroot/usr/lib/aarch64-linux-android/28 -v|' Makefile
-make
+pushd wireguard-go/
+make -f Android.mk
 popd
 
-cp wireguard-android/app/tools/libwg-go/out/libwg-go.h android/include/libwg-go.h
-cp wireguard-android/app/tools/libwg-go/out/libwg-go.so android/libwg-go.so
+cp wireguard-go/out/libwg.h android/include/libwg.h
+cp wireguard-go/out/libwg.so android/libwg.so

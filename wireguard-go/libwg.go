@@ -107,14 +107,25 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 	settings := C.GoString(cSettings)
 	ifaceName := C.GoString(cIfaceName)
 
-	file := os.NewFile(uintptr(fd), "")
-	tun, err := tun.CreateTUNFromFile(file, mtu)
-	if err != nil {
-		logger.Error.Println(err)
-		return -1
-	}
+    var tunDevice tun.TUNDevice
+    var err error
+    if runtime.GOOS == "android" {
+        tunDevice, ifaceName, err = tun.CreateUnmonitoredTUNFromFD(fd)
+        if err != nil {
+            unix.Close(fd)
+            logger.Error.Println(err)
+            return -1
+        }
+    } else {
+        file := os.NewFile(uintptr(fd), "")
+        tunDevice, err = tun.CreateTUNFromFile(file, mtu)
+        if err != nil {
+            logger.Error.Println(err)
+            return -1
+        }
+    }
 
-	device := device.NewDevice(tun, logger)
+	device := device.NewDevice(tunDevice, logger)
 
 	var uapi net.Listener
 
@@ -142,7 +153,7 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 
 	setError := device.IpcSetOperation(bufio.NewReader(strings.NewReader(settings)))
 	if setError != nil {
-		tun.Close()
+		tunDevice.Close()
 		logger.Error.Println(setError)
 		return -1
 	}
@@ -153,7 +164,7 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 		}
 	}
 	if i == math.MaxInt32 {
-		tun.Close()
+		tunDevice.Close()
 		return -1
 	}
 	tunnelHandles[i] = TunnelHandle{device: device, uapi: uapi}
@@ -172,6 +183,32 @@ func wgTurnOff(tunnelHandle int32) {
 		handle.uapi.Close()
 	}
 	handle.device.Close()
+}
+
+//export wgGetSocketV4
+func wgGetSocketV4(tunnelHandle int32) int32 {
+	handle, ok := tunnelHandles[tunnelHandle]
+	if !ok {
+		return -1
+	}
+	fd, err := handle.device.PeekLookAtSocketFd4()
+	if err != nil {
+		return -1
+	}
+	return int32(fd)
+}
+
+//export wgGetSocketV6
+func wgGetSocketV6(tunnelHandle int32) int32 {
+	handle, ok := tunnelHandles[tunnelHandle]
+	if !ok {
+		return -1
+	}
+	fd, err := handle.device.PeekLookAtSocketFd6()
+	if err != nil {
+		return -1
+	}
+	return int32(fd)
 }
 
 //export wgVersion
