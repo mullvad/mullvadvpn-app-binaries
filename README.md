@@ -4,10 +4,13 @@ libraries for all of our target platforms, and `libmnl` and `libnftnl` for
 Linux, all of which are used in the [Mullvad VPN app].
 
 
+
 ## Custom changes
 
 The `openvpn` submodule is tracking our [`mullvad-patches`] branch that contain a few custom
 changes needed by the [Mullvad VPN app].
+
+
 
 ## Building OpenVPN
 
@@ -42,6 +45,8 @@ release, one should generally follow the instructions laid out in the
 
 You should now have the final product in `./build/openvpn/bin/openvpn.exe`
 
+
+
 ## Building Wireguard-Go
 The userspace implementation of Wireguard using Go is used in the app. For Linux and macOS, a static
 library must be built to include support for Wireguard, while in Android a shared library is built
@@ -64,6 +69,8 @@ version used at the time of writing is `go1.11.2`.
 
 ### Windows
 Currently, Windows is not supported.
+
+
 
 ## Building OpenSSL
 To build the MullvadVPN app, one has to have statically linkable OpenSSL libraries.
@@ -100,9 +107,13 @@ The result of a successful build should be newly created `libssl.lib` and
 `libcrypto.lib` libraries in `.\windows\` and headers in
 `.\windows\include`.
 
+
+
 ## `libmnl` and `libnftnl`
 These libraries are only required for Linux and are required by our app to
 apply firewall rules. To produce the required libraries, run `make libnftnl`.
+
+
 
 ## Building libsodium
 Libsodium is used by e.g. Shadowsocks, a proxy software bundled with the MullvadVPN app.
@@ -117,6 +128,8 @@ Community Edition, pick the solution file at `.\libsodium\builds\msvc\vs2017\lib
 Inside the solution, select the (`StaticRelease`, `x64`) configuration.
 
 The static library is created as: `.\libsodium\bin\x64\Release\v141\static\libsodium.lib`.
+
+
 
 ## Building Shadowsocks
 
@@ -143,6 +156,8 @@ Then run `make shadowsocks` and wait for it to build. You'll notice the make pro
 when it comes to `strip`, but this is fine, as `strip` is not available nor applicable in this case.
 
 Grab the built binary from `.\shadowsocks-rust\target\release\sslocal.exe`
+
+
 
 ## Storage of binaries
 
