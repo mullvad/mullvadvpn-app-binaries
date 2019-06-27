@@ -73,10 +73,6 @@ extern GoInt32 wgTurnOnWithFd(char* p0, GoInt p1, char* p2, GoInt p3, GoInt p4, 
 
 extern void wgTurnOff(GoInt32 p0);
 
-extern GoInt32 wgGetSocketV4(GoInt32 p0);
-
-extern GoInt32 wgGetSocketV6(GoInt32 p0);
-
 extern char* wgVersion();
 
 #ifdef __cplusplus
