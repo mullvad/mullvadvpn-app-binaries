@@ -3,7 +3,7 @@
 # Copyright © 2017-2019 WireGuard LLC. All Rights Reserved.
 
 BUILDDIR ?= $(CURDIR)/build
-DESTDIR ?= $(CURDIR)/out
+DESTDIR ?= $(CURDIR)/../android
 
 NDK_GO_ARCH_MAP_x86 := 386
 NDK_GO_ARCH_MAP_x86_64 := amd64
@@ -43,7 +43,7 @@ $(GOROOT)/bin/go:
 $(shell test "$$(cat $(BUILDDIR)/.gobuildversion 2>/dev/null)" = "$(GOBUILDVERSION_CURRENT)" || rm -f "$(DESTDIR)/libwg.so")
 
 $(DESTDIR)/libwg.so: $(GOROOT)/bin/go
-	go get -tags linux || { chmod -fR +w "$(GOPATH)/pkg/mod"; rm -rf "$(GOPATH)/pkg/mod"; exit 1; }
+	go get -tags "linux android" || { chmod -fR +w "$(GOPATH)/pkg/mod"; rm -rf "$(GOPATH)/pkg/mod"; exit 1; }
 	chmod -fR +w "$(GOPATH)/pkg/mod"
-	go build -tags linux -ldflags="-X main.socketDirectory=/data/data/$(ANDROID_PACKAGE_NAME)/cache/wireguard" -v -o "$@" -buildmode c-shared
+	go build -tags "linux android" -ldflags="-X main.socketDirectory=/data/data/$(ANDROID_PACKAGE_NAME)/cache/wireguard" -v -o "$@" -buildmode c-shared
 	go version > $(BUILDDIR)/.gobuildversion
