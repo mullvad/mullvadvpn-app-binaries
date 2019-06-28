@@ -26,6 +26,3 @@ cp /opt/openssl/include/openssl/opensslv.h android/include/openssl/opensslv.h
 pushd wireguard-go/
 make -f Android.mk
 popd
-
-cp wireguard-go/out/libwg.h android/include/libwg.h
-cp wireguard-go/out/libwg.so android/libwg.so

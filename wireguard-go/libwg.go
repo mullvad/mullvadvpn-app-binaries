@@ -107,23 +107,12 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 	settings := C.GoString(cSettings)
 	ifaceName := C.GoString(cIfaceName)
 
-    var tunDevice tun.TUNDevice
-    var err error
-    if runtime.GOOS == "android" {
-        tunDevice, ifaceName, err = tun.CreateUnmonitoredTUNFromFD(fd)
-        if err != nil {
-            unix.Close(fd)
-            logger.Error.Println(err)
-            return -1
-        }
-    } else {
-        file := os.NewFile(uintptr(fd), "")
-        tunDevice, err = tun.CreateTUNFromFile(file, mtu)
-        if err != nil {
-            logger.Error.Println(err)
-            return -1
-        }
-    }
+	file := os.NewFile(uintptr(fd), "")
+	tunDevice, err := tun.CreateTUNFromFile(file, mtu)
+	if err != nil {
+		logger.Error.Println(err)
+		return -1
+	}
 
 	device := device.NewDevice(tunDevice, logger)
 
@@ -183,32 +172,6 @@ func wgTurnOff(tunnelHandle int32) {
 		handle.uapi.Close()
 	}
 	handle.device.Close()
-}
-
-//export wgGetSocketV4
-func wgGetSocketV4(tunnelHandle int32) int32 {
-	handle, ok := tunnelHandles[tunnelHandle]
-	if !ok {
-		return -1
-	}
-	fd, err := handle.device.PeekLookAtSocketFd4()
-	if err != nil {
-		return -1
-	}
-	return int32(fd)
-}
-
-//export wgGetSocketV6
-func wgGetSocketV6(tunnelHandle int32) int32 {
-	handle, ok := tunnelHandles[tunnelHandle]
-	if !ok {
-		return -1
-	}
-	fd, err := handle.device.PeekLookAtSocketFd6()
-	if err != nil {
-		return -1
-	}
-	return int32(fd)
 }
 
 //export wgVersion
