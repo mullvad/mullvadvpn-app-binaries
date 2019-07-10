@@ -3,11 +3,11 @@ BUILD_DIR = $(PWD)/build
 WINDOWS_BUILDROOT = openvpn-build/generic/tmp
 WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 
-OPENSSL_VERSION = openssl-1.1.0h
+OPENSSL_VERSION = openssl-1.1.1c
 OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 \
 	no-md4 no-seed no-cast no-camellia no-idea enable-ec_nistp_64_gcc_128 enable-rfc3779
 
-OPENVPN_VERSION = openvpn-2.4.6
+OPENVPN_VERSION = openvpn-2.4.7
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-server \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
 	--disable-def-auth --disable-pf --disable-pkcs11 \
