@@ -75,8 +75,8 @@ update_openssl: openssl
 	# This is not required for OpenVPN, but will be used to link openssl
 	# statically in our other utilities.
 	mkdir -p $(TARGET_OUTPUT_DIR)/include/openssl ; \
-	cp openssl/lib{crypto,ssl}.a $(TARGET_OUTPUT_DIR)/ ; \
-	cp openssl/include/openssl/openssl{conf,v}.h $(TARGET_OUTPUT_DIR)/include/openssl/
+	cp openssl/libcrypto.a openssl/libssl.a $(TARGET_OUTPUT_DIR)/ ; \
+	cp openssl/include/openssl/opensslconf.h openssl/include/openssl/opensslv.h $(TARGET_OUTPUT_DIR)/include/openssl/
 
 openvpn: lz4 openssl
 	@echo "Building OpenVPN"
