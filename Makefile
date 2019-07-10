@@ -96,7 +96,7 @@ openvpn: lz4 openssl
 	strip $(BUILD_DIR)/sbin/openvpn
 	cp $(BUILD_DIR)/sbin/openvpn $(TARGET_OUTPUT_DIR)/
 
-openvpn_windows: clean
+openvpn_windows: clean-submodules
 	rm -r "$(WINDOWS_BUILDROOT)"
 	mkdir -p $(WINDOWS_BUILDROOT)
 	mkdir -p $(WINDOWS_SOURCEROOT)
