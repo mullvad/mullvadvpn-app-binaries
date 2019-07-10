@@ -107,6 +107,10 @@ The result of a successful build should be newly created `libssl.lib` and
 `libcrypto.lib` libraries in `.\windows\` and headers in
 `.\windows\include`.
 
+#### Troubleshooting
+
+* Missing `ltmain.sh`? Copy it from the libtool installation path into openvpn/
+
 
 
 ## `libmnl` and `libnftnl`
