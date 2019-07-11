@@ -47,3 +47,6 @@ $(DESTDIR)/libwg.so: $(GOROOT)/bin/go
 	chmod -fR +w "$(GOPATH)/pkg/mod"
 	go build -tags "linux android" -ldflags="-X main.socketDirectory=/data/data/$(ANDROID_PACKAGE_NAME)/cache/wireguard" -v -o "$@" -buildmode c-shared
 	go version > $(BUILDDIR)/.gobuildversion
+
+clean:
+	rm -f $(DESTDIR)/libwg.so
