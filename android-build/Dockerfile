@@ -23,7 +23,7 @@ RUN cd /tmp && \
 ENV ANDROID_SYSROOT="/opt/android/toolchains/android28-aarch64/sysroot" \
     ANDROID_LLVM_TRIPLE="aarch64-linux-android" \
     ANDROID_C_COMPILER="/opt/android/toolchains/android28-aarch64/bin/aarch64-linux-android28-clang" \
-    ANDROID_NDK_HOME="/opt/android/" \
+    ANDROID_NDK_HOME="/opt/android/android-ndk-r19b" \
     ANDROID_TOOLCHAIN_ROOT="/opt/android/toolchains/android28-aarch64" \
     ANDROID_ARCH_NAME="arm64"
 
