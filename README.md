@@ -104,8 +104,8 @@ To compile OpenSSL for Windows with MSVC, run the following script:
 build-openssl-with-msbvc.bat
 ```
 The result of a successful build should be newly created `libssl.lib` and
-`libcrypto.lib` libraries in `.\windows\` and headers in
-`.\windows\include`.
+`libcrypto.lib` libraries in `.\x86_64-pc-windows-msvc\` and headers in
+`.\x86_64-pc-windows-msvc\include`.
 
 #### Troubleshooting
 
@@ -153,8 +153,9 @@ Create `.\shadowsocks-rust\.cargo\config` with the following content:
 rustflags = ["-Ctarget-feature=+crt-static"]
 ```
 
-Temporarily rename `.\windows\libsodium.lib` into `.\windows\sodium.lib`. This allows us to
-work around a bug in the `libsodium-ffi` crate.
+Temporarily rename `.\x86_64-pc-windows-msvc\libsodium.lib` into
+`.\x86_64-pc-windows-msvc\sodium.lib`. This allows us to work around a bug in the `libsodium-ffi`
+crate.
 
 Then run `make shadowsocks` and wait for it to build. You'll notice the make process is aborted
 when it comes to `strip`, but this is fine, as `strip` is not available nor applicable in this case.
@@ -166,11 +167,8 @@ Grab the built binary from `.\shadowsocks-rust\target\release\sslocal.exe`
 ## Storage of binaries
 
 This repository, apart from having the scripts used to build OpenVPN, also holds the built binaries
-for the platforms we need. These exist under directories for each platform:
-* `android/`
-* `linux/`
-* `macos/`
-* `windows/`
+for the platforms we need. These exist under directories named after the target triplet they are
+intended for.
 
 
 [Mullvad VPN app]: https://github.com/mullvad/mullvadvpn-app
