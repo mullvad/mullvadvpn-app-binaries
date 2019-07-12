@@ -11,9 +11,9 @@ pushd openssl
 make clean
 make build_libs
 
-mkdir -p ../android/include/openssl
-cp lib{crypto,ssl}.a ../android/
-cp include/openssl/openssl{conf,v}.h ../android/include/openssl/
+mkdir -p ../aarch64-linux-android/include/openssl
+cp lib{crypto,ssl}.a ../aarch64-linux-android/
+cp include/openssl/openssl{conf,v}.h ../aarch64-linux-android/include/openssl/
 popd
 
 # Build Wireguard-Go
