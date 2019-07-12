@@ -20,14 +20,14 @@ ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-iproute2
 	SHARED_LIB_EXT = so*
-	TARGET_OUTPUT_DIR = "linux"
+	TARGET_OUTPUT_DIR = "x86_64-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
-	TARGET_OUTPUT_DIR = "macos"
+	TARGET_OUTPUT_DIR = "x86_64-apple-darwin"
 endif
 ifneq (,$(findstring MINGW,$(UNAME_S)))
-	TARGET_OUTPUT_DIR = "windows"
+	TARGET_OUTPUT_DIR = "x86_64-pc-windows-msvc"
 endif
 
 .PHONY: help clean clean-build clean-submodules clean-android lz4 openssl openvpn android windows libmnl libnftnl wireguard-go libsodium shadowsocks
