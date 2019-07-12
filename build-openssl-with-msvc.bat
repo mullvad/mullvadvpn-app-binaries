@@ -16,7 +16,7 @@ call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary
 perl Configure VC-WIN64A ^
   --prefix=%cd%\..\msvc-openssl ^
   --openssldir=%cd%\..\msvc-openssl ^
-  %OPENSSL_CONFIG%
+  %OPENSSL_CONFIG% ^
   -FIWindows.h
 
 nmake clean
