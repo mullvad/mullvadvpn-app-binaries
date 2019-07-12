@@ -3,19 +3,16 @@ BUILD_DIR = $(PWD)/build
 WINDOWS_BUILDROOT = openvpn-build/generic/tmp
 WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 
-OPENSSL_VERSION = openssl-1.1.0h
+OPENSSL_VERSION = openssl-1.1.1c
 OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 \
 	no-md4 no-seed no-cast no-camellia no-idea enable-ec_nistp_64_gcc_128 enable-rfc3779
 
-OPENVPN_VERSION = openvpn-2.4.6
+OPENVPN_VERSION = openvpn-2.4.7
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-server \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
-	--disable-def-auth --disable-pf --disable-pkcs11 \
-	--enable-lzo --enable-lz4 --enable-ssl --enable-crypto --enable-plugins \
+	--disable-def-auth --disable-pf --disable-pkcs11 --disable-lzo \
+	--enable-lz4 --enable-ssl --enable-crypto --enable-plugins \
 	--enable-password-save --enable-socks --enable-http-proxy
-
-LZO_VERSION = lzo-2.10
-LZO_CONFIG = --enable-static --disable-debug
 
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
@@ -33,7 +30,7 @@ ifneq (,$(findstring MINGW,$(UNAME_S)))
 	TARGET_OUTPUT_DIR = "windows"
 endif
 
-.PHONY: help clean clean-build clean-submodules clean-android lz4 lzo openssl openvpn android windows libmnl libnftnl wireguard-go libsodium shadowsocks
+.PHONY: help clean clean-build clean-submodules clean-android lz4 openssl openvpn android windows libmnl libnftnl wireguard-go libsodium shadowsocks
 
 help:
 	@echo "Please run a more specific target"
@@ -46,7 +43,6 @@ clean-build:
 	rm -rf $(BUILD_DIR)
 
 clean-submodules:
-	rm -rf $(LZO_VERSION)
 	cd lz4; $(MAKE) clean
 	cd openssl; [ -e "Makefile" ] && $(MAKE) clean || true
 	cd openvpn; [ -e "Makefile" ] && $(MAKE) clean || true
@@ -60,16 +56,6 @@ lz4:
 	# lz4 always installs a shared library. Unless it's removed
 	# OpenVPN will link against it.
 	rm $(BUILD_DIR)/lib/liblz4.*$(SHARED_LIB_EXT)
-
-lzo:
-	@echo "Building lzo"
-	mkdir -p $(BUILD_DIR)
-	rm -rf $(LZO_VERSION)
-	tar xzf $(LZO_VERSION).tar.gz
-	cd $(LZO_VERSION) ; \
-	./configure --prefix=$(BUILD_DIR) $(LZO_CONFIG) ; \
-	$(MAKE) ; \
-	$(MAKE) install
 
 openssl:
 	@echo "Building OpenSSL"
@@ -89,10 +75,10 @@ update_openssl: openssl
 	# This is not required for OpenVPN, but will be used to link openssl
 	# statically in our other utilities.
 	mkdir -p $(TARGET_OUTPUT_DIR)/include/openssl ; \
-	cp openssl/lib{crypto,ssl}.a $(TARGET_OUTPUT_DIR)/ ; \
-	cp openssl/include/openssl/openssl{conf,v}.h $(TARGET_OUTPUT_DIR)/include/openssl/
+	cp openssl/libcrypto.a openssl/libssl.a $(TARGET_OUTPUT_DIR)/ ; \
+	cp openssl/include/openssl/opensslconf.h openssl/include/openssl/opensslv.h $(TARGET_OUTPUT_DIR)/include/openssl/
 
-openvpn: lz4 lzo openssl
+openvpn: lz4 openssl
 	@echo "Building OpenVPN"
 	mkdir -p $(BUILD_DIR)
 	cd openvpn ; \
@@ -101,10 +87,8 @@ openvpn: lz4 lzo openssl
 		--prefix=$(BUILD_DIR) \
 		$(OPENVPN_CONFIG) $(PLATFORM_OPENVPN_CONFIG) \
 		OPENSSL_CFLAGS="-I$(BUILD_DIR)/include" \
-		LZO_CFLAGS="-I$(BUILD_DIR)/include" \
 		LZ4_CFLAGS="-I$(BUILD_DIR)/include" \
-		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto" \
-		LZO_LIBS="-L$(BUILD_DIR)/lib -llzo2" \
+		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread" \
 		LZ4_LIBS="-L$(BUILD_DIR)/lib -llz4" ; \
 	$(MAKE) clean ; \
 	$(MAKE) ; \
@@ -112,11 +96,10 @@ openvpn: lz4 lzo openssl
 	strip $(BUILD_DIR)/sbin/openvpn
 	cp $(BUILD_DIR)/sbin/openvpn $(TARGET_OUTPUT_DIR)/
 
-openvpn_windows: clean
+openvpn_windows: clean-submodules
 	rm -r "$(WINDOWS_BUILDROOT)"
 	mkdir -p $(WINDOWS_BUILDROOT)
 	mkdir -p $(WINDOWS_SOURCEROOT)
-	ln -sf $(PWD)/$(LZO_VERSION).tar.gz $(WINDOWS_BUILDROOT)/../sources/$(LZO_VERSION).tar.gz
 	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/$(OPENSSL_VERSION)
 	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/$(OPENVPN_VERSION)
 	cd openvpn; autoreconf -f -v
