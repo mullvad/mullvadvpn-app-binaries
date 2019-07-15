@@ -17,11 +17,18 @@ cp include/openssl/openssl{conf,v}.h ../aarch64-linux-android/include/openssl/
 popd
 
 # Build Wireguard-Go
+export ANDROID_ARCH_NAME="arm64"
+export ANDROID_LLVM_ARCH="aarch64"
+export ANDROID_LLVM_TRIPLE="${ANDROID_LLVM_ARCH}-linux-android"
+export ANDROID_TOOLCHAIN_ROOT="${ANDROID_NDK_HOME}/toolchains/android21-${ANDROID_LLVM_ARCH}"
+export ANDROID_SYSROOT="${ANDROID_TOOLCHAIN_ROOT}/sysroot"
+export ANDROID_C_COMPILER="${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_LLVM_TRIPLE}21-clang"
+
 pushd wireguard-go/
 make -f Android.mk clean
 
 export CFLAGS="-D__ANDROID_API__=21"
-export LDFLAGS="-L${ANDROID_SYSROOT}/usr/lib/aarch64-linux-android/21"
+export LDFLAGS="-L${ANDROID_SYSROOT}/usr/lib/${ANDROID_LLVM_TRIPLE}/21"
 
 make -f Android.mk
 popd
