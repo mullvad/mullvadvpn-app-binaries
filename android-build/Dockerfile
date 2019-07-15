@@ -20,14 +20,21 @@ RUN cd /tmp && \
     mkdir toolchains && \
     /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh --platform=android-21 --arch=arm64 --install-dir=/opt/android/toolchains/android21-aarch64 && \
     /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh --platform=android-21 --arch=x86_64 --install-dir=/opt/android/toolchains/android21-x86_64 && \
+    /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh --platform=android-21 --arch=arm --install-dir=/opt/android/toolchains/android21-armv7 && \
     /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh --platform=android-21 --arch=x86 --install-dir=/opt/android/toolchains/android21-i686
 
 ENV ANDROID_NDK_HOME="/opt/android/android-ndk-r20"
 
 # Create symlinks to some libraries so that the linker used by Go can find them
-RUN for arch in aarch64 x86_64 i686; do \
+RUN for arch in aarch64 x86_64 i686 armv7; do \
+        if [ "$arch" = "armv7" ]; then \
+            TARGET="arm-linux-androideabi"; \
+        else \
+            TARGET="${arch}-linux-android"; \
+        fi; \
+        \
         for lib in crtbegin_dynamic.o crtend_android.o crtbegin_so.o crtend_so.o; do \
-            ln -s "/opt/android/toolchains/android21-${arch}/sysroot/usr/lib/${arch}-linux-android/21/$lib" /opt/android/toolchains/android21-${arch}/sysroot/usr/lib/${arch}-linux-android/; \
+            ln -s "/opt/android/toolchains/android21-${arch}/sysroot/usr/lib/${TARGET}/21/$lib" /opt/android/toolchains/android21-${arch}/sysroot/usr/lib/${TARGET}/; \
         done \
     done
 
