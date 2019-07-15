@@ -2,7 +2,7 @@
 
 set -e
 
-for arch_info in "arm64|aarch64" "x86_64|x86_64"; do
+for arch_info in "arm64|aarch64" "x86_64|x86_64" "x86|i686"; do
     export ANDROID_ARCH_NAME="$(echo "$arch_info" | cut -f1 -d'|')"
     export ANDROID_LLVM_ARCH="$(echo "$arch_info" | cut -f2 -d'|')"
     export OPENSSL_ARCH="android-${ANDROID_ARCH_NAME}"
@@ -12,8 +12,15 @@ for arch_info in "arm64|aarch64" "x86_64|x86_64"; do
     export ANDROID_C_COMPILER="${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_LLVM_TRIPLE}21-clang"
 
     # Build OpenSSL
-    export OPENSSL_CONFIG="no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 no-md4 no-seed no-cast no-camellia no-idea enable-ec_nistp_64_gcc_128 enable-rfc3779"
     export PATH="$PATH:${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin"
+
+    COMMON_OPENSSL_CONFIG="no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 no-md4 no-seed no-cast no-camellia no-idea enable-rfc3779"
+
+    if echo "$ANDROID_ARCH_NAME" | grep -q 64; then
+        export OPENSSL_CONFIG="$COMMON_OPENSSL_CONFIG enable-ec_nistp_64_gcc_128"
+    else
+        export OPENSSL_CONFIG="$COMMON_OPENSSL_CONFIG"
+    fi
 
     pushd openssl
     ./Configure "$OPENSSL_ARCH" -D__ANDROID_API__=21 no-shared -static --prefix=/opt/openssl --openssldir=/opt/openssl ${OPENSSL_CONFIG}
