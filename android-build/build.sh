@@ -7,7 +7,7 @@ export OPENSSL_CONFIG="no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 n
 export PATH="$PATH:$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin"
 
 pushd openssl
-./Configure android-arm64 no-shared -static --prefix=/opt/openssl --openssldir=/opt/openssl ${OPENSSL_CONFIG}
+./Configure android-arm64 -D__ANDROID_API__=21 no-shared -static --prefix=/opt/openssl --openssldir=/opt/openssl ${OPENSSL_CONFIG}
 make clean
 make build_libs
 
@@ -19,5 +19,9 @@ popd
 # Build Wireguard-Go
 pushd wireguard-go/
 make -f Android.mk clean
+
+export CFLAGS="-D__ANDROID_API__=21"
+export LDFLAGS="-L${ANDROID_SYSROOT}/usr/lib/aarch64-linux-android/21"
+
 make -f Android.mk
 popd
