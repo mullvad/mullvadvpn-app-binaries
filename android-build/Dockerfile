@@ -18,18 +18,18 @@ RUN cd /tmp && \
     unzip -q /tmp/android-ndk-r20-linux-x86_64.zip && \
     rm /tmp/android-ndk-r20-linux-x86_64.zip && \
     mkdir toolchains && \
-    /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh --platform=android-28 --arch=arm64 --install-dir=/opt/android/toolchains/android28-aarch64
+    /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh --platform=android-21 --arch=arm64 --install-dir=/opt/android/toolchains/android21-aarch64
 
-ENV ANDROID_SYSROOT="/opt/android/toolchains/android28-aarch64/sysroot" \
+ENV ANDROID_SYSROOT="/opt/android/toolchains/android21-aarch64/sysroot" \
     ANDROID_LLVM_TRIPLE="aarch64-linux-android" \
-    ANDROID_C_COMPILER="/opt/android/toolchains/android28-aarch64/bin/aarch64-linux-android28-clang" \
+    ANDROID_C_COMPILER="/opt/android/toolchains/android21-aarch64/bin/aarch64-linux-android21-clang" \
     ANDROID_NDK_HOME="/opt/android/android-ndk-r20" \
-    ANDROID_TOOLCHAIN_ROOT="/opt/android/toolchains/android28-aarch64" \
+    ANDROID_TOOLCHAIN_ROOT="/opt/android/toolchains/android21-aarch64" \
     ANDROID_ARCH_NAME="arm64"
 
 # Create symlinks to some libraries so that the linker used by Go can find them
 RUN for lib in crtbegin_dynamic.o crtend_android.o crtbegin_so.o crtend_so.o; do \
-        ln -s "/opt/android/toolchains/android28-aarch64/sysroot/usr/lib/aarch64-linux-android/28/$lib" /opt/android/toolchains/android28-aarch64/sysroot/usr/lib/aarch64-linux-android/; \
+        ln -s "/opt/android/toolchains/android21-aarch64/sysroot/usr/lib/aarch64-linux-android/21/$lib" /opt/android/toolchains/android21-aarch64/sysroot/usr/lib/aarch64-linux-android/; \
     done
 
 # Install Go-lang
