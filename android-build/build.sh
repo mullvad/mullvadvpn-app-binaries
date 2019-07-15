@@ -18,5 +18,6 @@ popd
 
 # Build Wireguard-Go
 pushd wireguard-go/
+make -f Android.mk clean
 make -f Android.mk
 popd
