@@ -3,7 +3,7 @@
 # Copyright © 2017-2019 WireGuard LLC. All Rights Reserved.
 
 BUILDDIR ?= $(CURDIR)/build
-DESTDIR ?= $(CURDIR)/../android
+DESTDIR ?= $(CURDIR)/../aarch64-linux-android
 
 NDK_GO_ARCH_MAP_x86 := 386
 NDK_GO_ARCH_MAP_x86_64 := amd64
