@@ -2,11 +2,36 @@
 
 set -e
 
-for arch_info in "arm64|aarch64" "x86_64|x86_64" "x86|i686"; do
-    export ANDROID_ARCH_NAME="$(echo "$arch_info" | cut -f1 -d'|')"
-    export ANDROID_LLVM_ARCH="$(echo "$arch_info" | cut -f2 -d'|')"
-    export ANDROID_LLVM_TRIPLE="${ANDROID_LLVM_ARCH}-linux-android"
-    export ANDROID_TOOLCHAIN_ROOT="/opt/android/toolchains/android21-${ANDROID_LLVM_ARCH}"
+for arch in arm arm64 x86_64 x86; do
+    case "$arch" in
+        "arm64")
+            export ANDROID_LLVM_TRIPLE="aarch64-linux-android"
+            export ANDROID_LIB_TRIPLE="aarch64-linux-android"
+            export RUST_TARGET_TRIPLE="aarch64-linux-android"
+            export RUST_LLVM_ARCH="aarch64"
+            ;;
+        "x86_64")
+            export ANDROID_LLVM_TRIPLE="x86_64-linux-android"
+            export ANDROID_LIB_TRIPLE="x86_64-linux-android"
+            export RUST_TARGET_TRIPLE="x86_64-linux-android"
+            export RUST_LLVM_ARCH="x86_64"
+            ;;
+        "arm")
+            export ANDROID_LLVM_TRIPLE="armv7a-linux-androideabi"
+            export ANDROID_LIB_TRIPLE="arm-linux-androideabi"
+            export RUST_TARGET_TRIPLE="armv7-linux-androideabi"
+            export RUST_LLVM_ARCH="armv7"
+            ;;
+        "x86")
+            export ANDROID_LLVM_TRIPLE="i686-linux-android"
+            export ANDROID_LIB_TRIPLE="i686-linux-android"
+            export RUST_TARGET_TRIPLE="i686-linux-android"
+            export RUST_LLVM_ARCH="i686"
+            ;;
+    esac
+
+    export ANDROID_ARCH_NAME="$arch"
+    export ANDROID_TOOLCHAIN_ROOT="/opt/android/toolchains/android21-${RUST_LLVM_ARCH}"
     export ANDROID_SYSROOT="${ANDROID_TOOLCHAIN_ROOT}/sysroot"
     export ANDROID_C_COMPILER="${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_LLVM_TRIPLE}21-clang"
 
@@ -23,9 +48,9 @@ for arch_info in "arm64|aarch64" "x86_64|x86_64" "x86|i686"; do
     make clean
     make build_libs
 
-    mkdir -p "../${ANDROID_LLVM_TRIPLE}/include/openssl"
-    cp lib{crypto,ssl}.a "../${ANDROID_LLVM_TRIPLE}/"
-    cp include/openssl/openssl{conf,v}.h "../${ANDROID_LLVM_TRIPLE}/include/openssl/"
+    mkdir -p "../${RUST_TARGET_TRIPLE}/include/openssl"
+    cp lib{crypto,ssl}.a "../${RUST_TARGET_TRIPLE}/"
+    cp include/openssl/openssl{conf,v}.h "../${RUST_TARGET_TRIPLE}/include/openssl/"
     popd
 
     # Build Wireguard-Go
@@ -33,7 +58,7 @@ for arch_info in "arm64|aarch64" "x86_64|x86_64" "x86|i686"; do
     make -f Android.mk clean
 
     export CFLAGS="-D__ANDROID_API__=21"
-    export LDFLAGS="-L${ANDROID_SYSROOT}/usr/lib/${ANDROID_LLVM_TRIPLE}/21"
+    export LDFLAGS="-L${ANDROID_SYSROOT}/usr/lib/${ANDROID_LIB_TRIPLE}/21"
 
     make -f Android.mk
     popd

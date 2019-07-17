@@ -3,7 +3,7 @@
 # Copyright © 2017-2019 WireGuard LLC. All Rights Reserved.
 
 BUILDDIR ?= $(CURDIR)/build
-DESTDIR ?= $(CURDIR)/../$(ANDROID_LLVM_TRIPLE)
+DESTDIR ?= $(CURDIR)/../$(RUST_TARGET_TRIPLE)
 
 NDK_GO_ARCH_MAP_x86 := 386
 NDK_GO_ARCH_MAP_x86_64 := amd64
