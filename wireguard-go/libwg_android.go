@@ -93,7 +93,7 @@ func wgTurnOnWithFdAndroid(cIfaceName *C.char, mtu int, cSettings *C.char, fd in
 	if setError != nil {
 		logger.Error.Println(setError)
 		device.Close()
-		return -1
+		return -2
 	}
 	var i int32
 	for i = 0; i < math.MaxInt32; i++ {
