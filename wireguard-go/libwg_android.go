@@ -91,7 +91,7 @@ func wgTurnOnWithFdAndroid(cIfaceName *C.char, mtu int, cSettings *C.char, fd in
 
 	setError := device.IpcSetOperation(bufio.NewReader(strings.NewReader(settings)))
 	if setError != nil {
-		tunDevice.Close()
+		device.Close()
 		logger.Error.Println(setError)
 		return -1
 	}
@@ -102,7 +102,7 @@ func wgTurnOnWithFdAndroid(cIfaceName *C.char, mtu int, cSettings *C.char, fd in
 		}
 	}
 	if i == math.MaxInt32 {
-		tunDevice.Close()
+		device.Close()
 		return -1
 	}
 	tunnelHandles[i] = TunnelHandle{device: device, uapi: uapi}
