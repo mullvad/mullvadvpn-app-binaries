@@ -40,11 +40,11 @@ RUN for arch in aarch64 x86_64 i686 armv7; do \
 
 # Install Go-lang
 RUN cd /tmp && \
-    curl -sf -L -O https://dl.google.com/go/go1.12.4.linux-amd64.tar.gz && \
-    test $(sha256sum go1.12.4.linux-amd64.tar.gz | cut -f1 -d' ') = "d7d1f1f88ddfe55840712dc1747f37a790cbcaa448f6c9cf51bbe10aa65442f5" && \
+    curl -sf -L -O https://dl.google.com/go/go1.12.7.linux-amd64.tar.gz && \
+    test $(sha256sum go1.12.7.linux-amd64.tar.gz | cut -f1 -d' ') = "66d83bfb5a9ede000e33c6579a91a29e6b101829ad41fffb5c5bb6c900e109d9" && \
     cd /opt && \
-    tar -xzf /tmp/go1.12.4.linux-amd64.tar.gz && \
-    rm /tmp/go1.12.4.linux-amd64.tar.gz
+    tar -xzf /tmp/go1.12.7.linux-amd64.tar.gz && \
+    rm /tmp/go1.12.7.linux-amd64.tar.gz
 
 ENV PATH=${PATH}:/opt/go/bin
 

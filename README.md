@@ -65,7 +65,7 @@ make android
 
 ### Linux + macOS
 Building the wireugard-go static library requires only a go compiler, the
-version used at the time of writing is `go1.11.2`.
+version used at the time of writing is `go1.12.7`.
 
 ### Windows
 Currently, Windows is not supported.
