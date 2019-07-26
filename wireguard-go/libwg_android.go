@@ -59,8 +59,8 @@ func wgTurnOnWithFdAndroid(cIfaceName *C.char, mtu int, cSettings *C.char, fd in
 
 	tunDevice, ifaceName, err := tun.CreateUnmonitoredTUNFromFD(fd)
 	if err != nil {
-		unix.Close(fd)
 		logger.Error.Println(err)
+		unix.Close(fd)
 		return -1
 	}
 	device := device.NewDevice(tunDevice, logger)
@@ -73,9 +73,9 @@ func wgTurnOnWithFdAndroid(cIfaceName *C.char, mtu int, cSettings *C.char, fd in
 	} else {
 		uapi, err = ipc.UAPIListen(ifaceName, uapiFile)
 		if err != nil {
-			uapiFile.Close()
 			logger.Error.Println("Failed to start the UAPI")
 			logger.Error.Println(err)
+			uapiFile.Close()
 		} else {
 			go func() {
 				for {
@@ -91,8 +91,8 @@ func wgTurnOnWithFdAndroid(cIfaceName *C.char, mtu int, cSettings *C.char, fd in
 
 	setError := device.IpcSetOperation(bufio.NewReader(strings.NewReader(settings)))
 	if setError != nil {
-		device.Close()
 		logger.Error.Println(setError)
+		device.Close()
 		return -1
 	}
 	var i int32
