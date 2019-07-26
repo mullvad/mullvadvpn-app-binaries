@@ -124,9 +124,9 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 	} else {
 		uapi, err = ipc.UAPIListen(ifaceName, uapiFile)
 		if err != nil {
-			uapiFile.Close()
 			logger.Error.Println("Failed to start the UAPI")
 			logger.Error.Println(err)
+			uapiFile.Close()
 		} else {
 			go func() {
 				for {
@@ -142,9 +142,9 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 
 	setError := device.IpcSetOperation(bufio.NewReader(strings.NewReader(settings)))
 	if setError != nil {
-		tunDevice.Close()
 		logger.Error.Println(setError)
-		return -1
+		device.Close()
+		return -2
 	}
 	var i int32
 	for i = 0; i < math.MaxInt32; i++ {
@@ -153,7 +153,7 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 		}
 	}
 	if i == math.MaxInt32 {
-		tunDevice.Close()
+		device.Close()
 		return -1
 	}
 	tunnelHandles[i] = TunnelHandle{device: device, uapi: uapi}
