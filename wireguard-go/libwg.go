@@ -111,6 +111,9 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logg
 	tunDevice, err := tun.CreateTUNFromFile(file, mtu)
 	if err != nil {
 		logger.Error.Println(err)
+		if (err.Error() == "bad file descriptor") {
+			return -2
+		}
 		return -1
 	}
 
