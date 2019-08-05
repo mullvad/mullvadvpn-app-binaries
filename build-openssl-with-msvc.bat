@@ -1,18 +1,15 @@
 cd openssl
 
 set OPENSSL_CONFIG =   enable-capieng ^
-  enable-rfc3779 ^
-  no-camellia ^
-  no-cast ^
-  no-dso ^
-  no-idea ^
-  no-seed ^
-  no-shared ^
-
-:: Sourcing environment form Visual Studio to be able to compile with MSVC and
-:: all the system libraries and headers
-call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-
+     enable-rfc3779 ^
+     no-ssl2 ^
+     no-ssl3 ^
+     no-camellia ^
+     no-cast ^
+     no-dso ^
+     no-idea ^
+     no-shared ^
+     no-seed ^
 perl Configure VC-WIN64A ^
   --prefix=%cd%\..\msvc-openssl ^
   --openssldir=%cd%\..\msvc-openssl ^
