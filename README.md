@@ -167,6 +167,25 @@ Grab the built binary from `.\shadowsocks-rust\target\release\sslocal.exe`
 
 
 
+## Building a custom Wintun installer
+
+Only applicable to Windows.
+
+We have a need to build a branded `MSI` installer from the official `MSM` that is provided by the
+Wintun project. This is done using the files found under `x86_64-pc-windows-msvc\wintun`.
+
+`mullvad-wintun.wxs` defines the `MSI` project.
+
+`build.bat` fetches all the required dependencies, then builds and optionally signs the `MSI`.
+It's expected that this file will need to be updated from time to time whenever a new version
+of Wintun is released, since it downloads a specific version of Wintun.
+
+`build-signed.bat` configures the environment so the MSI is signed after having been built. The
+certificate used is our primary `Amagicom AB` certificate for code signing. This is the build
+script that should always be used outside of testing.
+
+
+
 ## Storage of binaries
 
 This repository, apart from having the scripts used to build OpenVPN, also holds the built binaries
