@@ -8,7 +8,7 @@ package main
 import (
 	"C"
 	"bufio"
-	"io"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"math"
@@ -17,6 +17,7 @@ import (
 	"os/signal"
 	"runtime"
 	"strings"
+	"sync"
 
 	"golang.org/x/sys/unix"
 
@@ -24,6 +25,21 @@ import (
 	"golang.zx2c4.com/wireguard/ipc"
 	"golang.zx2c4.com/wireguard/tun"
 )
+
+var (
+	logFile     *os.File
+	logFilePath *string
+	logFileLock sync.RWMutex
+)
+
+type FileLogger struct{}
+
+func (logger FileLogger) Write(buffer []byte) (int, error) {
+	logFileLock.RLock()
+	defer logFileLock.RUnlock()
+
+	return logFile.Write(buffer)
+}
 
 type TunnelHandle struct {
 	device *device.Device
@@ -50,51 +66,63 @@ func init() {
 	}()
 }
 
-// Adjust logger to use the passed file descriptor for all output if the filedescriptor is valid
-func newLogger(loggingFd int, level int) *device.Logger {
-	logger := new(device.Logger)
-	outputFile := os.NewFile(uintptr(loggingFd), "")
-	var output io.Writer
-	if outputFile != nil {
-		output = outputFile
-	} else {
-		output = os.Stdout
+func newLogger(newLogFilePath string, level int) *device.Logger {
+	openLogFile(newLogFilePath)
+
+	logger := &device.Logger{
+		Debug: newLogForLevel(device.LogLevelDebug, level),
+		Info:  newLogForLevel(device.LogLevelInfo, level),
+		Error: newLogForLevel(device.LogLevelError, level),
 	}
-
-	logErr, logInfo, logDebug := func() (io.Writer, io.Writer, io.Writer) {
-		if level >= device.LogLevelDebug {
-			return output, output, output
-		}
-		if level >= device.LogLevelInfo {
-			return output, output, ioutil.Discard
-		}
-		if level >= device.LogLevelError {
-			return output, ioutil.Discard, ioutil.Discard
-		}
-		return ioutil.Discard, ioutil.Discard, ioutil.Discard
-	}()
-
-	logger.Debug = log.New(logDebug,
-		"DEBUG: ",
-		log.Ldate|log.Ltime,
-	)
-
-	logger.Info = log.New(logInfo,
-		"INFO: ",
-		log.Ldate|log.Ltime,
-	)
-	logger.Error = log.New(logErr,
-		"ERROR: ",
-		log.Ldate|log.Ltime,
-	)
 
 	return logger
 }
 
-//export wgTurnOnWithFd
-func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, loggingFd int, level int) int32 {
+func openLogFile(newLogFilePath string) {
+	logFileLock.Lock()
+	defer logFileLock.Unlock()
 
-	logger := newLogger(loggingFd, level)
+	if logFilePath == nil || *logFilePath != newLogFilePath {
+		if logFile != nil {
+			logFile.Close()
+		}
+
+		logFilePath = &newLogFilePath
+		backupLogFile(newLogFilePath)
+		logFile, _ = os.Create(newLogFilePath)
+	}
+}
+
+func backupLogFile(path string) {
+	backupPath := fmt.Sprintf("%s.old.log", strings.TrimSuffix(path, ".log"))
+
+	os.Rename(path, backupPath)
+}
+
+func newLogForLevel(level int, maxLevel int) *log.Logger {
+	if level > maxLevel {
+		return log.New(ioutil.Discard, "", log.Ldate|log.Ltime)
+	}
+
+	logger := &FileLogger{}
+
+	prefix := ""
+	switch level {
+	case device.LogLevelDebug:
+		prefix = "DEBUG: "
+	case device.LogLevelInfo:
+		prefix = "INFO: "
+	case device.LogLevelError:
+		prefix = "ERROR: "
+	}
+
+	return log.New(logger, prefix, log.Ldate|log.Ltime)
+}
+
+//export wgTurnOnWithFd
+func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logFilePath *C.char, level int) int32 {
+
+	logger := newLogger(C.GoString(logFilePath), level)
 	if cIfaceName == nil {
 		logger.Error.Println("cIfaceName is null")
 		return -1
