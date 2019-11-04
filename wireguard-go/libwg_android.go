@@ -61,7 +61,7 @@ func wgTurnOnWithFdAndroid(cIfaceName *C.char, mtu int, cSettings *C.char, fd in
 	if err != nil {
 		logger.Error.Println(err)
 		unix.Close(fd)
-		if (err.Error() == "bad file descriptor") {
+		if err.Error() == "bad file descriptor" {
 			return -2
 		}
 		return -1
