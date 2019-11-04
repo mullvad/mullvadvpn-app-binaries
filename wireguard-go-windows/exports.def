@@ -1,0 +1,6 @@
+LIBRARY libwg
+EXPORTS
+    wgRebindTunnelSocket
+    wgTurnOff
+    wgTurnOn
+    wgVersion
