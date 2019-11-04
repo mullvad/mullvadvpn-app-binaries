@@ -42,9 +42,9 @@ func wgGetSocketV6(tunnelHandle int32) int32 {
 }
 
 //export wgTurnOnWithFdAndroid
-func wgTurnOnWithFdAndroid(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, loggingFd int, level int) int32 {
+func wgTurnOnWithFdAndroid(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logFilePath *C.char, level int) int32 {
 
-	logger := newLogger(loggingFd, level)
+	logger := newLogger(C.GoString(logFilePath), level)
 	if cIfaceName == nil {
 		logger.Error.Println("cIfaceName is null")
 		return -1
@@ -61,7 +61,7 @@ func wgTurnOnWithFdAndroid(cIfaceName *C.char, mtu int, cSettings *C.char, fd in
 	if err != nil {
 		logger.Error.Println(err)
 		unix.Close(fd)
-		if (err.Error() == "bad file descriptor") {
+		if err.Error() == "bad file descriptor" {
 			return -2
 		}
 		return -1
