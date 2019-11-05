@@ -27,6 +27,15 @@ extern "C" {
 #ifndef OPENSSL_SYS_WIN64A
 # define OPENSSL_SYS_WIN64A 1
 #endif
+#ifndef OPENSSL_NO_CAMELLIA
+# define OPENSSL_NO_CAMELLIA
+#endif
+#ifndef OPENSSL_NO_CAST
+# define OPENSSL_NO_CAST
+#endif
+#ifndef OPENSSL_NO_IDEA
+# define OPENSSL_NO_IDEA
+#endif
 #ifndef OPENSSL_NO_MD2
 # define OPENSSL_NO_MD2
 #endif
