@@ -105,6 +105,7 @@ openvpn_windows: clean-submodules
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		EXTRA_OPENSSL_CONFIG="-static-libgcc no-shared $(OPENSSL_CONFIG)" \
 		EXTRA_TARGET_LDFLAGS="-Wl,-Bstatic" \
+		OPT_OPENVPN_CFLAGS="-O2 -flto" \
 		CHOST=x86_64-w64-mingw32 \
 		CBUILD=x86_64-pc-linux-gnu \
 		DO_STATIC=1 \
