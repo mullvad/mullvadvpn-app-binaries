@@ -110,7 +110,7 @@ openvpn_windows: clean-submodules
 		DO_STATIC=1 \
 		IMAGEROOT="$(BUILD_DIR)" \
 		./openvpn-build/generic/build
-	cp openvpn/src/openvpn/openvpn.exe ./windows/
+	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
 
 libmnl:
 	@echo "Building libmnl"
