@@ -6,21 +6,23 @@
 
 package main
 
-/*
-#include <stdlib.h>
-*/
+// #include <stdlib.h>
+// #include <sys/types.h>
+// typedef void (__stdcall *LogSink)(unsigned int, const char *, void *);
+// static void callLogSink(void *logSink, int level, const char *message, void *context)
+// {
+//   ((LogSink)logSink)((unsigned int)level, message, context);
+// }
 import "C"
 
 import (
 	"bufio"
 	"errors"
-	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"net"
-	"os"
 	"strings"
+	"unsafe"
 
 	"golang.org/x/sys/windows"
 
@@ -29,6 +31,23 @@ import (
 	"golang.zx2c4.com/wireguard/tun"
 	"golang.zx2c4.com/wireguard/windows/tunnel/winipcfg"
 )
+
+// Define type aliases.
+type LogSink = unsafe.Pointer
+type LogContext = unsafe.Pointer
+
+type Logger struct {
+	sink    LogSink
+	context LogContext
+	level   C.int
+}
+
+func (l *Logger) Write(message []byte) (int, error) {
+	msg := C.CString(string(message))
+	C.callLogSink(l.sink, l.level, msg, l.context)
+	C.free(unsafe.Pointer(msg))
+	return len(message), nil
+}
 
 type TunnelContext struct {
 	device *device.Device
@@ -43,41 +62,23 @@ func init() {
 	tunnels = make(map[int32]TunnelContext)
 }
 
-// Adjust logger to use the passed file descriptor for all output if the filedescriptor is valid
-func newLogger(loggingFd int, level int) *device.Logger {
+func newLogger(logSink LogSink, logContext LogContext) *device.Logger {
 	logger := new(device.Logger)
-	outputFile := os.NewFile(uintptr(loggingFd), "")
-	var output io.Writer
-	if outputFile != nil {
-		output = outputFile
-	} else {
-		output = os.Stdout
-	}
-
-	logErr, logInfo, logDebug := func() (io.Writer, io.Writer, io.Writer) {
-		if level >= device.LogLevelDebug {
-			return output, output, output
-		}
-		if level >= device.LogLevelInfo {
-			return output, output, ioutil.Discard
-		}
-		if level >= device.LogLevelError {
-			return output, ioutil.Discard, ioutil.Discard
-		}
-		return ioutil.Discard, ioutil.Discard, ioutil.Discard
-	}()
-
-	logger.Debug = log.New(logDebug,
-		"DEBUG: ",
-		log.Ldate|log.Ltime,
+	
+	logger.Debug = log.New(
+		&Logger{sink: logSink, context: logContext, level: device.LogLevelDebug},
+		"",
+		0,
 	)
-	logger.Info = log.New(logInfo,
-		"INFO: ",
-		log.Ldate|log.Ltime,
+	logger.Info = log.New(
+		&Logger{sink: logSink, context: logContext, level: device.LogLevelInfo},
+		"",
+		0,
 	)
-	logger.Error = log.New(logErr,
-		"ERROR: ",
-		log.Ldate|log.Ltime,
+	logger.Error = log.New(
+		&Logger{sink: logSink, context: logContext, level: device.LogLevelError},
+		"",
+		0,
 	)
 
 	return logger
@@ -100,8 +101,8 @@ func getContextHandle() (int32, error) {
 }
 
 //export wgTurnOn
-func wgTurnOn(cIfaceName *C.char, mtu int, cSettings *C.char, loggingFd int, level int) int32 {
-	logger := newLogger(loggingFd, level)
+func wgTurnOn(cIfaceName *C.char, mtu int, cSettings *C.char, logSink LogSink, logContext LogContext) int32 {
+	logger := newLogger(logSink, logContext)
 
 	if cIfaceName == nil {
 		logger.Error.Println("cIfaceName is null")
