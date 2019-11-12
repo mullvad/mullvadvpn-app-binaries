@@ -9,7 +9,7 @@ set OPENSSL_CONFIG =   enable-capieng ^
      no-dso ^
      no-idea ^
      no-shared ^
-     no-seed ^
+     no-seed
 perl Configure VC-WIN64A ^
   --prefix=%cd%\..\msvc-openssl ^
   --openssldir=%cd%\..\msvc-openssl ^
