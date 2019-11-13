@@ -130,11 +130,11 @@ Libsodium is used by e.g. Shadowsocks, a proxy software bundled with the Mullvad
 
 ### Windows
 When wishing to build libsodium on Windows it's recommended that you use one of the prepared
-Visual Studio solutions. E.g. for building a statically linkable libsodium, using Visual Studio 2017
-Community Edition, pick the solution file at `.\libsodium\builds\msvc\vs2017\libsodium.sln`.
+Visual Studio solutions. E.g. for building a statically linkable libsodium, using Visual Studio 2019
+Community Edition, pick the solution file at `.\libsodium\builds\msvc\vs2019\libsodium.sln`.
 Inside the solution, select the (`StaticRelease`, `x64`) configuration.
 
-The static library is created as: `.\libsodium\bin\x64\Release\v141\static\libsodium.lib`.
+The static library is created as: `.\libsodium\bin\x64\Release\v142\static\libsodium.lib`.
 
 
 
