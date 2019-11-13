@@ -95,8 +95,8 @@ standard library.
 ### Windows
 Building a static OpenSSL library on Windows requires the following:
 - Perl 5.11 and above (Strawberry Perl distribution works)
-- Build Tools for Visual Studio 2017 (a regular installation of Visual Studio
-2017 Community Edition works).
+- Build Tools for Visual Studio 2019 (a regular installation of Visual Studio
+2019 Community Edition works).
 - [NASM](https://www.nasm.us/), make sure that the tools are in your PATH.
 If installed with `chocolatey`, to set it up for your current shell, just run
 the batch script in `C:\Program Files\NASM\nasmpath.bat`.
