@@ -1,32 +1,50 @@
 # Custom third party binaries for the Mullvad VPN app
-This repository holds our custom OpenVPN binaries, statically linkable OpenSSL
-libraries for all of our target platforms, and `libmnl` and `libnftnl` for
-Linux, all of which are used in the [Mullvad VPN app].
+
+This repository holds our custom binaries and build scripts for third party software we need to
+bundle with the Mullvad VPN app. Such as OpenVPN, statically linkable OpenSSL libraries for all of
+our target platforms, `libmnl` and `libnftnl` for Linux, and more.
+
+## Security and integrity
+
+This repository should conform to the same integrity standards as the main
+[Mullvad VPN app] repository. Meaning every merge commit has to be signed.
+
+This repository contains a number of submodules, pulling in the source code for the third party
+software we store the binaries for. These submodules must point to commits that are either
+directly signed or has a signed tag attached to them. Upon moving a submodule to a different
+commit, the new commit must be cryptographically verified.
 
 
-
-## Custom changes
+## OpenVPN
 
 The `openvpn` submodule is tracking our [`mullvad-patches`] branch that contain a few custom
 changes needed by the [Mullvad VPN app].
 
+### Updating OpenVPN
 
+When bumping the submodule (rebasing `mullvad-patches`) to a new OpenVPN release. Make sure
+the upstream release tag is properly signed by the following gpg key:
 
-## Building OpenVPN
+```
+B62E6A2B4E56570B7BDC6BE01D829EFECA562812
+```
 
-### Linux + macOS
+Then tag the new head of `mullvad-patches` as `<original tag name>-mullvad`, for example
+`v2.4.8-mullvad`. This tag should be signed and pushed to our fork repository.
+
+### Building on Linux + macOS
+
 Before building, one has to ensure that the build host has all the required
 dependencies installed, as outlined in [OpenVPN's buildslave documentation].
 
 Building the OpenVPN binary should be as simple as running `make openvpn`.
 
-
 #### Linux
 Currently, the Linux distro of choice for building OpenVPN currently is Debian
 9, issues have been experienced on other distributions.
 
+### Building on Windows
 
-### Windows
 Building `openvpn.exe` for Windows is done by cross-compiling from Linux using
 a mingw-w64 toolchain. You need to do this build on a recent Debian or Ubuntu
 release, one should generally follow the instructions laid out in the
@@ -72,7 +90,15 @@ Currently, Windows is not supported.
 
 
 
-## Building OpenSSL
+## OpenSSL
+
+When bumping the submodule to a new OpenSSL release. Make sure to only point to a release tag,
+and not a random commit. Also verify that said tag is properly signed by the following gpg key:
+
+```
+8657ABB260F056B1E5190839D9C4D26D0E604491
+```
+
 To build the MullvadVPN app, one has to have statically linkable OpenSSL libraries.
 
 ### Android
@@ -123,7 +149,15 @@ apply firewall rules. To produce the required libraries, run `make libnftnl`.
 
 
 ## Building libsodium
+
 Libsodium is used by e.g. Shadowsocks, a proxy software bundled with the MullvadVPN app.
+
+When updating the `libsodium` submodule. Only point it to a proper release tag, and verify that
+said tag is properly signed with the following key:
+
+```
+54A2B8892CC3D6A597B92B6C210627AABA709FE1
+```
 
 ### Linux + MacOS
 ???
