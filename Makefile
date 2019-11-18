@@ -87,7 +87,7 @@ openvpn: lz4 openssl
 		$(OPENVPN_CONFIG) $(PLATFORM_OPENVPN_CONFIG) \
 		OPENSSL_CFLAGS="-I$(BUILD_DIR)/include" \
 		LZ4_CFLAGS="-I$(BUILD_DIR)/include" \
-		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread" \
+		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread -ldl" \
 		LZ4_LIBS="-L$(BUILD_DIR)/lib -llz4" ; \
 	$(MAKE) clean ; \
 	$(MAKE) ; \
