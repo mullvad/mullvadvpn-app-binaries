@@ -11,8 +11,7 @@ OPENVPN_VERSION = openvpn-2.4.8
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-server \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
 	--disable-def-auth --disable-pf --disable-pkcs11 --disable-lzo \
-	--enable-lz4 --enable-ssl --enable-crypto --enable-plugins \
-	--enable-password-save --enable-socks --enable-http-proxy
+	--enable-lz4 --enable-crypto --enable-plugins \
 
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
