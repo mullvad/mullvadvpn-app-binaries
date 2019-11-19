@@ -3,16 +3,15 @@ BUILD_DIR = $(PWD)/build
 WINDOWS_BUILDROOT = openvpn-build/generic/tmp
 WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 
-OPENSSL_VERSION = openssl-1.1.1c
+OPENSSL_VERSION = openssl-1.1.1d
 OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 \
 	no-md4 no-seed no-cast no-camellia no-idea enable-ec_nistp_64_gcc_128 enable-rfc3779
 
-OPENVPN_VERSION = openvpn-2.4.7
+OPENVPN_VERSION = openvpn-2.4.8
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-server \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
 	--disable-def-auth --disable-pf --disable-pkcs11 --disable-lzo \
-	--enable-lz4 --enable-ssl --enable-crypto --enable-plugins \
-	--enable-password-save --enable-socks --enable-http-proxy
+	--enable-lz4 --enable-crypto --enable-plugins \
 
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
@@ -88,7 +87,7 @@ openvpn: lz4 openssl
 		$(OPENVPN_CONFIG) $(PLATFORM_OPENVPN_CONFIG) \
 		OPENSSL_CFLAGS="-I$(BUILD_DIR)/include" \
 		LZ4_CFLAGS="-I$(BUILD_DIR)/include" \
-		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread" \
+		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread -ldl" \
 		LZ4_LIBS="-L$(BUILD_DIR)/lib -llz4" ; \
 	$(MAKE) clean ; \
 	$(MAKE) ; \
@@ -106,12 +105,13 @@ openvpn_windows: clean-submodules
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		EXTRA_OPENSSL_CONFIG="-static-libgcc no-shared $(OPENSSL_CONFIG)" \
 		EXTRA_TARGET_LDFLAGS="-Wl,-Bstatic" \
+		OPT_OPENVPN_CFLAGS="-O2 -flto" \
 		CHOST=x86_64-w64-mingw32 \
 		CBUILD=x86_64-pc-linux-gnu \
 		DO_STATIC=1 \
 		IMAGEROOT="$(BUILD_DIR)" \
 		./openvpn-build/generic/build
-	cp openvpn/src/openvpn/openvpn.exe ./windows/
+	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
 
 libmnl:
 	@echo "Building libmnl"

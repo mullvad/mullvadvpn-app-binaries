@@ -33,9 +33,6 @@ extern "C" {
 #ifndef OPENSSL_NO_RC5
 # define OPENSSL_NO_RC5
 #endif
-#ifndef OPENSSL_NO_SEED
-# define OPENSSL_NO_SEED
-#endif
 #ifndef OPENSSL_THREADS
 # define OPENSSL_THREADS
 #endif
@@ -96,8 +93,8 @@ extern "C" {
 #ifndef OPENSSL_NO_WEAK_SSL_CIPHERS
 # define OPENSSL_NO_WEAK_SSL_CIPHERS
 #endif
-#ifndef OPENSSL_NO_DYNAMIC_ENGINE
-# define OPENSSL_NO_DYNAMIC_ENGINE
+#ifndef OPENSSL_NO_STATIC_ENGINE
+# define OPENSSL_NO_STATIC_ENGINE
 #endif
 #ifndef OPENSSL_NO_AFALGENG
 # define OPENSSL_NO_AFALGENG
