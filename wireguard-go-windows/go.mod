@@ -14,7 +14,7 @@ require (
 	golang.org/x/sys v0.0.0-20191104094858-e8c54fb511f6
 	golang.org/x/tools v0.0.0-20191025023517-2077df36852e // indirect
 	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898 // indirect
-	golang.zx2c4.com/wireguard v0.0.20191013-0.20191022095125-f7d0edd2ecf5
+	golang.zx2c4.com/wireguard v0.0.20191013-0.20191121140156-3d0bb4c07f85
 	golang.zx2c4.com/wireguard/windows v0.0.35
 	gopkg.in/Knetic/govaluate.v3 v3.0.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
