@@ -207,7 +207,7 @@ func wgTurnOn(cIfaceName *C.char, mtu int, cSettings *C.char, logSink LogSink, l
 			if err != nil {
 				logger.Info.Println("UAPI Accept() failed")
 				logger.Info.Println(err)
-				continue
+				return
 			}
 			go device.IpcHandle(conn)
 		}
