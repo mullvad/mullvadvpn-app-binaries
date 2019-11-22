@@ -21,6 +21,7 @@ import (
 	"log"
 	"math"
 	"net"
+	"runtime"
 	"strings"
 	"unsafe"
 
@@ -207,7 +208,7 @@ func wgTurnOn(cIfaceName *C.char, mtu int, cSettings *C.char, logSink LogSink, l
 			if err != nil {
 				logger.Info.Println("UAPI Accept() failed")
 				logger.Info.Println(err)
-				continue
+				return
 			}
 			go device.IpcHandle(conn)
 		}
@@ -224,13 +225,18 @@ func wgTurnOn(cIfaceName *C.char, mtu int, cSettings *C.char, logSink LogSink, l
 
 //export wgTurnOff
 func wgTurnOff(contextHandle int32) {
-	context, ok := tunnels[contextHandle]
-	if !ok {
-		return
+	{
+		context, ok := tunnels[contextHandle]
+		if !ok {
+			return
+		}
+		delete(tunnels, contextHandle)
+		context.uapi.Close()
+		context.device.Close()
 	}
-	delete(tunnels, contextHandle)
-	context.uapi.Close()
-	context.device.Close()
+	// Calling twice convinces the GC to release NOW.
+	runtime.GC()
+	runtime.GC()
 }
 
 //export wgRebindTunnelSocket
