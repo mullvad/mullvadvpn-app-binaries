@@ -27,11 +27,23 @@ extern "C" {
 #ifndef OPENSSL_SYS_WIN64A
 # define OPENSSL_SYS_WIN64A 1
 #endif
+#ifndef OPENSSL_NO_CAMELLIA
+# define OPENSSL_NO_CAMELLIA
+#endif
+#ifndef OPENSSL_NO_CAST
+# define OPENSSL_NO_CAST
+#endif
+#ifndef OPENSSL_NO_IDEA
+# define OPENSSL_NO_IDEA
+#endif
 #ifndef OPENSSL_NO_MD2
 # define OPENSSL_NO_MD2
 #endif
 #ifndef OPENSSL_NO_RC5
 # define OPENSSL_NO_RC5
+#endif
+#ifndef OPENSSL_NO_SEED
+# define OPENSSL_NO_SEED
 #endif
 #ifndef OPENSSL_THREADS
 # define OPENSSL_THREADS
@@ -93,8 +105,8 @@ extern "C" {
 #ifndef OPENSSL_NO_WEAK_SSL_CIPHERS
 # define OPENSSL_NO_WEAK_SSL_CIPHERS
 #endif
-#ifndef OPENSSL_NO_STATIC_ENGINE
-# define OPENSSL_NO_STATIC_ENGINE
+#ifndef OPENSSL_NO_DYNAMIC_ENGINE
+# define OPENSSL_NO_DYNAMIC_ENGINE
 #endif
 #ifndef OPENSSL_NO_AFALGENG
 # define OPENSSL_NO_AFALGENG
