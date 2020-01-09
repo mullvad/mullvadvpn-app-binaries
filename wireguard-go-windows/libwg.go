@@ -17,6 +17,7 @@ import "C"
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"log"
 	"math"
@@ -65,7 +66,7 @@ func init() {
 
 func newLogger(logSink LogSink, logContext LogContext) *device.Logger {
 	logger := new(device.Logger)
-	
+
 	logger.Debug = log.New(
 		&Logger{sink: logSink, context: logContext, level: device.LogLevelDebug},
 		"",
@@ -262,6 +263,28 @@ func wgRebindTunnelSocket(family uint16, interfaceIndex uint32) {
 //export wgVersion
 func wgVersion() *C.char {
 	return C.CString(device.WireGuardGoVersion)
+}
+
+//export wgGetConfig
+func wgGetConfig(tunnelHandle int32) *C.char {
+	tunnel, ok := tunnels[tunnelHandle]
+	if !ok {
+		return nil
+	}
+
+	settings := new(bytes.Buffer)
+	writer := bufio.NewWriter(settings)
+	if err := tunnel.device.IpcGetOperation(writer); err != nil {
+		tunnel.logger.Error.Println("Failed to get config for tunel: ", err)
+		return nil
+	}
+	writer.Flush()
+	return C.CString(settings.String())
+}
+
+//export wgFreePtr
+func wgFreePtr(ptr unsafe.Pointer) {
+	C.free(ptr)
 }
 
 func main() {}

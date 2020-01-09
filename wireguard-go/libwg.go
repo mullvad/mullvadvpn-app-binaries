@@ -5,9 +5,11 @@
 
 package main
 
+// #include <stdlib.h>
+import "C"
 import (
-	"C"
 	"bufio"
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -18,6 +20,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"unsafe"
 
 	"golang.org/x/sys/unix"
 
@@ -191,6 +194,28 @@ func wgTurnOnWithFd(cIfaceName *C.char, mtu int, cSettings *C.char, fd int, logF
 	device.Up()
 	return i
 }
+
+//export wgGetConfig
+func wgGetConfig(index int32) *C.char {
+	handle, ok := tunnelHandles[index]
+	if !ok {
+		return nil
+	}
+
+	settings := new(bytes.Buffer)
+	writer := bufio.NewWriter(settings)
+	if err := handle.device.IpcGetOperation(writer); err != nil {
+		return nil
+	}
+	writer.Flush()
+	return C.CString(settings.String())
+}
+
+//export wgFreePtr
+func wgFreePtr(ptr unsafe.Pointer) {
+		C.free(ptr)
+}
+
 
 //export wgTurnOff
 func wgTurnOff(tunnelHandle int32) {
