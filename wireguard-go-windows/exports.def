@@ -1,5 +1,7 @@
 LIBRARY libwg
 EXPORTS
+    wgFreePtr
+    wgGetConfig
     wgRebindTunnelSocket
     wgTurnOff
     wgTurnOn
