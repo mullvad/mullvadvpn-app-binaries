@@ -64,6 +64,40 @@ release, one should generally follow the instructions laid out in the
 You should now have the final product in `./build/openvpn/bin/openvpn.exe`
 
 
+## TAP adapter driver for Windows
+
+On Windows, we build our own fork of OpenVPN's TAP driver (tracking branch `mullvad` in the
+submodule `tap-windows6`). This is to prevent conflicts with other software that relies on OpenVPN.
+
+### Dependencies
+
+* Visual Studio 2019 (e.g. Build Tools)
+* Spectre-mitigated MSVC libraries (available in the VS installer)
+* Python 3
+* [WDK](https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk) for Windows 10
+
+### Build and sign the driver
+As of now, only the driver for amd64 is in use by Mullvad VPN, so builds for other architectures
+are skipped.
+
+1. Open `x64 Native Tools Command Prompt for VS 2019`.
+
+1. Run (from the `tap-windows6` directory):
+   ```
+   build.bat <cert_sha1_hash>
+   ```
+
+   `cert_sha1_hash` refers to the SHA1 hash of the signing certificate. The certificate should be
+   available in the certificate store, where the hash may be referred to as "thumbprint". It can
+   be viewed by running `certmgr.msc` or `certlm.msc`.
+
+This produces a signed TAP driver in `.\tap-windows6\dist\amd64`. This will work on Windows 8.x.
+A cab file is also created, `.\tap-windows6\dist\tap-windows6-amd64.cab`, which must be submitted
+to the [Windows Hardware Dev Center](https://developer.microsoft.com/en-us/windows/hardware) for
+attestation signing. The attestation-signed driver package must be used for Windows 10 but will
+not work for Windows 8.1 or earlier.
+
+
 
 ## Building Wireguard-Go
 The userspace implementation of Wireguard using Go is used in the app. For Linux and macOS, a static
