@@ -98,6 +98,10 @@ are skipped.
    build.bat <cert_sha1_hash>
    ```
 
+   `cert_sha1_hash` refers to the SHA1 hash of the signing certificate. The certificate should be
+   available in the certificate store, where the hash may be referred to as "thumbprint". It can
+   be viewed by running `certmgr.msc` or `certlm.msc`.
+
 This produces a signed TAP driver in `.\tap-windows6\dist\amd64`. This will work on Windows 8.x.
 A cab file is also created, `.\tap-windows6\disk1\tap-windows6-amd64.cab`, which must be submitted
 to the [Windows Hardware Dev Center](https://developer.microsoft.com/en-us/windows/hardware) for
