@@ -32,7 +32,7 @@ ifneq (,$(findstring MINGW,$(UNAME_S)))
 	TARGET_OUTPUT_DIR = "x86_64-pc-windows-msvc"
 endif
 
-.PHONY: help clean clean-build clean-submodules clean-android lz4 openssl openvpn android windows libmnl libnftnl wireguard-go libsodium shadowsocks
+.PHONY: help clean clean-build clean-submodules clean-android lz4 openssl openvpn android windows libmnl libnftnl libsodium shadowsocks
 
 help:
 	@echo "Please run a more specific target"
@@ -136,12 +136,6 @@ libnftnl: libmnl
 	$(MAKE) clean; \
 	$(MAKE)
 	cp libnftnl/src/.libs/libnftnl.a linux/
-
-wireguard-go:
-	@echo "Building wireguard-go"
-	cd wireguard-go && \
-	go build -v -o libwg.a -buildmode c-archive
-	cp wireguard-go/libwg.a $(TARGET_OUTPUT_DIR)
 
 libsodium:
 	@echo "Building libsodium"

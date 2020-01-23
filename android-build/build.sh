@@ -53,13 +53,4 @@ for arch in arm arm64 x86_64 x86; do
     cp include/openssl/openssl{conf,v}.h "../${RUST_TARGET_TRIPLE}/include/openssl/"
     popd
 
-    # Build Wireguard-Go
-    pushd wireguard-go/
-    make -f Android.mk clean
-
-    export CFLAGS="-D__ANDROID_API__=21"
-    export LDFLAGS="-L${ANDROID_SYSROOT}/usr/lib/${ANDROID_LIB_TRIPLE}/21"
-
-    make -f Android.mk
-    popd
 done
