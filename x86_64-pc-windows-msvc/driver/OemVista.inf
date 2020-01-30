@@ -48,7 +48,7 @@
 
 [Version]
    Signature = "$Windows NT$"
-   CatalogFile = tap0901.cat
+   CatalogFile = tapmullvad0901.cat
    ClassGUID = {4d36e972-e325-11ce-bfc1-08002be10318}
    Provider = %Provider%
    Class = Net
@@ -58,18 +58,18 @@
    DriverVer = 09/27/2019,9.24.2.601
 
 [Strings]
-   DeviceDescription = "TAP-Windows Adapter V9"
-   Provider = "TAP-Windows Provider V9"
+   DeviceDescription = "Mullvad VPN TAP Adapter"
+   Provider = "Mullvad VPN"
 
 ;----------------------------------------------------------------
 ;                      Manufacturer + Product Section (Done)
 ;----------------------------------------------------------------
 [Manufacturer]
-   %Provider% = tap0901, NTamd64
+   %Provider% = tapmullvad0901, NTamd64
 
-[tap0901.NTamd64]
-   %DeviceDescription% = tap0901.ndi, root\tap0901 ; Root enumerated
-   %DeviceDescription% = tap0901.ndi, tap0901      ; Legacy
+[tapmullvad0901.NTamd64]
+   %DeviceDescription% = tapmullvad0901.ndi, root\tapmullvad0901 ; Root enumerated
+   %DeviceDescription% = tapmullvad0901.ndi, tapmullvad0901      ; Legacy
 
 ;---------------------------------------------------------------
 ;                             Driver Section (Done)
@@ -84,26 +84,26 @@
 ;    NCF_HAS_UI = 0x80
 ;----------------- Characteristics ------------
 
-[tap0901.ndi]
-   CopyFiles       = tap0901.driver, tap0901.files
-   AddReg          = tap0901.reg
-   AddReg          = tap0901.params.reg
+[tapmullvad0901.ndi]
+   CopyFiles       = tapmullvad0901.driver, tapmullvad0901.files
+   AddReg          = tapmullvad0901.reg
+   AddReg          = tapmullvad0901.params.reg
    Characteristics = 0x1
    *IfType            = 53  ; IF_TYPE_PROP_VIRTUAL
    *MediaType         = 0x0 ; NdisMedium802_3
    *PhysicalMediaType = 0   ; NdisPhysicalMediumUnspecified
 
-[tap0901.ndi.Services]
-   AddService = tap0901,        2, tap0901.service
+[tapmullvad0901.ndi.Services]
+   AddService = tapmullvad0901,        2, tapmullvad0901.service
 
-[tap0901.reg]
-   HKR, Ndi,            Service,      0, "tap0901"
+[tapmullvad0901.reg]
+   HKR, Ndi,            Service,      0, "tapmullvad0901"
    HKR, Ndi\Interfaces, UpperRange,   0, "ndis5"
    HKR, Ndi\Interfaces, LowerRange,   0, "ethernet"
    HKR, ,               Manufacturer, 0, "%Provider%"
    HKR, ,               ProductName,  0, "%DeviceDescription%"
 
-[tap0901.params.reg]
+[tapmullvad0901.params.reg]
    HKR, Ndi\params\MTU,                  ParamDesc, 0, "MTU"
    HKR, Ndi\params\MTU,                  Type,      0, "int"
    HKR, Ndi\params\MTU,                  Default,   0, "1500"
@@ -144,13 +144,13 @@
 ;    SERVICE_DISABLED     = 0x4
 ;---------- Start Mode ---------------
 
-[tap0901.service]
+[tapmullvad0901.service]
    DisplayName = %DeviceDescription%
    ServiceType = 1
    StartType = 3
    ErrorControl = 1
    LoadOrderGroup = NDIS
-   ServiceBinary = %12%\tap0901.sys
+   ServiceBinary = %12%\tapmullvad0901.sys
 
 ;-----------------------------------------------------------------
 ;                                File Installation
@@ -166,25 +166,25 @@
 ; 1 = "Intel Driver Disk 1",e100bex.sys,,
 
 [SourceDisksNames]
-   1 = %DeviceDescription%, tap0901.sys
+   1 = %DeviceDescription%, tapmullvad0901.sys
 
 ; SourceDisksFiles
 ; filename_on_source = diskID[, [subdir][, size]]
 ; e100bex.sys = 1,, ; on distribution disk 1
 
 [SourceDisksFiles]
-tap0901.sys = 1
+tapmullvad0901.sys = 1
 
 [DestinationDirs]
-   tap0901.files  = 11
-   tap0901.driver = 12
+   tapmullvad0901.files  = 11
+   tapmullvad0901.driver = 12
 
-[tap0901.files]
+[tapmullvad0901.files]
 ;   TapPanel.cpl,,,6   ; COPYFLG_NOSKIP | COPYFLG_NOVERSIONCHECK
 ;   cipsrvr.exe,,,6     ; COPYFLG_NOSKIP | COPYFLG_NOVERSIONCHECK
 
-[tap0901.driver]
-   tap0901.sys,,,6     ; COPYFLG_NOSKIP | COPYFLG_NOVERSIONCHECK
+[tapmullvad0901.driver]
+   tapmullvad0901.sys,,,6     ; COPYFLG_NOSKIP | COPYFLG_NOVERSIONCHECK
 
 ;---------------------------------------------------------------
 ;                                      End
