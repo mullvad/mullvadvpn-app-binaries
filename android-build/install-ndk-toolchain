@@ -23,9 +23,20 @@ esac
 /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh \
   --platform=android-21 \
   --arch=$target_arch \
-  --install-dir=/opt/android/toolchains/android21-$target_arch
+  --install-dir=/opt/android/toolchains/android21-$target_arch \
+  1>&2
 
 for lib in crtbegin_dynamic.o crtend_android.o crtbegin_so.o crtend_so.o; do
     ln -s "/opt/android/toolchains/android21-${target_arch}/sysroot/usr/lib/${llvm_arch}/21/$lib" \
-          /opt/android/toolchains/android21-${target_arch}/sysroot/usr/lib/${llvm_arch}/
+          /opt/android/toolchains/android21-${target_arch}/sysroot/usr/lib/${llvm_arch}/ \
+          1>&2
 done
+
+ANDROID_TOOLCHAIN_ROOT="/opt/android/toolchains/android21-${target_arch}"
+ANDROID_SYSROOT="/opt/android/android-ndk-r20/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+ANDROID_C_COMPILER="${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_LLVM_TRIPLE}21-clang"
+
+# outputing environment variables to be used for this toolchain
+echo ANDROID_TOOLCHAIN_ROOT="\"$ANDROID_TOOLCHAIN_ROOT\""
+echo ANDROID_SYSROOT="\"$ANDROID_SYSROOT\""
+echo ANDROID_C_COMPILER="\"$ANDROID_C_COMPILER\""
