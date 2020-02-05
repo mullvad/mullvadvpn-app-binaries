@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -eu
-mkdir -p /opt/androids/toolchains
+mkdir -p /opt/android/toolchains
 
 target_arch=$1
 
