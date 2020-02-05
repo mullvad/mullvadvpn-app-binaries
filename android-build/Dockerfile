@@ -31,6 +31,7 @@ RUN cd /tmp && \
     tar -xzf /tmp/go1.13.3.linux-amd64.tar.gz && \
     rm /tmp/go1.13.3.linux-amd64.tar.gz && \
     patch -p1 -f -N -r- -d "/opt/go" < /opt/goruntime-boottime-over-monotonic.diff
+
 ENV PATH=${PATH}:/opt/go/bin
 ENV GOROOT=/opt/go
 ENV GOPATH=/opt/go-path
