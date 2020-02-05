@@ -27,5 +27,5 @@ esac
 
 for lib in crtbegin_dynamic.o crtend_android.o crtbegin_so.o crtend_so.o; do
     ln -s "/opt/android/toolchains/android21-${target_arch}/sysroot/usr/lib/${llvm_arch}/21/$lib" \
-          /opt/android/toolchains/android21-${target_arch}/sysroot/usr/lib/${llvm_arch}/;
+          /opt/android/toolchains/android21-${target_arch}/sysroot/usr/lib/${llvm_arch}/
 done
