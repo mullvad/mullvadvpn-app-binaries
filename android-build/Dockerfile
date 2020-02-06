@@ -16,38 +16,31 @@ RUN cd /tmp && \
     mkdir /opt/android && \
     cd /opt/android && \
     unzip -q /tmp/android-ndk-r20-linux-x86_64.zip && \
-    rm /tmp/android-ndk-r20-linux-x86_64.zip && \
-    mkdir toolchains && \
-    /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh --platform=android-21 --arch=arm64 --install-dir=/opt/android/toolchains/android21-aarch64 && \
-    /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh --platform=android-21 --arch=x86_64 --install-dir=/opt/android/toolchains/android21-x86_64 && \
-    /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh --platform=android-21 --arch=arm --install-dir=/opt/android/toolchains/android21-armv7 && \
-    /opt/android/android-ndk-r20/build/tools/make-standalone-toolchain.sh --platform=android-21 --arch=x86 --install-dir=/opt/android/toolchains/android21-i686
+    rm /tmp/android-ndk-r20-linux-x86_64.zip
+
 
 ENV ANDROID_NDK_HOME="/opt/android/android-ndk-r20"
 
-# Create symlinks to some libraries so that the linker used by Go can find them
-RUN for arch in aarch64 x86_64 i686 armv7; do \
-        if [ "$arch" = "armv7" ]; then \
-            TARGET="arm-linux-androideabi"; \
-        else \
-            TARGET="${arch}-linux-android"; \
-        fi; \
-        \
-        for lib in crtbegin_dynamic.o crtend_android.o crtbegin_so.o crtend_so.o; do \
-            ln -s "/opt/android/toolchains/android21-${arch}/sysroot/usr/lib/${TARGET}/21/$lib" /opt/android/toolchains/android21-${arch}/sysroot/usr/lib/${TARGET}/; \
-        done \
-    done
 
-# Install Go-lang
+# Install Go-lang and patch it to use the appropriate monotonic clock
+COPY goruntime-boottime-over-monotonic.diff /opt/goruntime-boottime-over-monotonic.diff
 RUN cd /tmp && \
-    curl -sf -L -O https://dl.google.com/go/go1.12.7.linux-amd64.tar.gz && \
-    test $(sha256sum go1.12.7.linux-amd64.tar.gz | cut -f1 -d' ') = "66d83bfb5a9ede000e33c6579a91a29e6b101829ad41fffb5c5bb6c900e109d9" && \
+    curl -sf -L -O https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz && \
+    echo "0804bf02020dceaa8a7d7275ee79f7a142f1996bfd0c39216ccb405f93f994c0 go1.13.3.linux-amd64.tar.gz" | sha256sum --check && \
     cd /opt && \
-    tar -xzf /tmp/go1.12.7.linux-amd64.tar.gz && \
-    rm /tmp/go1.12.7.linux-amd64.tar.gz
+    tar -xzf /tmp/go1.13.3.linux-amd64.tar.gz && \
+    rm /tmp/go1.13.3.linux-amd64.tar.gz && \
+    patch -p1 -f -N -r- -d "/opt/go" < /opt/goruntime-boottime-over-monotonic.diff
 
 ENV PATH=${PATH}:/opt/go/bin
+ENV GOROOT=/opt/go
+ENV GOPATH=/opt/go-path
 
+RUN apt-get remove -y curl \
+    && apt-get autoremove -y
+
+COPY install-ndk-toolchain /usr/local/bin/install-ndk-toolchain
+RUN chmod +x /usr/local/bin/install-ndk-toolchain
 COPY build.sh /usr/local/bin/build.sh
 
 ENTRYPOINT ["/usr/local/bin/build.sh"]
