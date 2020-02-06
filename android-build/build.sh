@@ -32,11 +32,6 @@ for arch in arm arm64 x86_64 x86; do
 
     eval "$(install-ndk-toolchain $arch)"
 
-    export ANDROID_TOOLCHAIN_ROOT="/opt/android/toolchains/android21-${arch}"
-    export ANDROID_SYSROOT="/opt/android/android-ndk-r20/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-    export ANDROID_C_COMPILER="/opt/android/android-ndk-r20/toolchains/llvm/prebuilt/linux-x86_64/bin/clang -target=$ANDROID_LLVM_TRIPLE"
-    export ANDROID_C_COMPILER="${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_LLVM_TRIPLE}21-clang"
-
     # Build OpenSSL
     export PATH="$PATH:${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin"
 
