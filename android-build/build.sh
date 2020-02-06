@@ -5,28 +5,16 @@ set -e
 for arch in arm arm64 x86_64 x86; do
     case "$arch" in
         "arm64")
-            export ANDROID_LLVM_TRIPLE="aarch64-linux-android"
-            export ANDROID_LIB_TRIPLE="aarch64-linux-android"
             export RUST_TARGET_TRIPLE="aarch64-linux-android"
-            export ANDROID_TOOLCHAIN_ARCH="arm64"
             ;;
         "x86_64")
-            export ANDROID_LLVM_TRIPLE="x86_64-linux-android"
-            export ANDROID_LIB_TRIPLE="x86_64-linux-android"
             export RUST_TARGET_TRIPLE="x86_64-linux-android"
-            export ANDROID_TOOLCHAIN_ARCH="x86_64"
             ;;
         "arm")
-            export ANDROID_LLVM_TRIPLE="armv7a-linux-androideabi"
-            export ANDROID_LIB_TRIPLE="arm-linux-androideabi"
             export RUST_TARGET_TRIPLE="armv7-linux-androideabi"
-            export ANDROID_TOOLCHAIN_ARCH="arm"
             ;;
         "x86")
-            export ANDROID_LLVM_TRIPLE="i686-linux-android"
-            export ANDROID_LIB_TRIPLE="i686-linux-android"
             export RUST_TARGET_TRIPLE="i686-linux-android"
-            export ANDROID_TOOLCHAIN_ARCH="x86"
             ;;
     esac
 
