@@ -25,3 +25,6 @@
 [submodule "tap-windows6"]
 	path = tap-windows6
 	url = https://github.com/mullvad/tap-windows6.git
+[submodule "tap-windows"]
+	path = tap-windows
+	url = https://github.com/mullvad/tap-windows
