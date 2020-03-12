@@ -75,7 +75,7 @@ release, one should generally follow the instructions laid out in the
 
 
 
-## TAP adapter driver for Windows
+## TAP adapter driver for Windows 8-10
 
 On Windows, we build our own fork of OpenVPN's TAP driver (tracking branch `mullvad` in the
 submodule `tap-windows6`). This is to prevent conflicts with other software that relies on OpenVPN.
@@ -107,6 +107,35 @@ A cab file is also created, `.\tap-windows6\dist\tap-windows6-amd64.cab`, which 
 to the [Windows Hardware Dev Center](https://developer.microsoft.com/en-us/windows/hardware) for
 attestation signing. The attestation-signed driver package must be used for Windows 10 but will
 not work for Windows 8.1 or earlier.
+
+## TAP adapter driver for Windows 7
+
+An older NDIS 5 driver is used on Windows 7 due to issues with [packet loss](https://github.com/OpenVPN/tap-windows6/issues/58).
+This is found in the `tap-windows` submodule.
+
+### Dependencies
+
+* Visual Studio 2019 (e.g. Build Tools)
+* [WDK](https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk) for Windows 10
+
+### Build and sign the driver
+As of now, only the driver for amd64 is in use by Mullvad VPN, so builds for other architectures
+are skipped.
+
+1. Open `x64 Native Tools Command Prompt for VS 2019` and navigate to the `tap-windows` directory.
+
+1. Run `configure.bat`.
+
+1. Run:
+   ```
+   build.bat <cert_sha1_hash>
+   ```
+
+   `cert_sha1_hash` refers to the SHA1 hash of the signing certificate. The certificate should be
+   available in the certificate store, where the hash may be referred to as "thumbprint". It can
+   be viewed by running `certmgr.msc` or `certlm.msc`.
+
+The driver files can be found in `.\tap-windows\src\x64\Release\tap-windows`.
 
 
 
