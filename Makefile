@@ -66,8 +66,8 @@ openssl:
 	KERNEL_BITS=64 ./config no-shared \
 		--prefix=$(BUILD_DIR) \
 		--openssldir=$(BUILD_DIR) \
-	$(PLATFORM_OPENSSL_CONFIG) \
-	$(OPENSSL_CONFIG) ; \
+		$(PLATFORM_OPENSSL_CONFIG) \
+		$(OPENSSL_CONFIG) ; \
 	$(MAKE) clean ; \
 	$(MAKE) build_libs build_apps ; \
 	$(MAKE) install_sw
