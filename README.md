@@ -139,14 +139,16 @@ The driver files can be found in `.\tap-windows\src\x64\Release\tap-windows`.
 
 
 
-## Building Wireguard-Go
+## Building wireguard-go
+
 The userspace implementation of Wireguard using Go is used in the app. For Linux and macOS, a static
 library must be built to include support for Wireguard, while in Android a shared library is built
-from the official Wireguard app for Android [repository][wireguard-android].
+from the official [Wireguard app for Android].
 
-[wireguard-android]: https://github.com/WireGuard/wireguard-android/
+[Wireguard app for Android]: https://github.com/WireGuard/wireguard-android/
 
 ### Android
+
 The libwg-go.so shared library is cross-compiled using a custom Docker image. You can build the
 image with the final binaries and extract them to the appropriate sub-directory in the repository
 using the following command:
@@ -156,10 +158,12 @@ make android
 ```
 
 ### Linux + macOS
+
 Building the wireugard-go static library requires only a go compiler, the
 version used at the time of writing is `go1.12.7`.
 
 ### Windows
+
 Currently, Windows is not supported.
 
 
@@ -176,6 +180,7 @@ and not a random commit. Also verify that said tag is properly signed by the fol
 To build the MullvadVPN app, one has to have statically linkable OpenSSL libraries.
 
 ### Android
+
 The OpenSSL static binaries are cross-compiled using a custom Docker image. You can build the image
 with the final binaries and extract them to the appropriate sub-directory in the repository using
 the following command:
@@ -185,6 +190,7 @@ make android
 ```
 
 ### Linux + macOS
+
 To build statically linkable OpenSSL libraries on macOS and Linux, just run
 `make update_openssl`. To do so, one has to make sure to have all the required
 build dependencies on the build host. Refer to OpenSSL's documentation, but
@@ -193,19 +199,21 @@ standard library.
 
 
 ### Windows
+
 Building a static OpenSSL library on Windows requires the following:
 - Perl 5.11 and above (Strawberry Perl distribution works)
 - Build Tools for Visual Studio 2019 (a regular installation of Visual Studio
-2019 Community Edition works).
+  2019 Community Edition works).
 - [NASM](https://www.nasm.us/), make sure that the tools are in your PATH.
-If installed with `chocolatey`, to set it up for your current shell, just run
-the batch script in `C:\Program Files\NASM\nasmpath.bat`.
+  If installed with `chocolatey`, to set it up for your current shell, just run
+  the batch script in `C:\Program Files\NASM\nasmpath.bat`.
 
 To compile OpenSSL for Windows with MSVC, run the following script from a
 a _x64 Native Tools Command Prompt for VSXXXX_:
 ```
 build-openssl-with-msbvc.bat
 ```
+
 The result of a successful build should be newly created `libssl.lib` and
 `libcrypto.lib` libraries in `.\x86_64-pc-windows-msvc\` and headers in
 `.\x86_64-pc-windows-msvc\include`.
@@ -217,6 +225,7 @@ The result of a successful build should be newly created `libssl.lib` and
 
 
 ## `libmnl` and `libnftnl`
+
 These libraries are only required for Linux and are required by our app to
 apply firewall rules. To produce the required libraries, run `make libnftnl`.
 
