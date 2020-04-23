@@ -138,36 +138,6 @@ are skipped.
 The driver files can be found in `.\tap-windows\src\x64\Release\tap-windows`.
 
 
-
-## Building wireguard-go
-
-The userspace implementation of Wireguard using Go is used in the app. For Linux and macOS, a static
-library must be built to include support for Wireguard, while in Android a shared library is built
-from the official [Wireguard app for Android].
-
-[Wireguard app for Android]: https://github.com/WireGuard/wireguard-android/
-
-### Android
-
-The libwg-go.so shared library is cross-compiled using a custom Docker image. You can build the
-image with the final binaries and extract them to the appropriate sub-directory in the repository
-using the following command:
-
-```bash
-make android
-```
-
-### Linux + macOS
-
-Building the wireugard-go static library requires only a go compiler, the
-version used at the time of writing is `go1.12.7`.
-
-### Windows
-
-Currently, Windows is not supported.
-
-
-
 ## OpenSSL
 
 When bumping the submodule to a new OpenSSL release. Make sure to only point to a release tag,
