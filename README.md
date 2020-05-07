@@ -1,8 +1,9 @@
 # Custom third party binaries for the Mullvad VPN app
 
 This repository holds our custom binaries and build scripts for third party software we need to
-bundle with the Mullvad VPN app. Such as OpenVPN, statically linkable OpenSSL libraries for all of
-our target platforms, `libmnl` and `libnftnl` for Linux, and more.
+bundle with the Mullvad VPN app: OpenVPN and Shadowsocks for our target platforms, `libmnl` and
+`libnftnl` for Linux, WinTun and TAP adapter drivers for Windows.
+
 
 ## Security and integrity
 
@@ -139,60 +140,13 @@ The driver files can be found in `.\tap-windows\src\x64\Release\tap-windows`.
 
 
 ## OpenSSL
-
+OpenSSL is a transitive dependency for Shadowsocks and OpenVPN.
 When bumping the submodule to a new OpenSSL release. Make sure to only point to a release tag,
 and not a random commit. Also verify that said tag is properly signed by the following gpg key:
 
 ```
 8657ABB260F056B1E5190839D9C4D26D0E604491
 ```
-
-To build the MullvadVPN app, one has to have statically linkable OpenSSL libraries.
-
-### Android
-
-The OpenSSL static binaries are cross-compiled using a custom Docker image. You can build the image
-with the final binaries and extract them to the appropriate sub-directory in the repository using
-the following command:
-
-```bash
-make android
-```
-
-### Linux + macOS
-
-To build statically linkable OpenSSL libraries on macOS and Linux, just run
-`make update_openssl`. To do so, one has to make sure to have all the required
-build dependencies on the build host. Refer to OpenSSL's documentation, but
-usually it requires a recent version of Perl 5 and a good C compiler and
-standard library.
-
-
-### Windows
-
-Building a static OpenSSL library on Windows requires the following:
-- Perl 5.11 and above (Strawberry Perl distribution works)
-- Build Tools for Visual Studio 2019 (a regular installation of Visual Studio
-  2019 Community Edition works).
-- [NASM](https://www.nasm.us/), make sure that the tools are in your PATH.
-  If installed with `chocolatey`, to set it up for your current shell, just run
-  the batch script in `C:\Program Files\NASM\nasmpath.bat`.
-
-To compile OpenSSL for Windows with MSVC, run the following script from a
-a _x64 Native Tools Command Prompt for VSXXXX_:
-```
-build-openssl-with-msbvc.bat
-```
-
-The result of a successful build should be newly created `libssl.lib` and
-`libcrypto.lib` libraries in `.\x86_64-pc-windows-msvc\` and headers in
-`.\x86_64-pc-windows-msvc\include`.
-
-#### Troubleshooting
-
-* Missing `ltmain.sh`? Copy it from the libtool installation path into openvpn/
-
-
 
 ## `libmnl` and `libnftnl`
 
@@ -212,46 +166,29 @@ said tag is properly signed with the following key:
 54A2B8892CC3D6A597B92B6C210627AABA709FE1
 ```
 
-### Linux + MacOS
-???
-
-### Windows
-When wishing to build libsodium on Windows it's recommended that you use one of the prepared
-Visual Studio solutions. E.g. for building a statically linkable libsodium, using Visual Studio 2019
-Community Edition, pick the solution file at `.\libsodium\builds\msvc\vs2019\libsodium.sln`.
-Inside the solution, select the (`StaticRelease`, `x64`) configuration.
-
-The static library is created as: `.\libsodium\bin\x64\Release\v142\static\libsodium.lib`.
-
-
 
 ## Building Shadowsocks
 
 ### Linux + MacOS
-`make shadowsocks`
+To build Shadowsocks, just run `make shadowsocks`.
 
 ### Windows
-If using `Git Bash`, you first need to install `make`. You can use `make` from `ezwinports`,
-e.g. `make-4.2.1-without-guile-w32-bin.zip`. Extract and merge the archive's contents into:
-`C:\Program Files\git\mingw64`.
 
-Next, temporarily modify `shadowsocks-rust` to statically link as many dependencies as possible.
-Create `.\shadowsocks-rust\.cargo\config` with the following content:
+To build Shadowsocks, just run `shaodwsocks-windows.bat` from a command prompt that has the Visual
+Studio 2019 build tool environment. The script will compile `libsodium` and `openssl` statically and
+then build Shadowsocks with said libraries.
 
-```
-[target.x86_64-pc-windows-msvc]
-rustflags = ["-Ctarget-feature=+crt-static"]
-```
+Dependencies for building Shadowsocks:
+- Perl 5.11 and above (Strawberry Perl distribution works)
+- Build Tools for Visual Studio 2019 (a regular installation of Visual Studio
+  2019 Community Edition works).
+- [NASM](https://www.nasm.us/), make sure that the tools are in your PATH.
+  If installed with `chocolatey`, to set it up for your current shell, just run
+  the batch script in `C:\Program Files\NASM\nasmpath.bat`.
 
-Temporarily rename `.\x86_64-pc-windows-msvc\libsodium.lib` into
-`.\x86_64-pc-windows-msvc\sodium.lib`. This allows us to work around a bug in the `libsodium-ffi`
-crate.
+#### Troubleshooting
 
-Then run `make shadowsocks` and wait for it to build. You'll notice the make process is aborted
-when it comes to `strip`, but this is fine, as `strip` is not available nor applicable in this case.
-
-Grab the built binary from `.\shadowsocks-rust\target\release\sslocal.exe`
-
+* Missing `ltmain.sh`? Copy it from the libtool installation path into openvpn/
 
 
 ## Building a custom Wintun installer
