@@ -72,14 +72,6 @@ openssl:
 	$(MAKE) build_libs build_apps ; \
 	$(MAKE) install_sw
 
-update_openssl: openssl
-	# Copy libraries and header files to target output directory for openssl.
-	# This is not required for OpenVPN, but will be used to link openssl
-	# statically in our other utilities.
-	mkdir -p $(TARGET_OUTPUT_DIR)/include/openssl ; \
-	cp openssl/libcrypto.a openssl/libssl.a $(TARGET_OUTPUT_DIR)/ ; \
-	cp openssl/include/openssl/opensslconf.h openssl/include/openssl/opensslv.h $(TARGET_OUTPUT_DIR)/include/openssl/
-
 openvpn: lz4 openssl
 	@echo "Building OpenVPN"
 	mkdir -p $(BUILD_DIR)
@@ -144,17 +136,16 @@ libsodium:
 	./configure --disable-shared --enable-static=yes; \
 	$(MAKE) clean; \
 	$(MAKE)
-	cp libsodium/src/libsodium/.libs/libsodium.a $(TARGET_OUTPUT_DIR)/
 
-shadowsocks:
+shadowsocks: libsodium openssl
 	@echo "Building shadowsocks"
 	cd shadowsocks-rust; \
 	unset CARGO_TARGET_DIR; \
 	SODIUM_STATIC=1 \
-		SODIUM_LIB_DIR=$(PWD)/$(TARGET_OUTPUT_DIR) \
+		SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
 		OPENSSL_STATIC=1 \
-		OPENSSL_LIB_DIR=$(PWD)/$(TARGET_OUTPUT_DIR) \
-		OPENSSL_INCLUDE_DIR="$(PWD)/$(TARGET_OUTPUT_DIR)/include" \
+		OPENSSL_LIB_DIR=$(BUILD_DIR)/lib \
+		OPENSSL_INCLUDE_DIR="$(BUILD_DIR)/include" \
 		CARGO_INCREMENTAL=0 \
 		cargo +stable build --no-default-features --features sodium --release --bin sslocal
 	strip shadowsocks-rust/target/release/sslocal
