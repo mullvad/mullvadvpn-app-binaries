@@ -179,6 +179,8 @@ To build Shadowsocks, just run `shaodwsocks-windows.bat` from a command prompt t
 Studio 2019 build tool environment. The script will compile `libsodium` statically and
 then build Shadowsocks with said library.
 
+Remember to sign the binary! See OpenVPN build instructions for the command
+
 Dependencies for building Shadowsocks:
 - Build Tools for Visual Studio 2019 (a regular installation of Visual Studio
   2019 Community Edition works).
