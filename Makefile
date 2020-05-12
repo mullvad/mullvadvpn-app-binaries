@@ -10,7 +10,7 @@ OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 
 # Prevents escalation attack to SYSTEM user.
 OPENSSL_CONFIG += no-autoload-config
 
-OPENVPN_VERSION = openvpn-2.4.8
+OPENVPN_VERSION = openvpn-2.4.9
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-server \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
 	--disable-def-auth --disable-pf --disable-pkcs11 --disable-lzo \
