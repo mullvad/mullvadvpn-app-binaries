@@ -7,7 +7,7 @@ set TARGET_DIR=%CD%\x86_64-pc-windows-msvc
 echo Building libsodium
 msbuild libsodium\builds\msvc\vs2019\libsodium.sln /t:Clean /p:Configuration=StaticRelease /p:Platform=x64
 msbuild libsodium\builds\msvc\vs2019\libsodium.sln /t:Build /p:Configuration=StaticRelease /p:Platform=x64
-copy /y .\libsodium\bin\x64\Release\v142\static\libsodium.lib %BUILD_DIR%\sodium.lib
+copy /y .\libsodium\bin\x64\Release\v142\static\libsodium.lib %BUILD_DIR%\
 
 echo Building shadowsocks
 cd shadowsocks-rust
