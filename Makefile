@@ -32,7 +32,7 @@ ifneq (,$(findstring MINGW,$(UNAME_S)))
 	TARGET_OUTPUT_DIR = "x86_64-pc-windows-msvc"
 endif
 
-.PHONY: help clean clean-build clean-submodules lz4 openssl openvpn windows libmnl libnftnl libsodium shadowsocks
+.PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl libsodium shadowsocks_linux shadowsocks_macos
 
 help:
 	@echo "Please run a more specific target"
