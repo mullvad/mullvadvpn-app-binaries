@@ -141,8 +141,7 @@ shadowsocks_linux: libsodium openssl
 	@echo "Building shadowsocks"
 	cd shadowsocks-rust; \
 	unset CARGO_TARGET_DIR; \
-	SODIUM_STATIC=1 \
-		SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
+	SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
 		OPENSSL_STATIC=1 \
 		OPENSSL_LIB_DIR=$(BUILD_DIR)/lib \
 		OPENSSL_INCLUDE_DIR="$(BUILD_DIR)/include" \
@@ -155,8 +154,7 @@ shadowsocks_macos: libsodium
 	@echo "Building shadowsocks"
 	cd shadowsocks-rust; \
 	unset CARGO_TARGET_DIR; \
-	SODIUM_STATIC=1 \
-		SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
+	SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
 		CARGO_INCREMENTAL=0 \
 		cargo +stable build --no-default-features --features sodium --release --bin sslocal
 	strip shadowsocks-rust/target/release/sslocal
