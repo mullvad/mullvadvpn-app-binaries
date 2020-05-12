@@ -41,10 +41,11 @@ dependencies installed, as outlined in [OpenVPN's buildslave documentation].
 Building the OpenVPN binary should be as simple as running `make openvpn`.
 
 #### Linux
+
 Currently, the Linux distro of choice for building OpenVPN currently is Debian
 9, issues have been experienced on other distributions.
 
-### Building on Windows
+### Building for Windows
 
 Building `openvpn.exe` for Windows is done by cross-compiling from Linux using
 a mingw-w64 toolchain. You need to do this build on a recent Debian or Ubuntu
