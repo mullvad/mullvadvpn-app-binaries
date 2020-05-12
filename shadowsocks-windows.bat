@@ -14,7 +14,6 @@ cd shadowsocks-rust
   mkdir .cargo
   copy ..\win-shadowsocks-cargo-config .cargo\config
   CARGO_TARGET_DIR=
-  set SODIUM_STATIC="1"
   set SODIUM_LIB_DIR=%BUILD_DIR%
   set CARGO_INCREMENTAL="0"
   cargo clean
