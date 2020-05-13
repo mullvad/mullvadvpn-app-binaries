@@ -32,7 +32,7 @@ ifneq (,$(findstring MINGW,$(UNAME_S)))
 	TARGET_OUTPUT_DIR = "x86_64-pc-windows-msvc"
 endif
 
-.PHONY: help clean clean-build clean-submodules lz4 openssl openvpn windows libmnl libnftnl libsodium shadowsocks
+.PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl libsodium shadowsocks_linux shadowsocks_macos
 
 help:
 	@echo "Please run a more specific target"
@@ -137,15 +137,24 @@ libsodium:
 	$(MAKE) clean; \
 	$(MAKE)
 
-shadowsocks: libsodium openssl
+shadowsocks_linux: libsodium openssl
 	@echo "Building shadowsocks"
 	cd shadowsocks-rust; \
 	unset CARGO_TARGET_DIR; \
-	SODIUM_STATIC=1 \
-		SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
+	SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
 		OPENSSL_STATIC=1 \
 		OPENSSL_LIB_DIR=$(BUILD_DIR)/lib \
 		OPENSSL_INCLUDE_DIR="$(BUILD_DIR)/include" \
+		CARGO_INCREMENTAL=0 \
+		cargo +stable build --no-default-features --features sodium --release --bin sslocal
+	strip shadowsocks-rust/target/release/sslocal
+	cp shadowsocks-rust/target/release/sslocal $(TARGET_OUTPUT_DIR)/
+
+shadowsocks_macos: libsodium
+	@echo "Building shadowsocks"
+	cd shadowsocks-rust; \
+	unset CARGO_TARGET_DIR; \
+	SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
 		CARGO_INCREMENTAL=0 \
 		cargo +stable build --no-default-features --features sodium --release --bin sslocal
 	strip shadowsocks-rust/target/release/sslocal

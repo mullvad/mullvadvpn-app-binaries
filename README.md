@@ -171,25 +171,19 @@ said tag is properly signed with the following key:
 ## Building Shadowsocks
 
 ### Linux + MacOS
-To build Shadowsocks, just run `make shadowsocks`.
+To build Shadowsocks, just run `make shadowsocks_linux` or `make shadowsocks_macos` respectively.
 
 ### Windows
 
 To build Shadowsocks, just run `shaodwsocks-windows.bat` from a command prompt that has the Visual
-Studio 2019 build tool environment. The script will compile `libsodium` and `openssl` statically and
-then build Shadowsocks with said libraries.
+Studio 2019 build tool environment. The script will compile `libsodium` statically and
+then build Shadowsocks with said library.
+
+Remember to sign the binary! See OpenVPN build instructions for the command
 
 Dependencies for building Shadowsocks:
-- Perl 5.11 and above (Strawberry Perl distribution works)
 - Build Tools for Visual Studio 2019 (a regular installation of Visual Studio
   2019 Community Edition works).
-- [NASM](https://www.nasm.us/), make sure that the tools are in your PATH.
-  If installed with `chocolatey`, to set it up for your current shell, just run
-  the batch script in `C:\Program Files\NASM\nasmpath.bat`.
-
-#### Troubleshooting
-
-* Missing `ltmain.sh`? Copy it from the libtool installation path into openvpn/
 
 
 ## Building a custom Wintun installer
