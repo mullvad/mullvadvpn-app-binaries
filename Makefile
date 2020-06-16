@@ -63,6 +63,7 @@ openssl:
 	@echo "Building OpenSSL"
 	mkdir -p $(BUILD_DIR)
 	cd openssl; \
+	export MACOSX_DEPLOYMENT_TARGET="10.13" ; \
 	KERNEL_BITS=64 ./config no-shared \
 		--prefix=$(BUILD_DIR) \
 		--openssldir=$(BUILD_DIR) \
@@ -76,6 +77,7 @@ openvpn: lz4 openssl
 	@echo "Building OpenVPN"
 	mkdir -p $(BUILD_DIR)
 	cd openvpn ; \
+	export MACOSX_DEPLOYMENT_TARGET="10.13" ; \
 	autoreconf -i -v ; \
 	./configure \
 		--prefix=$(BUILD_DIR) \
