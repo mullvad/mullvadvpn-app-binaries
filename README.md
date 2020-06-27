@@ -8,7 +8,7 @@ bundle with the Mullvad VPN app: OpenVPN and Shadowsocks for our target platform
 ## Security and integrity
 
 This repository should conform to the same integrity standards as the main
-[Mullvad VPN app] repository. Meaning every merge commit has to be signed.
+[Mullvad VPN app] repository, meaning that every merge commit has to be signed.
 
 This repository contains a number of submodules, pulling in the source code for the third party
 software we store the binaries for. These submodules must point to commits that are either
