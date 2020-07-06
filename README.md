@@ -191,7 +191,7 @@ Dependencies for building Shadowsocks:
 Only applicable to Windows.
 
 We have a need to build a branded `MSI` installer from the official `MSM` that is provided by the
-Wintun project. This is done using the files found under `x86_64-pc-windows-msvc\wintun`.
+Wintun project. This is done using the files found under `wintun\`.
 
 `mullvad-wintun.wxs` defines the `MSI` project.
 
@@ -199,9 +199,16 @@ Wintun project. This is done using the files found under `x86_64-pc-windows-msvc
 It's expected that this file will need to be updated from time to time whenever a new version
 of Wintun is released, since it downloads a specific version of Wintun.
 
-`build-signed.bat` configures the environment so the MSI is signed after having been built. The
-certificate used is our primary `Amagicom AB` certificate for code signing. This is the build
-script that should always be used outside of testing.
+`build-signed.bat` configures the environment for signing and calls `build.bat` so the MSI is
+built and then signed. This is the build script that should always be used outside of testing.
+Call this script with the path to the signing certificate PFX file as the first argument and
+the passphrase for it as the second argument. Example:
+```
+...\wintun> build-signed.bat C:\Users\build\cert.pfx omg_so_secret
+```
+
+If the build script finishes successfully you will find the final `MSI` under the `dist\`
+directory.
 
 
 

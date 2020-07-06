@@ -32,9 +32,10 @@ if exist .deps\prepared goto :build
 	call :msi amd64 x86_64 x64 || goto :error
 	if exist ..\sign.bat call ..\sign.bat
 	if "%SigningCertificate%"=="" goto :success
+	if "%SigningCertificatePassword%"=="" goto :success
 	if "%TimestampServer%"=="" goto :success
 	echo [+] Signing
-	signtool sign /sha1 "%SigningCertificate%" /fd sha256 /tr "%TimestampServer%" /td sha256 /d "Mullvad Wintun Setup" "dist\mullvad-wintun-*.msi" || goto :error
+	signtool sign /tr "%TimestampServer%" /td sha256 /fd sha256 /d "Mullvad VPN Wintun Setup" /f "%SigningCertificate%" /p "%SigningCertificatePassword%" "dist\mullvad-wintun-*.msi" || goto :error
 
 :success
 	echo [+] Success.
