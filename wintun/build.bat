@@ -15,8 +15,8 @@ if exist .deps\prepared goto :build
 	rmdir /s /q .deps 2> NUL
 	mkdir .deps || goto :error
 	cd .deps || goto :error
-	call :download wintun-x86.msm https://www.wintun.net/builds/wintun-x86-0.7.msm bdc40a2314964759653cd0717983dd3fedfeb53e7e15f4ed8370e12964c04b43 || goto :error
-	call :download wintun-amd64.msm https://www.wintun.net/builds/wintun-amd64-0.7.msm c87f9e0df51ac5c4fc8551f38c58b6fe6c43c06344451e3ed8939f05f4979c7d || goto :error
+	call :download wintun-x86.msm https://www.wintun.net/builds/wintun-x86-0.8.1.msm 5b47f83ffa9c361a360196d692f64755183e82c65f4753accc92087e6736af10 || goto :error
+	call :download wintun-amd64.msm https://www.wintun.net/builds/wintun-amd64-0.8.1.msm af9644438a716f5a022052e3574ee0404c3e3309daff84889d656178fbc6b168 || goto :error
 	call :download wix-binaries.zip https://wixtoolset.org/downloads/v3.14.0.2812/wix314-binaries.zip 923892298f37514622c58cbbd9c2cadf2822d9bb53df8ee83aaeb05280777611 || goto :error
 	echo [+] Extracting wix-binaries.zip
 	mkdir wix\bin || goto :error
@@ -32,9 +32,10 @@ if exist .deps\prepared goto :build
 	call :msi amd64 x86_64 x64 || goto :error
 	if exist ..\sign.bat call ..\sign.bat
 	if "%SigningCertificate%"=="" goto :success
+	if "%SigningCertificatePassword%"=="" goto :success
 	if "%TimestampServer%"=="" goto :success
 	echo [+] Signing
-	signtool sign /sha1 "%SigningCertificate%" /fd sha256 /tr "%TimestampServer%" /td sha256 /d "Mullvad Wintun Setup" "dist\mullvad-wintun-*.msi" || goto :error
+	signtool sign /tr "%TimestampServer%" /td sha256 /fd sha256 /d "Mullvad VPN Wintun Setup" /f "%SigningCertificate%" /p "%SigningCertificatePassword%" "dist\mullvad-wintun-*.msi" || goto :error
 
 :success
 	echo [+] Success.

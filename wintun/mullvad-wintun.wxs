@@ -19,7 +19,7 @@
 		Name="Mullvad-Wintun"
 		Language="1033"
 		Version="1.0"
-		Manufacturer="Amagicom AB"
+		Manufacturer="Mullvad VPN AB"
 		UpgradeCode="$(var.UpgradeCode)">
 		<Package
 			InstallerVersion="400"
