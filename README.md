@@ -2,7 +2,7 @@
 
 This repository holds our custom binaries and build scripts for third party software we need to
 bundle with the Mullvad VPN app: OpenVPN and Shadowsocks for our target platforms, `libmnl` and
-`libnftnl` for Linux, WinTun and TAP adapter drivers for Windows.
+`libnftnl` for Linux, and Wintun for Windows.
 
 
 ## Security and integrity
@@ -76,70 +76,6 @@ release, one should generally follow the instructions laid out in the
 
 
 
-
-## TAP adapter driver for Windows 8-10
-
-On Windows, we build our own fork of OpenVPN's TAP driver (tracking branch `mullvad` in the
-submodule `tap-windows6`). This is to prevent conflicts with other software that relies on OpenVPN.
-
-### Dependencies
-
-* Visual Studio 2019 (e.g. Build Tools)
-* Spectre-mitigated MSVC libraries (available in the VS installer)
-* Python 3
-* [WDK](https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk) for Windows 10
-
-### Build and sign the driver
-As of now, only the driver for amd64 is in use by Mullvad VPN, so builds for other architectures
-are skipped.
-
-1. Open `x64 Native Tools Command Prompt for VS 2019`.
-
-1. Run (from the `tap-windows6` directory):
-   ```
-   build.bat <cert_sha1_hash>
-   ```
-
-   `cert_sha1_hash` refers to the SHA1 hash of the signing certificate. The certificate should be
-   available in the certificate store, where the hash may be referred to as "thumbprint". It can
-   be viewed by running `certmgr.msc` or `certlm.msc`.
-
-This produces a signed TAP driver in `.\tap-windows6\dist\amd64`. This will work on Windows 8.x.
-A cab file is also created, `.\tap-windows6\dist\tap-windows6-amd64.cab`, which must be submitted
-to the [Windows Hardware Dev Center](https://developer.microsoft.com/en-us/windows/hardware) for
-attestation signing. The attestation-signed driver package must be used for Windows 10 but will
-not work for Windows 8.1 or earlier.
-
-## TAP adapter driver for Windows 7
-
-An older NDIS 5 driver is used on Windows 7 due to issues with [packet loss](https://github.com/OpenVPN/tap-windows6/issues/58).
-This is found in the `tap-windows` submodule.
-
-### Dependencies
-
-* Visual Studio 2019 (e.g. Build Tools)
-* [WDK](https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk) for Windows 10
-
-### Build and sign the driver
-As of now, only the driver for amd64 is in use by Mullvad VPN, so builds for other architectures
-are skipped.
-
-1. Open `x64 Native Tools Command Prompt for VS 2019` and navigate to the `tap-windows` directory.
-
-1. Run `configure.bat`.
-
-1. Run:
-   ```
-   build.bat <cert_sha1_hash>
-   ```
-
-   `cert_sha1_hash` refers to the SHA1 hash of the signing certificate. The certificate should be
-   available in the certificate store, where the hash may be referred to as "thumbprint". It can
-   be viewed by running `certmgr.msc` or `certlm.msc`.
-
-The driver files can be found in `.\tap-windows\src\x64\Release\tap-windows`.
-
-
 ## OpenSSL
 OpenSSL is a transitive dependency for Shadowsocks and OpenVPN.
 When bumping the submodule to a new OpenSSL release. Make sure to only point to a release tag,
@@ -186,29 +122,13 @@ Dependencies for building Shadowsocks:
   2019 Community Edition works).
 
 
-## Building a custom Wintun installer
+## Updating Wintun
 
 Only applicable to Windows.
 
-We have a need to build a branded `MSI` installer from the official `MSM` that is provided by the
-Wintun project. This is done using the files found under `wintun\`.
-
-`mullvad-wintun.wxs` defines the `MSI` project.
-
-`build.bat` fetches all the required dependencies, then builds and optionally signs the `MSI`.
-It's expected that this file will need to be updated from time to time whenever a new version
-of Wintun is released, since it downloads a specific version of Wintun.
-
-`build-signed.bat` configures the environment for signing and calls `build.bat` so the MSI is
-built and then signed. This is the build script that should always be used outside of testing.
-Call this script with the path to the signing certificate PFX file as the first argument and
-the passphrase for it as the second argument. Example:
-```
-...\wintun> build-signed.bat C:\Users\build\cert.pfx omg_so_secret
-```
-
-If the build script finishes successfully you will find the final `MSI` under the `dist\`
-directory.
+Wintun is found in `.\x86_64-pc-windows-msvc\wintun.dll`. The driver can be downloaded and verified
+by running the script `.\wintun\download-wintun.bat`. This script downloads Wintun, verifies its
+checksum, and makes sure that wintun.dll is correctly signed.
 
 
 

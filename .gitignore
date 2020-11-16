@@ -1,3 +1,4 @@
 lzo-*/
 build/
 build-win64/
+/wintun/.deps
