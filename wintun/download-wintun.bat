@@ -20,8 +20,10 @@ set DEST_DIR=%~dp0%..\x86_64-pc-windows-msvc
 do if not "%%a"=="%SIG_THUMBPRINT%" goto :thumbprinterror
 
 :movefile
-	echo [+] Copying wintun.dll to %DEST_DIR%
+	echo [+] Moving wintun.dll to %DEST_DIR%
 	move /y .deps\wintun\bin\amd64\wintun.dll %DEST_DIR%\wintun.dll || goto :error
+	echo [+] Moving wintun.h to %DEST_DIR%
+	move /y .deps\wintun\include\wintun.h %DEST_DIR%\wintun.h || goto :error
 
 :cleanup
 	echo [+] Cleaning up temporary files
