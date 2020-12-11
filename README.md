@@ -140,7 +140,7 @@ Dependencies for building Shadowsocks:
 
 Only applicable to Windows.
 
-Wintun is found in `.\x86_64-pc-windows-msvc\wintun.dll`. The driver can be downloaded and verified
+Wintun is found in `.\x86_64-pc-windows-msvc\wintun\wintun.dll`. The driver can be downloaded and verified
 by running the script `.\wintun\download-wintun.bat`. This script downloads Wintun, verifies its
 checksum, and makes sure that wintun.dll is correctly signed.
 

@@ -2,7 +2,7 @@
 setlocal
 
 set SIG_THUMBPRINT=DF98E075A012ED8C86FBCF14854B8F9555CB3D45
-set DEST_DIR=%~dp0%..\x86_64-pc-windows-msvc
+set DEST_DIR=%~dp0%..\x86_64-pc-windows-msvc\wintun
 
 :getwintun
 	rmdir /s /q .deps 2> NUL
