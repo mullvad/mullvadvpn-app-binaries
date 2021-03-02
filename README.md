@@ -45,6 +45,13 @@ Building the OpenVPN binary should be as simple as running `make openvpn`.
 Currently, the Linux distro of choice for building OpenVPN currently is Debian
 9, issues have been experienced on other distributions.
 
+#### Building for ARM macOS
+
+Building for Apple Silicon macOS is done by cross-compiling from Intel macOS by adding the `TARGET="aarch64-apple-darwin"` option, i.e.:
+```bash
+make openvpn TARGET="aarch64-apple-darwin"
+```
+
 ### Building for Windows
 
 Building `openvpn.exe` for Windows is done by cross-compiling from Linux using
@@ -108,6 +115,13 @@ said tag is properly signed with the following key:
 
 ### Linux + MacOS
 To build Shadowsocks, just run `make shadowsocks_linux` or `make shadowsocks_macos` respectively.
+
+#### Building for ARM macOS
+
+Building for Apple Silicon macOS is done by cross-compiling from Intel macOS by adding the `TARGET="aarch64-apple-darwin"` option, i.e.:
+```bash
+make shadowsocks_macos TARGET="aarch64-apple-darwin"
+```
 
 ### Windows
 
