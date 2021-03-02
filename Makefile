@@ -3,6 +3,7 @@ BUILD_DIR = $(PWD)/build
 WINDOWS_BUILDROOT = openvpn-build/generic/tmp
 WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 
+OPENSSL_CONGIFURE_SCRIPT = config
 OPENSSL_VERSION = openssl-1.1.1g
 OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 \
 	no-md4 no-seed no-cast no-camellia no-idea enable-ec_nistp_64_gcc_128 enable-rfc3779
@@ -22,14 +23,33 @@ ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-iproute2
 	SHARED_LIB_EXT = so*
-	TARGET_OUTPUT_DIR = "x86_64-unknown-linux-gnu"
+	TARGET_TRIPLET = "x86_64-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
-	TARGET_OUTPUT_DIR = "x86_64-apple-darwin"
+	MACOSX_DEPLOYMENT_TARGET = "10.13"
+	TARGET_TRIPLET = "x86_64-apple-darwin"
 endif
 ifneq (,$(findstring MINGW,$(UNAME_S)))
-	TARGET_OUTPUT_DIR = "x86_64-pc-windows-msvc"
+	TARGET_TRIPLET = "x86_64-pc-windows-msvc"
+endif
+
+ifeq ($(TARGET),)
+	RUST_RELEASE_DIR = "target/release"
+else
+	TARGET_TRIPLET = $(TARGET)
+	RUST_RELEASE_DIR = "target/$(TARGET)/release"
+endif
+
+ifeq ($(TARGET),aarch64-apple-darwin)
+	MACOSX_DEPLOYMENT_TARGET = "11.0"
+	OPENSSL_CONGIFURE_SCRIPT = Configure
+	PLATFORM_OPENSSL_CONFIG += darwin64-arm64-cc
+	CFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
+	LDFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
+	PLATFORM_OPENVPN_CONFIG = --target=aarch64-apple-darwin --host=aarch64-apple-darwin
+	LIBSODIUM_OPTIONS = --host=aarch64-apple-darwin
+	SHADOWSOCKS_OPTIONS = --target=aarch64-apple-darwin
 endif
 
 .PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl libsodium shadowsocks_linux shadowsocks_macos
@@ -54,7 +74,7 @@ lz4:
 	mkdir -p $(BUILD_DIR)
 	cd lz4 ; \
 	$(MAKE) clean ; \
-	PREFIX=$(BUILD_DIR) $(MAKE) install LIBS="-all-static"
+	PREFIX=$(BUILD_DIR) LDFLAGS="$(LDFLAGS)" CFLAGS="$(CFLAGS)" $(MAKE) install LIBS="-all-static"
 	# lz4 always installs a shared library. Unless it's removed
 	# OpenVPN will link against it.
 	rm $(BUILD_DIR)/lib/liblz4.*$(SHARED_LIB_EXT)
@@ -63,8 +83,8 @@ openssl:
 	@echo "Building OpenSSL"
 	mkdir -p $(BUILD_DIR)
 	cd openssl; \
-	export MACOSX_DEPLOYMENT_TARGET="10.13" ; \
-	KERNEL_BITS=64 ./config no-shared \
+	export MACOSX_DEPLOYMENT_TARGET="$(MACOSX_DEPLOYMENT_TARGET)" ; \
+	KERNEL_BITS=64 ./$(OPENSSL_CONGIFURE_SCRIPT) no-shared \
 		--prefix=$(BUILD_DIR) \
 		--openssldir=$(BUILD_DIR) \
 		$(PLATFORM_OPENSSL_CONFIG) \
@@ -75,9 +95,9 @@ openssl:
 
 openvpn: lz4 openssl
 	@echo "Building OpenVPN"
-	mkdir -p $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR) $(TARGET_TRIPLET)
 	cd openvpn ; \
-	export MACOSX_DEPLOYMENT_TARGET="10.13" ; \
+	export MACOSX_DEPLOYMENT_TARGET="$(MACOSX_DEPLOYMENT_TARGET)" ; \
 	autoreconf -i -v ; \
 	./configure \
 		--prefix=$(BUILD_DIR) \
@@ -90,7 +110,7 @@ openvpn: lz4 openssl
 	$(MAKE) ; \
 	$(MAKE) install
 	strip $(BUILD_DIR)/sbin/openvpn
-	cp $(BUILD_DIR)/sbin/openvpn $(TARGET_OUTPUT_DIR)/
+	cp $(BUILD_DIR)/sbin/openvpn $(TARGET_TRIPLET)/
 
 openvpn_windows: clean-submodules
 	rm -r "$(WINDOWS_BUILDROOT)"
@@ -134,10 +154,10 @@ libnftnl: libmnl
 libsodium:
 	@echo "Building libsodium"
 	cd libsodium; \
-	./autogen.sh; \
-	./configure --disable-shared --enable-static=yes; \
-	$(MAKE) clean; \
-	$(MAKE)
+		./autogen.sh; \
+		./configure --disable-shared --enable-static=yes $(LIBSODIUM_OPTIONS); \
+		$(MAKE) clean; \
+		CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" $(MAKE)
 
 shadowsocks_linux: libsodium openssl
 	@echo "Building shadowsocks"
@@ -150,14 +170,16 @@ shadowsocks_linux: libsodium openssl
 		CARGO_INCREMENTAL=0 \
 		cargo +stable build --no-default-features --features sodium --release --bin sslocal
 	strip shadowsocks-rust/target/release/sslocal
-	cp shadowsocks-rust/target/release/sslocal $(TARGET_OUTPUT_DIR)/
+	cp shadowsocks-rust/target/release/sslocal $(TARGET_TRIPLET)/
 
 shadowsocks_macos: libsodium
 	@echo "Building shadowsocks"
+	mkdir -p $(TARGET_TRIPLET); \
 	cd shadowsocks-rust; \
 	unset CARGO_TARGET_DIR; \
 	SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
 		CARGO_INCREMENTAL=0 \
-		cargo +stable build --no-default-features --features sodium --release --bin sslocal
-	strip shadowsocks-rust/target/release/sslocal
-	cp shadowsocks-rust/target/release/sslocal $(TARGET_OUTPUT_DIR)/
+		cargo +stable build $(SHADOWSOCKS_OPTIONS) --no-default-features --features sodium \
+			--release --bin sslocal
+	strip shadowsocks-rust/$(RUST_RELEASE_DIR)/sslocal
+	cp shadowsocks-rust/$(RUST_RELEASE_DIR)/sslocal $(TARGET_TRIPLET)/
