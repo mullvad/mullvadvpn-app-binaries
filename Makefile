@@ -11,11 +11,11 @@ OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 
 # Prevents escalation attack to SYSTEM user.
 OPENSSL_CONFIG += no-autoload-config
 
-OPENVPN_VERSION = openvpn-2.5.0
+OPENVPN_VERSION = openvpn-2.5.1
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-server \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
 	--disable-def-auth --disable-pf --disable-pkcs11 --disable-lzo --disable-plugin-auth-pam \
-	--enable-lz4 --enable-crypto --enable-plugins \
+	--enable-lz4 --enable-crypto --enable-plugins
 
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
