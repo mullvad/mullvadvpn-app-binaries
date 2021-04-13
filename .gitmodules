@@ -28,3 +28,6 @@
 [submodule "tap-windows"]
 	path = tap-windows
 	url = https://github.com/mullvad/tap-windows
+[submodule "win-split-tunnel"]
+	path = win-split-tunnel
+	url = https://github.com/mullvad/win-split-tunnel.git

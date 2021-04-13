@@ -125,7 +125,7 @@ make shadowsocks_macos TARGET="aarch64-apple-darwin"
 
 ### Windows
 
-To build Shadowsocks, just run `shaodwsocks-windows.bat` from a command prompt that has the Visual
+To build Shadowsocks, just run `shadowsocks-windows.bat` from a command prompt that has the Visual
 Studio 2019 build tool environment. The script will compile `libsodium` statically and
 then build Shadowsocks with said library.
 
@@ -140,10 +140,21 @@ Dependencies for building Shadowsocks:
 
 Only applicable to Windows.
 
-Wintun is found in `.\x86_64-pc-windows-msvc\wintun.dll`. The driver can be downloaded and verified
+Wintun is found in `.\x86_64-pc-windows-msvc\wintun\wintun.dll`. The driver can be downloaded and verified
 by running the script `.\wintun\download-wintun.bat`. This script downloads Wintun, verifies its
 checksum, and makes sure that wintun.dll is correctly signed.
 
+
+## Split tunnel driver
+
+Only applicable to Windows.
+
+The split tunneling functionality implemented in [Mullvad VPN app] is supported by a custom kernel driver.
+The driver is developed by us, and is represented here as a submodule named `win-split-tunnel`.
+
+Instructions for building and signing the driver are provided in said submodule.
+
+The built and signed driver, and associated files, reside under `x86_64-pc-windows-msvc\split-tunnel`.
 
 
 ## Storage of binaries
