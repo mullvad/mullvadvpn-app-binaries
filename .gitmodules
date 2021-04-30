@@ -22,12 +22,6 @@
 [submodule "shadowsocks-rust"]
 	path = shadowsocks-rust
 	url = https://github.com/shadowsocks/shadowsocks-rust
-[submodule "tap-windows6"]
-	path = tap-windows6
-	url = https://github.com/mullvad/tap-windows6.git
-[submodule "tap-windows"]
-	path = tap-windows
-	url = https://github.com/mullvad/tap-windows
 [submodule "win-split-tunnel"]
 	path = win-split-tunnel
 	url = https://github.com/mullvad/win-split-tunnel.git
