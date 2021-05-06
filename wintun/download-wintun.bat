@@ -8,9 +8,9 @@ set DEST_DIR=%~dp0%..\x86_64-pc-windows-msvc\wintun
 	rmdir /s /q .deps 2> NUL
 	mkdir .deps || goto :error
 	cd .deps || goto :error
-	call :download wintun-0.10.1.zip https://www.wintun.net/builds/wintun-0.10.1.zip ff871508b3316701fa2c9ab72b919ef23cf2683ba04bbc405df4b509aa06e368 || goto :error
+	call :download wintun.zip https://www.wintun.net/builds/wintun-0.10.4.zip bebaab454a589dd4f9c7f8f4a757553181d5bf7fb7eddcdf48811f840055fb55 || goto :error
 	echo [+] Extracting wintun.dll
-	tar -xf wintun-0.10.1.zip || goto :error
+	tar -xf wintun.zip || goto :error
 	cd .. || goto :error
 
 :verify
@@ -34,7 +34,7 @@ do if not "%%a"=="%SIG_THUMBPRINT%" goto :thumbprinterror
 	exit /b 0
 
 :download
-	echo [+] Downloading %1
+	echo [+] Downloading %1 (%2)
 	curl -#fLo %1 %2 || exit /b 1
 	echo [+] Verifying %1
 	for /f %%a in ('CertUtil -hashfile %1 SHA256 ^| findstr /r "^[0-9a-f]*$"') do if not "%%a"=="%~3" exit /b 1
