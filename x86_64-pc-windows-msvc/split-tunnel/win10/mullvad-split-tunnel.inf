@@ -8,7 +8,8 @@ Class=WFPCALLOUTS
 ClassGuid={57465043-616C-6C6F-7574-5F636C617373}
 Provider=%ManufacturerName%
 CatalogFile=mullvad-split-tunnel.cat
-DriverVer = 03/16/2021,1.0.1.0
+PnpLockdown=1
+DriverVer = 05/04/2021,1.0.2.0
 
 [DestinationDirs]
 DefaultDestDir = 12
