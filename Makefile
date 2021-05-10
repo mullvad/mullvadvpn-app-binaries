@@ -19,11 +19,19 @@ OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-serv
 
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
+UNAME_M := $(shell uname -m)
+LIBNFTNL_CFLAGS = "-g -O2 -mcmodel=large"
 ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-iproute2
 	SHARED_LIB_EXT = so*
-	TARGET_TRIPLE = "x86_64-unknown-linux-gnu"
+	TARGET_TRIPLE = "$(UNAME_M)-unknown-linux-gnu"
+	# ARM doesn't support 'mcmodel=large'
+	ifeq ($(UNAME_M),aarch64)
+		LIBNFTNL_CFLAGS = "-g -O2"
+	else ifneq (,$(findstring arm,$(UNAME_M)))
+		LIBNFTNL_CFLAGS = "-g -O2"
+	endif
 endif
 ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
@@ -138,7 +146,7 @@ libmnl:
 	./configure --enable-static --disable-shared; \
 	$(MAKE) clean; \
 	$(MAKE)
-	cp libmnl/src/.libs/libmnl.a linux/
+	cp libmnl/src/.libs/libmnl.a $(TARGET_TRIPLE)/
 
 libnftnl: libmnl
 	@echo "Building libnftnl"
@@ -146,11 +154,11 @@ libnftnl: libmnl
 	./autogen.sh; \
 	LIBMNL_LIBS="-L$(PWD)/libmnl/src/.libs -lmnl" \
 		LIBMNL_CFLAGS="-I$(PWD)/libmnl/include" \
-		CFLAGS="-g -O2 -mcmodel=large" \
+		CFLAGS=$(LIBNFTNL_CFLAGS) \
 		./configure --enable-static --disable-shared; \
 	$(MAKE) clean; \
 	$(MAKE)
-	cp libnftnl/src/.libs/libnftnl.a linux/
+	cp libnftnl/src/.libs/libnftnl.a $(TARGET_TRIPLE)/
 
 libsodium:
 	@echo "Building libsodium"
