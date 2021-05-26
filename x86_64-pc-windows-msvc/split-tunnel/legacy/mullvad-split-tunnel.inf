@@ -9,7 +9,7 @@ ClassGuid={57465043-616C-6C6F-7574-5F636C617373}
 Provider=%ManufacturerName%
 CatalogFile=mullvad-split-tunnel.cat
 PnpLockdown=1
-DriverVer = 05/04/2021,1.0.2.0
+DriverVer = 05/26/2021,1.1.0.0
 
 [DestinationDirs]
 DefaultDestDir = 12
