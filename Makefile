@@ -11,7 +11,7 @@ OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 
 # Prevents escalation attack to SYSTEM user.
 OPENSSL_CONFIG += no-autoload-config
 
-OPENVPN_VERSION = openvpn-2.5.1
+OPENVPN_VERSION = openvpn-2.5.3
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-server \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
 	--disable-def-auth --disable-pf --disable-pkcs11 --disable-lzo --disable-plugin-auth-pam \
@@ -121,10 +121,11 @@ openvpn: lz4 openssl
 	strip $(BUILD_DIR)/sbin/openvpn
 	cp $(BUILD_DIR)/sbin/openvpn $(TARGET_TRIPLE)/
 
-openvpn_windows: clean-submodules
-	rm -r "$(WINDOWS_BUILDROOT)"
+openvpn_windows: clean-submodules lz4
+	rm -rf "$(WINDOWS_BUILDROOT)"
 	mkdir -p $(WINDOWS_BUILDROOT)
 	mkdir -p $(WINDOWS_SOURCEROOT)
+	ln -sf $(PWD)/lz4 $(WINDOWS_BUILDROOT)/lz4
 	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/$(OPENSSL_VERSION)
 	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/$(OPENVPN_VERSION)
 	cd openvpn; autoreconf -f -v
