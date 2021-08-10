@@ -8,7 +8,7 @@ set DEST_DIR=%~dp0%..\x86_64-pc-windows-msvc\wintun
 	rmdir /s /q .deps 2> NUL
 	mkdir .deps || goto :error
 	cd .deps || goto :error
-	call :download wintun.zip https://www.wintun.net/builds/wintun-0.10.4.zip bebaab454a589dd4f9c7f8f4a757553181d5bf7fb7eddcdf48811f840055fb55 || goto :error
+	call :download wintun.zip https://www.wintun.net/builds/wintun-0.13.zip 34afe7d0de1fdb781af3defc0a75fd8c97daa756279b42dd6be6a1bd8ccdc7f0 || goto :error
 	echo [+] Extracting wintun.dll
 	tar -xf wintun.zip || goto :error
 	cd .. || goto :error
