@@ -2,7 +2,7 @@
 
 This repository holds our custom binaries and build scripts for third party software we need to
 bundle with the Mullvad VPN app: OpenVPN and Shadowsocks for our target platforms, `libmnl` and
-`libnftnl` for Linux, and Wintun for Windows.
+`libnftnl` for Linux, and Wintun and WireGuardNT for Windows.
 
 
 ## Security and integrity
@@ -141,8 +141,16 @@ Dependencies for building Shadowsocks:
 Only applicable to Windows.
 
 Wintun is found in `.\x86_64-pc-windows-msvc\wintun\wintun.dll`. The driver can be downloaded and verified
-by running the script `.\wintun\download-wintun.bat`. This script downloads Wintun, verifies its
+by running the script `.\wireguard\download-wintun.bat`. This script downloads Wintun, verifies its
 checksum, and makes sure that wintun.dll is correctly signed.
+
+
+## Updating WireGuardNT
+
+Only applicable to Windows.
+
+WireGuardNT is found in `.\x86_64-pc-windows-msvc\wireguard-nt`. The driver can be downloaded and verified
+by running the script `.\wireguard\download-wireguard-nt.bat`.
 
 
 ## Split tunnel driver
