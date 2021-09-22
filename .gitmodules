@@ -25,3 +25,6 @@
 [submodule "win-split-tunnel"]
 	path = win-split-tunnel
 	url = https://github.com/mullvad/win-split-tunnel.git
+[submodule "wireguard-nt"]
+	path = wireguard-nt
+	url = https://github.com/mullvad/wireguard-nt
