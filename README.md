@@ -73,7 +73,7 @@ release, one should generally follow the instructions laid out in the
 1. Sign `openvpn.exe` - Do this by copying `openvpn.exe` to the Windows machine with
    the certificate and run:
    ```bash
-   signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 \
+   signtool sign /tr https://timestamp.digicert.com /td sha256 /fd sha256 \
        /d "Mullvad VPN" \
        /du "https://github.com/mullvad/mullvadvpn-app#readme" \
        /f the_certificate.pfx \
