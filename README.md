@@ -156,9 +156,7 @@ changes are sensible, and rebase the `mullvad-patches-build` branch on top of it
 `mullvad-patches-build` should be tagged as `<original tag name>-mullvad`, for example
 `0.7-mullvad`. This tag should be signed and pushed to the fork repository.
 
-Follow the instructions in `MULLVAD_BUILD.md` to build the driver. Copy the resulting files
-`.\dist\win10\wireguard.dll` and `.\dist\wireguard.pdb` from that repo to
-`.\x86_64-pc-windows-msvc\wireguard-nt` in this repo.
+Follow the instructions in `MULLVAD_BUILD.md` in said submodule to build and sign the driver.
 
 
 ## Split tunnel driver
