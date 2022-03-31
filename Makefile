@@ -56,11 +56,9 @@ ifeq ($(TARGET),aarch64-apple-darwin)
 	CFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 	LDFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 	PLATFORM_OPENVPN_CONFIG = --target=aarch64-apple-darwin --host=aarch64-apple-darwin
-	LIBSODIUM_OPTIONS = --host=aarch64-apple-darwin
-	SHADOWSOCKS_CARGO_OPTIONS = --target=aarch64-apple-darwin
 endif
 
-.PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl libsodium shadowsocks_linux shadowsocks_macos
+.PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl
 
 help:
 	@echo "Please run a more specific target"
@@ -160,37 +158,3 @@ libnftnl: libmnl
 	$(MAKE) clean; \
 	$(MAKE)
 	cp libnftnl/src/.libs/libnftnl.a $(TARGET_TRIPLE)/
-
-libsodium:
-	@echo "Building libsodium"
-	cd libsodium; \
-	export CFLAGS="$(CFLAGS)"; \
-	./autogen.sh; \
-	./configure --disable-shared --enable-static=yes $(LIBSODIUM_OPTIONS); \
-	$(MAKE) clean; \
-	$(MAKE)
-
-shadowsocks_linux: libsodium openssl
-	@echo "Building shadowsocks"
-	cd shadowsocks-rust; \
-	unset CARGO_TARGET_DIR; \
-	SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
-		OPENSSL_STATIC=1 \
-		OPENSSL_LIB_DIR=$(BUILD_DIR)/lib \
-		OPENSSL_INCLUDE_DIR="$(BUILD_DIR)/include" \
-		CARGO_INCREMENTAL=0 \
-		cargo +stable build --no-default-features --features sodium --release --bin sslocal
-	strip shadowsocks-rust/$(RUST_RELEASE_DIR)/sslocal
-	cp shadowsocks-rust/$(RUST_RELEASE_DIR)/sslocal $(TARGET_TRIPLE)/
-
-shadowsocks_macos: libsodium
-	@echo "Building shadowsocks"
-	mkdir -p $(TARGET_TRIPLE); \
-	cd shadowsocks-rust; \
-	unset CARGO_TARGET_DIR; \
-	SODIUM_LIB_DIR=$(PWD)/libsodium/src/libsodium/.libs/ \
-		CARGO_INCREMENTAL=0 \
-		cargo +stable build $(SHADOWSOCKS_CARGO_OPTIONS) --no-default-features --features sodium \
-			--release --bin sslocal
-	strip shadowsocks-rust/$(RUST_RELEASE_DIR)/sslocal
-	cp shadowsocks-rust/$(RUST_RELEASE_DIR)/sslocal $(TARGET_TRIPLE)/
