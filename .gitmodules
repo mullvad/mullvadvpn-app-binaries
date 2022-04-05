@@ -16,12 +16,6 @@
 [submodule "libnftnl"]
 	path = libnftnl
 	url = git://git.netfilter.org/libnftnl
-[submodule "libsodium"]
-	path = libsodium
-	url = https://github.com/jedisct1/libsodium.git
-[submodule "shadowsocks-rust"]
-	path = shadowsocks-rust
-	url = https://github.com/shadowsocks/shadowsocks-rust
 [submodule "win-split-tunnel"]
 	path = win-split-tunnel
 	url = https://github.com/mullvad/win-split-tunnel.git
