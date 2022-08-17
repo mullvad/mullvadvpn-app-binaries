@@ -58,6 +58,7 @@ ifeq ($(TARGET),aarch64-unknown-linux-gnu)
 	export CC := aarch64-linux-gnu-gcc
 	OPENSSL_CONFIGURE_SCRIPT = ./Configure
 	PLATFORM_OPENSSL_CONFIG += linux-aarch64
+	PLATFORM_OPENVPN_CONFIG += --target=aarch64-linux --host=aarch64-linux
 endif
 
 .PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl
