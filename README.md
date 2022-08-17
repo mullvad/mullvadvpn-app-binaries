@@ -52,6 +52,16 @@ Building for Apple Silicon macOS is done by cross-compiling from Intel macOS by 
 make openvpn TARGET="aarch64-apple-darwin"
 ```
 
+#### Building for ARM64 Linux
+
+Follow the normal instructions, or cross-compile on x64 Linux by setting the appropriate `TARGET`:
+
+```bash
+# Install gcc for arm64
+#apt install gcc-aarch64-linux-gnu
+make openvpn TARGET="aarch64-unknown-linux-gnu"
+```
+
 ### Building for Windows
 
 Building `openvpn.exe` for Windows is done by cross-compiling from Linux using
