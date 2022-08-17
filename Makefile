@@ -17,6 +17,9 @@ OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-serv
 	--disable-def-auth --disable-pf --disable-pkcs11 --disable-lzo --disable-plugin-auth-pam \
 	--enable-lz4 --enable-crypto --enable-plugins
 
+LIBMNL_CONFIG = --enable-static --disable-shared
+LIBNFTNL_CONFIG = --enable-static --disable-shared
+
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)
@@ -59,6 +62,8 @@ ifeq ($(TARGET),aarch64-unknown-linux-gnu)
 	OPENSSL_CONFIGURE_SCRIPT = ./Configure
 	PLATFORM_OPENSSL_CONFIG += linux-aarch64
 	PLATFORM_OPENVPN_CONFIG += --target=aarch64-linux --host=aarch64-linux
+	LIBMNL_CONFIG += --target=aarch64-linux --host=aarch64-linux
+	LIBNFTNL_CONFIG += --target=aarch64-linux --host=aarch64-linux
 endif
 
 .PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl
@@ -145,7 +150,7 @@ libmnl:
 	@echo "Building libmnl"
 	cd libmnl; \
 	./autogen.sh; \
-	./configure --enable-static --disable-shared; \
+	./configure $(LIBMNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
 	cp libmnl/src/.libs/libmnl.a $(TARGET_TRIPLE)/
@@ -157,7 +162,7 @@ libnftnl: libmnl
 	LIBMNL_LIBS="-L$(PWD)/libmnl/src/.libs -lmnl" \
 		LIBMNL_CFLAGS="-I$(PWD)/libmnl/include" \
 		CFLAGS=$(LIBNFTNL_CFLAGS) \
-		./configure --enable-static --disable-shared; \
+		./configure $(LIBNFTNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
 	cp libnftnl/src/.libs/libnftnl.a $(TARGET_TRIPLE)/
