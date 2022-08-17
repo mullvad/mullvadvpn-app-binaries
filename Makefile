@@ -3,6 +3,8 @@ BUILD_DIR = $(PWD)/build
 WINDOWS_BUILDROOT = openvpn-build/generic/tmp
 WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 
+STRIP = strip
+
 OPENSSL_CONFIGURE_SCRIPT = ./config
 OPENSSL_VERSION = openssl-1.1.1j
 OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 \
@@ -59,6 +61,7 @@ endif
 
 ifeq ($(TARGET),aarch64-unknown-linux-gnu)
 	export CC := aarch64-linux-gnu-gcc
+	STRIP = aarch64-linux-gnu-strip
 	OPENSSL_CONFIGURE_SCRIPT = ./Configure
 	PLATFORM_OPENSSL_CONFIG += linux-aarch64
 	PLATFORM_OPENVPN_CONFIG += --target=aarch64-linux --host=aarch64-linux
@@ -124,7 +127,7 @@ openvpn: lz4 openssl
 	$(MAKE) clean ; \
 	$(MAKE) ; \
 	$(MAKE) install
-	strip $(BUILD_DIR)/sbin/openvpn
+	$(STRIP) $(BUILD_DIR)/sbin/openvpn
 	cp $(BUILD_DIR)/sbin/openvpn $(TARGET_TRIPLE)/
 
 openvpn_windows: clean-submodules lz4
