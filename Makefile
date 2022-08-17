@@ -26,12 +26,6 @@ ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENVPN_CONFIG = --enable-iproute2
 	SHARED_LIB_EXT = so*
 	TARGET_TRIPLE = "$(UNAME_M)-unknown-linux-gnu"
-	# ARM doesn't support 'mcmodel=large'
-	ifeq ($(UNAME_M),aarch64)
-		LIBNFTNL_CFLAGS = "-g -O2"
-	else ifneq (,$(findstring arm,$(UNAME_M)))
-		LIBNFTNL_CFLAGS = "-g -O2"
-	endif
 endif
 ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
@@ -42,11 +36,8 @@ ifneq (,$(findstring MINGW,$(UNAME_S)))
 	TARGET_TRIPLE = "x86_64-pc-windows-msvc"
 endif
 
-ifeq ($(TARGET),)
-	RUST_RELEASE_DIR = "target/release"
-else
+ifneq ($(TARGET),)
 	TARGET_TRIPLE = $(TARGET)
-	RUST_RELEASE_DIR = "target/$(TARGET)/release"
 endif
 
 ifeq ($(TARGET),aarch64-apple-darwin)
@@ -56,6 +47,17 @@ ifeq ($(TARGET),aarch64-apple-darwin)
 	CFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 	LDFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 	PLATFORM_OPENVPN_CONFIG = --target=aarch64-apple-darwin --host=aarch64-apple-darwin
+endif
+
+ifeq ($(TARGET_TRIPLE),aarch64-unknown-linux-gnu)
+	# ARM doesn't support 'mcmodel=large'
+	LIBNFTNL_CFLAGS = "-g -O2"
+endif
+
+ifeq ($(TARGET),aarch64-unknown-linux-gnu)
+	export CC := aarch64-linux-gnu-gcc
+	OPENSSL_CONFIGURE_SCRIPT = ./Configure
+	PLATFORM_OPENSSL_CONFIG += linux-aarch64
 endif
 
 .PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl
