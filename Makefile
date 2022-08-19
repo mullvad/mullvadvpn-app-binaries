@@ -53,7 +53,7 @@ ifeq ($(TARGET),aarch64-apple-darwin)
 	PLATFORM_OPENSSL_CONFIG += darwin64-arm64-cc
 	CFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 	LDFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
-	PLATFORM_OPENVPN_CONFIG = --target=aarch64-apple-darwin --host=aarch64-apple-darwin
+	PLATFORM_OPENVPN_CONFIG = --host=aarch64-apple-darwin
 endif
 
 ifeq ($(TARGET),aarch64-unknown-linux-gnu)
@@ -67,9 +67,9 @@ ifeq ($(TARGET),aarch64-unknown-linux-gnu)
 		STRIP = aarch64-linux-gnu-strip
 		OPENSSL_CONFIGURE_SCRIPT = ./Configure
 		PLATFORM_OPENSSL_CONFIG += linux-aarch64
-		PLATFORM_OPENVPN_CONFIG += --target=aarch64-linux --host=aarch64-linux
-		LIBMNL_CONFIG += --target=aarch64-linux --host=aarch64-linux
-		LIBNFTNL_CONFIG += --target=aarch64-linux --host=aarch64-linux
+		PLATFORM_OPENVPN_CONFIG += --host=aarch64-linux
+		LIBMNL_CONFIG += --host=aarch64-linux
+		LIBNFTNL_CONFIG += --host=aarch64-linux
 	endif
 endif
 
