@@ -22,7 +22,7 @@ OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-serv
 LIBMNL_CONFIG = --enable-static --disable-shared
 LIBNFTNL_CONFIG = --enable-static --disable-shared
 
-LIBNFTNL_CFLAGS = "-g -O2 -mcmodel=large"
+LIBNFTNL_CFLAGS = -g -O2
 
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
@@ -57,11 +57,6 @@ ifeq ($(TARGET),aarch64-apple-darwin)
 endif
 
 ifeq ($(TARGET),aarch64-unknown-linux-gnu)
-	# ARM doesn't support 'mcmodel=large'
-	LIBNFTNL_CFLAGS = "-g -O2"
-endif
-
-ifeq ($(TARGET),aarch64-unknown-linux-gnu)
 	ifneq ($(HOST),aarch64-unknown-linux-gnu)
 		export CC := aarch64-linux-gnu-gcc
 		STRIP = aarch64-linux-gnu-strip
@@ -71,6 +66,9 @@ ifeq ($(TARGET),aarch64-unknown-linux-gnu)
 		LIBMNL_CONFIG += --host=aarch64-linux
 		LIBNFTNL_CONFIG += --host=aarch64-linux
 	endif
+else
+	# ARM doesn't support 'mcmodel=large'
+	LIBNFTNL_CFLAGS += -mcmodel=large
 endif
 
 .PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl
@@ -170,7 +168,7 @@ libnftnl: libmnl
 	./autogen.sh; \
 	LIBMNL_LIBS="-L$(PWD)/libmnl/src/.libs -lmnl" \
 		LIBMNL_CFLAGS="-I$(PWD)/libmnl/include" \
-		CFLAGS=$(LIBNFTNL_CFLAGS) \
+		CFLAGS="$(LIBNFTNL_CFLAGS)" \
 		./configure $(LIBNFTNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
