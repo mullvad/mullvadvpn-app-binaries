@@ -22,27 +22,29 @@ OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-serv
 LIBMNL_CONFIG = --enable-static --disable-shared
 LIBNFTNL_CONFIG = --enable-static --disable-shared
 
+LIBNFTNL_CFLAGS = "-g -O2 -mcmodel=large"
+
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)
-LIBNFTNL_CFLAGS = "-g -O2 -mcmodel=large"
+
 ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-iproute2
 	SHARED_LIB_EXT = so*
-	TARGET_TRIPLE = "$(UNAME_M)-unknown-linux-gnu"
+	HOST = "$(UNAME_M)-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
 	MACOSX_DEPLOYMENT_TARGET = "10.13"
-	TARGET_TRIPLE = "x86_64-apple-darwin"
+	HOST = "x86_64-apple-darwin"
 endif
 ifneq (,$(findstring MINGW,$(UNAME_S)))
-	TARGET_TRIPLE = "x86_64-pc-windows-msvc"
+	HOST = "x86_64-pc-windows-msvc"
 endif
 
-ifneq ($(TARGET),)
-	TARGET_TRIPLE = $(TARGET)
+ifndef $(TARGET)
+	TARGET = $(HOST)
 endif
 
 ifeq ($(TARGET),aarch64-apple-darwin)
@@ -54,19 +56,21 @@ ifeq ($(TARGET),aarch64-apple-darwin)
 	PLATFORM_OPENVPN_CONFIG = --target=aarch64-apple-darwin --host=aarch64-apple-darwin
 endif
 
-ifeq ($(TARGET_TRIPLE),aarch64-unknown-linux-gnu)
+ifeq ($(TARGET),aarch64-unknown-linux-gnu)
 	# ARM doesn't support 'mcmodel=large'
 	LIBNFTNL_CFLAGS = "-g -O2"
 endif
 
 ifeq ($(TARGET),aarch64-unknown-linux-gnu)
-	export CC := aarch64-linux-gnu-gcc
-	STRIP = aarch64-linux-gnu-strip
-	OPENSSL_CONFIGURE_SCRIPT = ./Configure
-	PLATFORM_OPENSSL_CONFIG += linux-aarch64
-	PLATFORM_OPENVPN_CONFIG += --target=aarch64-linux --host=aarch64-linux
-	LIBMNL_CONFIG += --target=aarch64-linux --host=aarch64-linux
-	LIBNFTNL_CONFIG += --target=aarch64-linux --host=aarch64-linux
+	ifneq ($(HOST),aarch64-unknown-linux-gnu)
+		export CC := aarch64-linux-gnu-gcc
+		STRIP = aarch64-linux-gnu-strip
+		OPENSSL_CONFIGURE_SCRIPT = ./Configure
+		PLATFORM_OPENSSL_CONFIG += linux-aarch64
+		PLATFORM_OPENVPN_CONFIG += --target=aarch64-linux --host=aarch64-linux
+		LIBMNL_CONFIG += --target=aarch64-linux --host=aarch64-linux
+		LIBNFTNL_CONFIG += --target=aarch64-linux --host=aarch64-linux
+	endif
 endif
 
 .PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl
@@ -112,7 +116,7 @@ openssl:
 
 openvpn: lz4 openssl
 	@echo "Building OpenVPN"
-	mkdir -p $(BUILD_DIR) $(TARGET_TRIPLE)
+	mkdir -p $(BUILD_DIR) $(TARGET)
 	cd openvpn ; \
 	export MACOSX_DEPLOYMENT_TARGET="$(MACOSX_DEPLOYMENT_TARGET)" ; \
 	export CFLAGS="$(CFLAGS)"; \
@@ -128,7 +132,7 @@ openvpn: lz4 openssl
 	$(MAKE) ; \
 	$(MAKE) install
 	$(STRIP) $(BUILD_DIR)/sbin/openvpn
-	cp $(BUILD_DIR)/sbin/openvpn $(TARGET_TRIPLE)/
+	cp $(BUILD_DIR)/sbin/openvpn $(TARGET)/
 
 openvpn_windows: clean-submodules lz4
 	rm -rf "$(WINDOWS_BUILDROOT)"
@@ -156,7 +160,7 @@ libmnl:
 	./configure $(LIBMNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
-	cp libmnl/src/.libs/libmnl.a $(TARGET_TRIPLE)/
+	cp libmnl/src/.libs/libmnl.a $(TARGET)/
 
 libnftnl: libmnl
 	@echo "Building libnftnl"
@@ -168,4 +172,4 @@ libnftnl: libmnl
 		./configure $(LIBNFTNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
-	cp libnftnl/src/.libs/libnftnl.a $(TARGET_TRIPLE)/
+	cp libnftnl/src/.libs/libnftnl.a $(TARGET)/
