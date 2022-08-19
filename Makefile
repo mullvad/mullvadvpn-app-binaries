@@ -3,6 +3,8 @@ BUILD_DIR = $(PWD)/build
 WINDOWS_BUILDROOT = openvpn-build/generic/tmp
 WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 
+STRIP = strip
+
 OPENSSL_CONFIGURE_SCRIPT = ./config
 OPENSSL_VERSION = openssl-1.1.1j
 OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 \
@@ -17,36 +19,32 @@ OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-serv
 	--disable-def-auth --disable-pf --disable-pkcs11 --disable-lzo --disable-plugin-auth-pam \
 	--enable-lz4 --enable-crypto --enable-plugins
 
+LIBMNL_CONFIG = --enable-static --disable-shared
+LIBNFTNL_CONFIG = --enable-static --disable-shared
+
+LIBNFTNL_CFLAGS = -g -O2
+
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)
-LIBNFTNL_CFLAGS = "-g -O2 -mcmodel=large"
+
 ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-iproute2
 	SHARED_LIB_EXT = so*
-	TARGET_TRIPLE = "$(UNAME_M)-unknown-linux-gnu"
-	# ARM doesn't support 'mcmodel=large'
-	ifeq ($(UNAME_M),aarch64)
-		LIBNFTNL_CFLAGS = "-g -O2"
-	else ifneq (,$(findstring arm,$(UNAME_M)))
-		LIBNFTNL_CFLAGS = "-g -O2"
-	endif
+	HOST = "$(UNAME_M)-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)
 	SHARED_LIB_EXT = dylib
 	MACOSX_DEPLOYMENT_TARGET = "10.13"
-	TARGET_TRIPLE = "x86_64-apple-darwin"
+	HOST = "x86_64-apple-darwin"
 endif
 ifneq (,$(findstring MINGW,$(UNAME_S)))
-	TARGET_TRIPLE = "x86_64-pc-windows-msvc"
+	HOST = "x86_64-pc-windows-msvc"
 endif
 
-ifeq ($(TARGET),)
-	RUST_RELEASE_DIR = "target/release"
-else
-	TARGET_TRIPLE = $(TARGET)
-	RUST_RELEASE_DIR = "target/$(TARGET)/release"
+ifndef $(TARGET)
+	TARGET = $(HOST)
 endif
 
 ifeq ($(TARGET),aarch64-apple-darwin)
@@ -55,7 +53,22 @@ ifeq ($(TARGET),aarch64-apple-darwin)
 	PLATFORM_OPENSSL_CONFIG += darwin64-arm64-cc
 	CFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 	LDFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
-	PLATFORM_OPENVPN_CONFIG = --target=aarch64-apple-darwin --host=aarch64-apple-darwin
+	PLATFORM_OPENVPN_CONFIG = --host=aarch64-apple-darwin
+endif
+
+ifeq ($(TARGET),aarch64-unknown-linux-gnu)
+	ifneq ($(HOST),aarch64-unknown-linux-gnu)
+		export CC := aarch64-linux-gnu-gcc
+		STRIP = aarch64-linux-gnu-strip
+		OPENSSL_CONFIGURE_SCRIPT = ./Configure
+		PLATFORM_OPENSSL_CONFIG += linux-aarch64
+		PLATFORM_OPENVPN_CONFIG += --host=aarch64-linux
+		LIBMNL_CONFIG += --host=aarch64-linux
+		LIBNFTNL_CONFIG += --host=aarch64-linux
+	endif
+else
+	# ARM doesn't support 'mcmodel=large'
+	LIBNFTNL_CFLAGS += -mcmodel=large
 endif
 
 .PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl
@@ -101,7 +114,7 @@ openssl:
 
 openvpn: lz4 openssl
 	@echo "Building OpenVPN"
-	mkdir -p $(BUILD_DIR) $(TARGET_TRIPLE)
+	mkdir -p $(BUILD_DIR) $(TARGET)
 	cd openvpn ; \
 	export MACOSX_DEPLOYMENT_TARGET="$(MACOSX_DEPLOYMENT_TARGET)" ; \
 	export CFLAGS="$(CFLAGS)"; \
@@ -116,8 +129,8 @@ openvpn: lz4 openssl
 	$(MAKE) clean ; \
 	$(MAKE) ; \
 	$(MAKE) install
-	strip $(BUILD_DIR)/sbin/openvpn
-	cp $(BUILD_DIR)/sbin/openvpn $(TARGET_TRIPLE)/
+	$(STRIP) $(BUILD_DIR)/sbin/openvpn
+	cp $(BUILD_DIR)/sbin/openvpn $(TARGET)/
 
 openvpn_windows: clean-submodules lz4
 	rm -rf "$(WINDOWS_BUILDROOT)"
@@ -140,21 +153,23 @@ openvpn_windows: clean-submodules lz4
 
 libmnl:
 	@echo "Building libmnl"
+	mkdir -p $(TARGET)
 	cd libmnl; \
 	./autogen.sh; \
-	./configure --enable-static --disable-shared; \
+	./configure $(LIBMNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
-	cp libmnl/src/.libs/libmnl.a $(TARGET_TRIPLE)/
+	cp libmnl/src/.libs/libmnl.a $(TARGET)/
 
 libnftnl: libmnl
 	@echo "Building libnftnl"
+	mkdir -p $(TARGET)
 	cd libnftnl; \
 	./autogen.sh; \
 	LIBMNL_LIBS="-L$(PWD)/libmnl/src/.libs -lmnl" \
 		LIBMNL_CFLAGS="-I$(PWD)/libmnl/include" \
-		CFLAGS=$(LIBNFTNL_CFLAGS) \
-		./configure --enable-static --disable-shared; \
+		CFLAGS="$(LIBNFTNL_CFLAGS)" \
+		./configure $(LIBNFTNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
-	cp libnftnl/src/.libs/libnftnl.a $(TARGET_TRIPLE)/
+	cp libnftnl/src/.libs/libnftnl.a $(TARGET)/

@@ -52,6 +52,16 @@ Building for Apple Silicon macOS is done by cross-compiling from Intel macOS by 
 make openvpn TARGET="aarch64-apple-darwin"
 ```
 
+#### Building for ARM64 Linux
+
+Follow the normal instructions, or cross-compile on x64 Linux by setting the appropriate `TARGET`:
+
+```bash
+# Install gcc for arm64
+#apt install gcc-aarch64-linux-gnu
+make openvpn TARGET="aarch64-unknown-linux-gnu"
+```
+
 ### Building for Windows
 
 Building `openvpn.exe` for Windows is done by cross-compiling from Linux using
@@ -96,6 +106,16 @@ and not a random commit. Also verify that said tag is properly signed by the fol
 
 These libraries are only required for Linux and are required by our app to
 apply firewall rules. To produce the required libraries, run `make libnftnl`.
+
+#### Cross-compiling for ARM64 Linux
+
+You can cross-compile both libraries on x64 Linux by setting the appropriate `TARGET`:
+
+```bash
+# Install gcc for arm64
+#apt install gcc-aarch64-linux-gnu
+make libnftnl TARGET="aarch64-unknown-linux-gnu"
+```
 
 ## Updating Wintun
 
