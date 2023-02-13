@@ -13,11 +13,10 @@ OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 
 # Prevents escalation attack to SYSTEM user.
 OPENSSL_CONFIG += no-autoload-config
 
-OPENVPN_VERSION = openvpn-2.5.3
-OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-server \
+OPENVPN_VERSION = 2.6.0
+OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-plugin-down-root \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
-	--disable-def-auth --disable-pf --disable-pkcs11 --disable-lzo --disable-plugin-auth-pam \
-	--enable-lz4 --enable-crypto --enable-plugins
+	--disable-pkcs11 --disable-lzo --disable-plugin-auth-pam --enable-lz4 --enable-plugins
 
 LIBMNL_CONFIG = --enable-static --disable-shared
 LIBNFTNL_CONFIG = --enable-static --disable-shared
@@ -132,15 +131,17 @@ openvpn: lz4 openssl
 	$(STRIP) $(BUILD_DIR)/sbin/openvpn
 	cp $(BUILD_DIR)/sbin/openvpn $(TARGET)/
 
-openvpn_windows: clean-submodules lz4
+openvpn_windows: clean-submodules
 	rm -rf "$(WINDOWS_BUILDROOT)"
 	mkdir -p $(WINDOWS_BUILDROOT)
 	mkdir -p $(WINDOWS_SOURCEROOT)
 	ln -sf $(PWD)/lz4 $(WINDOWS_BUILDROOT)/lz4
-	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/$(OPENSSL_VERSION)
-	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/$(OPENVPN_VERSION)
+	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/openssl-$(OPENSSL_VERSION)
+	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
 	cd openvpn; autoreconf -f -v
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
+		OPENVPN_VERSION="$(OPENVPN_VERSION)" \
+		OPENSSL_VERSION="$(OPENSSL_VERSION)" \
 		EXTRA_OPENSSL_CONFIG="-static-libgcc no-shared $(OPENSSL_CONFIG)" \
 		EXTRA_TARGET_LDFLAGS="-Wl,-Bstatic" \
 		OPT_OPENVPN_CFLAGS="-O2 -flto" \
