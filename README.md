@@ -102,6 +102,12 @@ and not a random commit. Also verify that said tag is properly signed by the fol
 8657ABB260F056B1E5190839D9C4D26D0E604491
 ```
 
+or
+
+```
+7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C
+```
+
 ## `libmnl` and `libnftnl`
 
 These libraries are only required for Linux and are required by our app to
