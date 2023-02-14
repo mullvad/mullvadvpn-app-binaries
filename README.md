@@ -16,6 +16,20 @@ directly signed or has a signed tag attached to them. Upon moving a submodule to
 commit, the new commit must be cryptographically verified.
 
 
+## Container image
+
+The easiest way to build the binaries is by using the container image specified by `Dockerfile`:
+
+```bash
+podman build . -t mullvadvpn-app-binaries
+```
+
+When this is done, you can run `make` in a container to build any submodule:
+
+```bash
+podman run --rm -v .:/build:Z mullvadvpn-app-binaries /bin/sh -c 'make openvpn_windows'
+```
+
 ## OpenVPN
 
 The `openvpn` submodule is tracking our [`mullvad-patches`] branch that contain a few custom
@@ -68,15 +82,7 @@ make openvpn TARGET="aarch64-unknown-linux-gnu"
 ### Building for Windows
 
 Building `openvpn.exe` for Windows is done by cross-compiling from Linux using
-a mingw-w64 toolchain. You need to do this build on a recent Debian or Ubuntu
-release, one should generally follow the instructions laid out in the
-[OpenVPN's build system docs]. Currently, this has only been tested with Debian 9.
-
-
-1. Install the dependencies and cross-compile toolchain:
-   ```bash
-   ./setup-generic-buildsystem.6.sh
-   ```
+a mingw-w64 toolchain:
 
 1. Compile:
    ```bash
@@ -161,5 +167,4 @@ intended for.
 
 [Mullvad VPN app]: https://github.com/mullvad/mullvadvpn-app
 [`mullvad-patches`]: https://github.com/mullvad/openvpn/tree/mullvad-patches
-[OpenVPN's build system docs]: https://community.openvpn.net/openvpn/wiki/SettingUpGenericBuildsystem
 [OpenVPN's buildslave documentation]: https://community.openvpn.net/openvpn/wiki/SettingUpBuildslave
