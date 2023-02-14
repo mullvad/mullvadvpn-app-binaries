@@ -131,7 +131,7 @@ openvpn: lz4 openssl
 	$(STRIP) $(BUILD_DIR)/sbin/openvpn
 	cp $(BUILD_DIR)/sbin/openvpn $(TARGET)/
 
-openvpn_windows: clean-submodules lz4
+openvpn_windows: clean-submodules
 	rm -rf "$(WINDOWS_BUILDROOT)"
 	mkdir -p $(WINDOWS_BUILDROOT)
 	mkdir -p $(WINDOWS_SOURCEROOT)
@@ -140,6 +140,8 @@ openvpn_windows: clean-submodules lz4
 	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
 	cd openvpn; autoreconf -f -v
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
+		OPENVPN_VERSION="$(OPENVPN_VERSION)" \
+		OPENSSL_VERSION="$(OPENSSL_VERSION)" \
 		EXTRA_OPENSSL_CONFIG="-static-libgcc no-shared $(OPENSSL_CONFIG)" \
 		EXTRA_TARGET_LDFLAGS="-Wl,-Bstatic" \
 		OPT_OPENVPN_CFLAGS="-O2 -flto" \
