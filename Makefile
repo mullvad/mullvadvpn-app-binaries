@@ -16,7 +16,7 @@ OPENSSL_CONFIG += no-autoload-config
 OPENVPN_VERSION = 2.6.0
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-plugin-down-root \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
-	--disable-pkcs11 --disable-lzo --disable-plugin-auth-pam --enable-lz4 --enable-plugins
+	--disable-pkcs11 --disable-lzo --disable-plugin-auth-pam --disable-lz4 --enable-plugins
 
 LIBMNL_CONFIG = --enable-static --disable-shared
 LIBNFTNL_CONFIG = --enable-static --disable-shared
@@ -30,11 +30,9 @@ UNAME_M := $(shell uname -m)
 ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-iproute2
-	SHARED_LIB_EXT = so*
 	HOST = "$(UNAME_M)-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)
-	SHARED_LIB_EXT = dylib
 	MACOSX_DEPLOYMENT_TARGET = "10.13"
 	HOST = "x86_64-apple-darwin"
 endif
@@ -70,7 +68,7 @@ else
 	LIBNFTNL_CFLAGS += -mcmodel=large
 endif
 
-.PHONY: help clean clean-build clean-submodules lz4 openssl openvpn openvpn_windows libmnl libnftnl
+.PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl
 
 help:
 	@echo "Please run a more specific target"
@@ -83,19 +81,8 @@ clean-build:
 	rm -rf $(BUILD_DIR)
 
 clean-submodules:
-	cd lz4; $(MAKE) clean
 	cd openssl; [ -e "Makefile" ] && $(MAKE) clean || true
 	cd openvpn; [ -e "Makefile" ] && $(MAKE) clean || true
-
-lz4:
-	@echo "Building lz4"
-	mkdir -p $(BUILD_DIR)
-	cd lz4 ; \
-	$(MAKE) clean ; \
-	PREFIX=$(BUILD_DIR) LDFLAGS="$(LDFLAGS)" CFLAGS="$(CFLAGS)" $(MAKE) install LIBS="-all-static"
-	# lz4 always installs a shared library. Unless it's removed
-	# OpenVPN will link against it.
-	rm $(BUILD_DIR)/lib/liblz4.*$(SHARED_LIB_EXT)
 
 openssl:
 	@echo "Building OpenSSL"
@@ -111,7 +98,7 @@ openssl:
 	$(MAKE) build_libs build_apps ; \
 	$(MAKE) install_sw
 
-openvpn: lz4 openssl
+openvpn: openssl
 	@echo "Building OpenVPN"
 	mkdir -p $(BUILD_DIR) $(TARGET)
 	cd openvpn ; \
@@ -122,9 +109,7 @@ openvpn: lz4 openssl
 		--prefix=$(BUILD_DIR) \
 		$(OPENVPN_CONFIG) $(PLATFORM_OPENVPN_CONFIG) \
 		OPENSSL_CFLAGS="-I$(BUILD_DIR)/include" \
-		LZ4_CFLAGS="-I$(BUILD_DIR)/include" \
-		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread -ldl" \
-		LZ4_LIBS="-L$(BUILD_DIR)/lib -llz4" ; \
+		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread -ldl" ; \
 	$(MAKE) clean ; \
 	$(MAKE) ; \
 	$(MAKE) install
@@ -135,7 +120,6 @@ openvpn_windows: clean-submodules
 	rm -rf "$(WINDOWS_BUILDROOT)"
 	mkdir -p $(WINDOWS_BUILDROOT)
 	mkdir -p $(WINDOWS_SOURCEROOT)
-	ln -sf $(PWD)/lz4 $(WINDOWS_BUILDROOT)/lz4
 	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/openssl-$(OPENSSL_VERSION)
 	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
 	cd openvpn; autoreconf -f -v
