@@ -6,14 +6,14 @@ WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 STRIP = strip
 
 OPENSSL_CONFIGURE_SCRIPT = ./config
-OPENSSL_VERSION = openssl-1.1.1j
+OPENSSL_VERSION = 1.1.1t
 OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 \
 	no-md4 no-seed no-cast no-camellia no-idea enable-ec_nistp_64_gcc_128 enable-rfc3779
 # To stop OpenSSL from loading C:\etc\ssl\openvpn.cnf (and equivalent) on start.
 # Prevents escalation attack to SYSTEM user.
 OPENSSL_CONFIG += no-autoload-config
 
-OPENVPN_VERSION = openvpn-2.6.0
+OPENVPN_VERSION = 2.6.0
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-plugin-down-root \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
 	--disable-pkcs11 --disable-lzo --disable-plugin-auth-pam --enable-lz4 --enable-plugins
@@ -136,8 +136,8 @@ openvpn_windows: clean-submodules lz4
 	mkdir -p $(WINDOWS_BUILDROOT)
 	mkdir -p $(WINDOWS_SOURCEROOT)
 	ln -sf $(PWD)/lz4 $(WINDOWS_BUILDROOT)/lz4
-	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/$(OPENSSL_VERSION)
-	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/$(OPENVPN_VERSION)
+	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/openssl-$(OPENSSL_VERSION)
+	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
 	cd openvpn; autoreconf -f -v
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		EXTRA_OPENSSL_CONFIG="-static-libgcc no-shared $(OPENSSL_CONFIG)" \
