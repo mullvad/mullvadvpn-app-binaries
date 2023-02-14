@@ -99,17 +99,8 @@ release, one should generally follow the instructions laid out in the
 ## OpenSSL
 OpenSSL is a transitive dependency for OpenVPN.
 When bumping the submodule to a new OpenSSL release. Make sure to only point to a release tag,
-and not a random commit. Also verify that said tag is properly signed by the following gpg key:
-
-```
-8657ABB260F056B1E5190839D9C4D26D0E604491
-```
-
-or
-
-```
-7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C
-```
+and not a random commit. Also verify that said tag is properly signed by one of the keys listed
+here: https://www.openssl.org/community/otc.html
 
 ## `libmnl` and `libnftnl`
 
