@@ -122,7 +122,7 @@ openvpn_windows: clean-submodules
 	mkdir -p $(WINDOWS_SOURCEROOT)
 	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/openssl-$(OPENSSL_VERSION)
 	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
-	cd openvpn; autoreconf -f -v
+	cd openvpn; autoreconf -fiv
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		OPENVPN_VERSION="$(OPENVPN_VERSION)" \
 		OPENSSL_VERSION="$(OPENSSL_VERSION)" \
