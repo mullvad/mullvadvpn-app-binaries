@@ -126,6 +126,7 @@ openvpn_windows: clean-submodules
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		OPENVPN_VERSION="$(OPENVPN_VERSION)" \
 		OPENSSL_VERSION="$(OPENSSL_VERSION)" \
+		TAP_CFLAGS="-I$(PWD)/x86_64-pc-windows-msvc/tap-windows" \
 		EXTRA_OPENSSL_CONFIG="-static-libgcc no-shared $(OPENSSL_CONFIG)" \
 		EXTRA_TARGET_LDFLAGS="-Wl,-Bstatic" \
 		OPT_OPENVPN_CFLAGS="-O2 -flto" \
