@@ -24,12 +24,6 @@ The easiest way to build the binaries is by using the container image specified 
 podman build . -t mullvadvpn-app-binaries
 ```
 
-When this is done, you can run `make` in a container to build any submodule:
-
-```bash
-./container.sh "make openvpn_windows"
-```
-
 ## OpenVPN
 
 The `openvpn` submodule is tracking our [`mullvad-patches`] branch that contain a few custom
@@ -50,43 +44,39 @@ Then tag the new head of `mullvad-patches` as `<original tag name>-mullvad`, for
 Repeat the process above for the `openvpn-build`. Note: The upstream tags are not signed in
 `openvpn-build`.
 
-### Building on Linux + macOS
+### Building on macOS
 
 Before building, one has to ensure that the build host has all the required
 dependencies installed, as outlined in [OpenVPN's buildslave documentation].
 
 Building the OpenVPN binary should be as simple as running `make openvpn`.
 
-#### Linux
+#### ARM64/Apple Silicon
 
-Currently, the Linux distro of choice for building OpenVPN currently is Debian
-9, issues have been experienced on other distributions.
-
-#### Building for ARM macOS
-
-Building for Apple Silicon macOS is done by cross-compiling from Intel macOS by adding the `TARGET="aarch64-apple-darwin"` option, i.e.:
+Cross-compile from Intel macOS by adding the `TARGET="aarch64-apple-darwin"` option, i.e.:
 ```bash
 make openvpn TARGET="aarch64-apple-darwin"
 ```
 
-#### Building for ARM64 Linux
+### Building on Linux
 
-Follow the normal instructions, or cross-compile on x64 Linux by setting the appropriate `TARGET`:
+Simply run `./container-run.sh make openvpn`.
+
+#### ARM64
+
+Cross-compile on x64 Linux by setting the appropriate `TARGET`:
 
 ```bash
-# Install gcc for arm64
-#apt install gcc-aarch64-linux-gnu
-make openvpn TARGET="aarch64-unknown-linux-gnu"
+./container-run.sh make openvpn TARGET="aarch64-unknown-linux-gnu"
 ```
 
 ### Building for Windows
 
-Building `openvpn.exe` for Windows is done by cross-compiling from Linux using
-a mingw-w64 toolchain:
+Building `openvpn.exe` for Windows is done by cross-compiling from Linux using the container image:
 
 1. Compile:
    ```bash
-   make openvpn_windows
+   ./container-run.sh make openvpn_windows
    ```
 
 1. Sign `openvpn.exe` - Do this by copying `openvpn.exe` to the Windows machine with
@@ -111,16 +101,14 @@ here: https://www.openssl.org/community/otc.html
 ## `libmnl` and `libnftnl`
 
 These libraries are only required for Linux and are required by our app to
-apply firewall rules. To produce the required libraries, run `make libnftnl`.
+apply firewall rules. To produce the required libraries, run `./container-run.sh make libnftnl`.
 
-#### Cross-compiling for ARM64 Linux
+#### ARM64
 
-You can cross-compile both libraries on x64 Linux by setting the appropriate `TARGET`:
+Cross-compile both libraries on x64 Linux by setting the appropriate `TARGET`:
 
 ```bash
-# Install gcc for arm64
-#apt install gcc-aarch64-linux-gnu
-make libnftnl TARGET="aarch64-unknown-linux-gnu"
+./container-run.sh make libnftnl TARGET="aarch64-unknown-linux-gnu"
 ```
 
 ## Updating Wintun
