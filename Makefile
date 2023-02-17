@@ -16,7 +16,8 @@ OPENSSL_CONFIG += no-autoload-config
 OPENVPN_VERSION = 2.6.0
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-plugin-down-root \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
-	--disable-pkcs11 --disable-lzo --disable-plugin-auth-pam --disable-lz4 --enable-plugins
+	--disable-pkcs11 --disable-lzo --disable-plugin-auth-pam --disable-lz4 --enable-plugins \
+	--enable-comp-stub
 
 LIBMNL_CONFIG = --enable-static --disable-shared
 LIBNFTNL_CONFIG = --enable-static --disable-shared
