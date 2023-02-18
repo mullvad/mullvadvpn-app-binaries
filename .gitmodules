@@ -1,9 +1,6 @@
 [submodule "openvpn"]
 	path = openvpn
 	url = https://github.com/mullvad/openvpn
-[submodule "lz4"]
-	path = lz4
-	url = https://github.com/lz4/lz4
 [submodule "openssl"]
 	path = openssl
 	url = git://git.openssl.org/openssl.git
@@ -22,3 +19,6 @@
 [submodule "wireguard-nt"]
 	path = wireguard-nt
 	url = https://github.com/mullvad/wireguard-nt
+[submodule "libnl"]
+	path = libnl
+	url = https://github.com/thom311/libnl
