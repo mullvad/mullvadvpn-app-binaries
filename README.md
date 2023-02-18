@@ -76,7 +76,7 @@ Building `openvpn.exe` for Windows is done by cross-compiling from Linux using t
 
 1. Compile:
    ```bash
-   ./container-run.sh make openvpn_windows
+   ./container-run.sh make openvpn TARGET=x86_64-pc-windows-msvc
    ```
 
 1. Sign `openvpn.exe` - Do this by copying `openvpn.exe` to the Windows machine with

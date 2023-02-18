@@ -1,7 +1,5 @@
 
 BUILD_DIR = $(PWD)/build
-WINDOWS_BUILDROOT = openvpn-build/generic/tmp
-WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 
 STRIP = strip
 
@@ -12,6 +10,8 @@ OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 
 # To stop OpenSSL from loading C:\etc\ssl\openvpn.cnf (and equivalent) on start.
 # Prevents escalation attack to SYSTEM user.
 OPENSSL_CONFIG += no-autoload-config
+
+OPENSSL_LIBS = -L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread -ldl
 
 OPENVPN_VERSION = 2.6.0
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-plugin-down-root \
@@ -29,8 +29,6 @@ UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)
 
 ifeq ($(UNAME_S),Linux)
-	PLATFORM_OPENSSL_CONFIG = -static
-	PLATFORM_OPENVPN_CONFIG = --enable-dco --disable-iproute2
 	HOST = "$(UNAME_M)-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)
@@ -50,8 +48,12 @@ ifeq ($(TARGET),aarch64-apple-darwin)
 	OPENSSL_CONFIGURE_SCRIPT = ./Configure
 	PLATFORM_OPENSSL_CONFIG += darwin64-arm64-cc
 	CFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
-	LDFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 	PLATFORM_OPENVPN_CONFIG = --host=aarch64-apple-darwin
+endif
+
+ifneq (,$(findstring unknown-linux-gnu,$(TARGET)))
+	PLATFORM_OPENSSL_CONFIG = -static
+	PLATFORM_OPENVPN_CONFIG = --enable-dco --disable-iproute2
 endif
 
 ifeq ($(TARGET),aarch64-unknown-linux-gnu)
@@ -67,6 +69,23 @@ ifeq ($(TARGET),aarch64-unknown-linux-gnu)
 else
 	# ARM doesn't support 'mcmodel=large'
 	LIBNFTNL_CFLAGS += -mcmodel=large
+endif
+
+ifeq ($(TARGET),x86_64-pc-windows-msvc)
+	OPENSSL_CONFIGURE_SCRIPT = ./Configure
+	CTARGET = x86_64-w64-mingw32
+	PLATFORM_OPENSSL_CONFIG += -static-libgcc no-capieng
+	PLATFORM_OPENSSL_CONFIG += --cross-compile-prefix=$(CTARGET)- mingw64
+
+	OPENSSL_LIBS = -L$(BUILD_DIR)/lib -lssl -lcrypto -lws2_32 -lgdi32
+
+	PLATFORM_OPENVPN_CONFIG += --host=x86_64-w64-mingw32
+	PLATFORM_OPENVPN_CONFIG += --build=x86_64-pc-linux-gnu
+
+	export LDFLAGS := -Wl,-Bstatic
+	OPENVPN_CFLAGS = -O2 -flto
+
+	BIN_EXT = .exe
 endif
 
 .PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl
@@ -109,36 +128,19 @@ openvpn: openssl libnl
 	./configure \
 		--prefix=$(BUILD_DIR) \
 		$(OPENVPN_CONFIG) $(PLATFORM_OPENVPN_CONFIG) \
+		CFLAGS="$(OPENVPN_CFLAGS)" \
 		LIBNL_GENL_CFLAGS="-I$(PWD)/libnl/include" \
 		LIBNL_GENL_LIBS="-L$(PWD)/libnl/lib/.libs -lnl-genl-3" \
+		TAP_CFLAGS="-I$(PWD)/x86_64-pc-windows-msvc/tap-windows" \
 		OPENSSL_CFLAGS="-I$(BUILD_DIR)/include" \
-		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread -ldl" ; \
+		OPENSSL_LIBS="$(OPENSSL_LIBS)" ; \
 	$(MAKE) clean ; \
 	$(MAKE) ; \
 	$(MAKE) install
 	$(STRIP) $(BUILD_DIR)/sbin/openvpn
-	cp $(BUILD_DIR)/sbin/openvpn $(TARGET)/
+	cp $(BUILD_DIR)/sbin/openvpn$(BIN_EXT) $(TARGET)/
 
-openvpn_windows: clean-submodules
-	rm -rf "$(WINDOWS_BUILDROOT)"
-	mkdir -p $(WINDOWS_BUILDROOT)
-	mkdir -p $(WINDOWS_SOURCEROOT)
-	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/openssl-$(OPENSSL_VERSION)
-	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
-	cd openvpn; autoreconf -fiv
-	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
-		OPENVPN_VERSION="$(OPENVPN_VERSION)" \
-		OPENSSL_VERSION="$(OPENSSL_VERSION)" \
-		TAP_CFLAGS="-I$(PWD)/x86_64-pc-windows-msvc/tap-windows" \
-		EXTRA_OPENSSL_CONFIG="-static-libgcc no-shared $(OPENSSL_CONFIG)" \
-		EXTRA_TARGET_LDFLAGS="-Wl,-Bstatic" \
-		OPT_OPENVPN_CFLAGS="-O2 -flto" \
-		CHOST=x86_64-w64-mingw32 \
-		CBUILD=x86_64-pc-linux-gnu \
-		DO_STATIC=1 \
-		IMAGEROOT="$(BUILD_DIR)" \
-		./openvpn-build/generic/build
-	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
+ifneq (,$(findstring unknown-linux-gnu,$(TARGET)))
 
 libnl:
 	@echo "Building libnl"
@@ -170,3 +172,13 @@ libnftnl: libmnl
 	$(MAKE) clean; \
 	$(MAKE)
 	cp libnftnl/src/.libs/libnftnl.a $(TARGET)/
+
+else
+
+libnl:
+
+libmnl:
+
+libnftnl:
+
+endif
