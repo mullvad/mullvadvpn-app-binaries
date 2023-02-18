@@ -16,7 +16,7 @@ OPENSSL_CONFIG += no-autoload-config
 OPENVPN_VERSION = 2.6.0
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-plugin-down-root \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
-	--disable-pkcs11 --disable-plugin-auth-pam --enable-plugins \
+	--disable-pkcs11 --disable-plugin-auth-pam --enable-plugins --enable-dco \
 	--disable-lzo --disable-lz4 --enable-comp-stub
 
 LIBMNL_CONFIG = --enable-static --disable-shared
@@ -30,7 +30,7 @@ UNAME_M := $(shell uname -m)
 
 ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENSSL_CONFIG = -static
-	PLATFORM_OPENVPN_CONFIG = --enable-iproute2
+	PLATFORM_OPENVPN_CONFIG = --disable-iproute2
 	HOST = "$(UNAME_M)-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)

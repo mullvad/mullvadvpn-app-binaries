@@ -12,6 +12,7 @@ LABEL org.opencontainers.image.licenses=GPL-3.0
 RUN apt-get update -y && apt-get install -y \
     git curl wget unzip bzip2 \
     pkg-config make autoconf libtool \
+    libnl-genl-3-dev \
     gcc iproute2 \
     gcc-aarch64-linux-gnu \
     gcc-mingw-w64 mingw-w64-common \
