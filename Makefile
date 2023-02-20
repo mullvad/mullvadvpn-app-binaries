@@ -22,6 +22,8 @@ OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-plug
 LIBMNL_CONFIG = --enable-static --disable-shared
 LIBNFTNL_CONFIG = --enable-static --disable-shared
 
+LIBNL_CONFIG = --enable-static --disable-shared --enable-cli=no --disable-debug
+
 LIBNFTNL_CFLAGS = -g -O2
 
 # You likely need GNU Make for this to work.
@@ -35,7 +37,7 @@ ifeq ($(UNAME_S),Linux)
 endif
 ifeq ($(UNAME_S),Darwin)
 	MACOSX_DEPLOYMENT_TARGET = "10.13"
-	HOST = "x86_64-apple-darwin"
+	HOST = "$(UNAME_M)-apple-darwin"
 endif
 ifneq (,$(findstring MINGW,$(UNAME_S)))
 	HOST = "x86_64-pc-windows-msvc"
@@ -47,11 +49,13 @@ endif
 
 ifeq ($(TARGET),aarch64-apple-darwin)
 	MACOSX_DEPLOYMENT_TARGET = "11.0"
-	OPENSSL_CONFIGURE_SCRIPT = ./Configure
-	PLATFORM_OPENSSL_CONFIG += darwin64-arm64-cc
-	CFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
-	LDFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
-	PLATFORM_OPENVPN_CONFIG = --host=aarch64-apple-darwin
+	ifneq ($(HOST),aarch64-apple-darwin)
+		OPENSSL_CONFIGURE_SCRIPT = ./Configure
+		PLATFORM_OPENSSL_CONFIG += darwin64-arm64-cc
+		CFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
+		LDFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
+		PLATFORM_OPENVPN_CONFIG = --host=aarch64-apple-darwin
+	endif
 endif
 
 ifeq ($(TARGET),aarch64-unknown-linux-gnu)
@@ -63,6 +67,7 @@ ifeq ($(TARGET),aarch64-unknown-linux-gnu)
 		PLATFORM_OPENVPN_CONFIG += --host=aarch64-linux
 		LIBMNL_CONFIG += --host=aarch64-linux
 		LIBNFTNL_CONFIG += --host=aarch64-linux
+		LIBNL_CONFIG += --host=aarch64-linux
 	endif
 else
 	# ARM doesn't support 'mcmodel=large'
@@ -140,11 +145,13 @@ openvpn_windows: clean-submodules
 		./openvpn-build/generic/build
 	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
 
+ifneq (,$(findstring unknown-linux-gnu,$(TARGET)))
+
 libnl:
 	@echo "Building libnl"
 	cd libnl; \
 	./autogen.sh; \
-	./configure --enable-static --disable-shared --enable-cli=no --disable-debug; \
+	./configure $(LIBNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
 
@@ -170,3 +177,13 @@ libnftnl: libmnl
 	$(MAKE) clean; \
 	$(MAKE)
 	cp libnftnl/src/.libs/libnftnl.a $(TARGET)/
+
+else
+
+libnl:
+
+libmnl:
+
+libnftnl:
+
+endif
