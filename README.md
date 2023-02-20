@@ -33,6 +33,9 @@ B62E6A2B4E56570B7BDC6BE01D829EFECA562812
 Then tag the new head of `mullvad-patches` as `<original tag name>-mullvad`, for example
 `v2.4.8-mullvad`. This tag should be signed and pushed to our fork repository.
 
+Repeat the process above for the `openvpn-build`. Note: The upstream tags are not signed in
+`openvpn-build`.
+
 ### Building on Linux + macOS
 
 Before building, one has to ensure that the build host has all the required
@@ -96,11 +99,8 @@ release, one should generally follow the instructions laid out in the
 ## OpenSSL
 OpenSSL is a transitive dependency for OpenVPN.
 When bumping the submodule to a new OpenSSL release. Make sure to only point to a release tag,
-and not a random commit. Also verify that said tag is properly signed by the following gpg key:
-
-```
-8657ABB260F056B1E5190839D9C4D26D0E604491
-```
+and not a random commit. Also verify that said tag is properly signed by one of the keys listed
+here: https://www.openssl.org/community/otc.html
 
 ## `libmnl` and `libnftnl`
 
