@@ -111,6 +111,12 @@ Cross-compile both libraries on x64 Linux by setting the appropriate `TARGET`:
 ./container-run.sh make libnftnl TARGET="aarch64-unknown-linux-gnu"
 ```
 
+## libnl
+
+`libnl` is a dependency of OpenVPN, specifically DCO on Linux.
+When bumping the submodule, point to a release tag, and verify that the tag is signed by
+`49EA7C670E0850E7419514F629C2366E4DFC5728`.
+
 ## Updating Wintun
 
 Only applicable to Windows.
