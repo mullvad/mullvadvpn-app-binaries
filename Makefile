@@ -30,7 +30,7 @@ UNAME_M := $(shell uname -m)
 
 ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENSSL_CONFIG = -static
-	PLATFORM_OPENVPN_CONFIG = --enable-iproute2
+	PLATFORM_OPENVPN_CONFIG = --enable-dco --disable-iproute2
 	HOST = "$(UNAME_M)-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)
@@ -69,7 +69,7 @@ else
 	LIBNFTNL_CFLAGS += -mcmodel=large
 endif
 
-.PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl
+.PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl
 
 help:
 	@echo "Please run a more specific target"
@@ -99,16 +99,18 @@ openssl:
 	$(MAKE) build_libs build_apps ; \
 	$(MAKE) install_sw
 
-openvpn: openssl
+openvpn: openssl libnl
 	@echo "Building OpenVPN"
 	mkdir -p $(BUILD_DIR) $(TARGET)
 	cd openvpn ; \
 	export MACOSX_DEPLOYMENT_TARGET="$(MACOSX_DEPLOYMENT_TARGET)" ; \
 	export CFLAGS="$(CFLAGS)"; \
-	autoreconf -i -v ; \
+	autoreconf -f -i -v ; \
 	./configure \
 		--prefix=$(BUILD_DIR) \
 		$(OPENVPN_CONFIG) $(PLATFORM_OPENVPN_CONFIG) \
+		LIBNL_GENL_CFLAGS="-I$(PWD)/libnl/include" \
+		LIBNL_GENL_LIBS="-L$(PWD)/libnl/lib/.libs -lnl-genl-3" \
 		OPENSSL_CFLAGS="-I$(BUILD_DIR)/include" \
 		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread -ldl" ; \
 	$(MAKE) clean ; \
@@ -137,6 +139,14 @@ openvpn_windows: clean-submodules
 		IMAGEROOT="$(BUILD_DIR)" \
 		./openvpn-build/generic/build
 	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
+
+libnl:
+	@echo "Building libnl"
+	cd libnl; \
+	./autogen.sh; \
+	./configure --enable-static --disable-shared --enable-cli=no --disable-debug; \
+	$(MAKE) clean; \
+	$(MAKE)
 
 libmnl:
 	@echo "Building libmnl"
