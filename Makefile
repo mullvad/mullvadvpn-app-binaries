@@ -16,7 +16,8 @@ OPENSSL_CONFIG += no-autoload-config
 OPENVPN_VERSION = 2.6.0
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-plugin-down-root \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
-	--disable-pkcs11 --disable-lzo --disable-plugin-auth-pam --disable-lz4 --enable-plugins
+	--disable-pkcs11 --disable-plugin-auth-pam --enable-plugins \
+	--disable-lzo --disable-lz4 --enable-comp-stub
 
 LIBMNL_CONFIG = --enable-static --disable-shared
 LIBNFTNL_CONFIG = --enable-static --disable-shared
@@ -122,7 +123,7 @@ openvpn_windows: clean-submodules
 	mkdir -p $(WINDOWS_SOURCEROOT)
 	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/openssl-$(OPENSSL_VERSION)
 	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
-	cd openvpn; autoreconf -f -v
+	cd openvpn; autoreconf -fiv
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		OPENVPN_VERSION="$(OPENVPN_VERSION)" \
 		OPENSSL_VERSION="$(OPENSSL_VERSION)" \
