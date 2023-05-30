@@ -7,6 +7,7 @@
 [submodule "openvpn-build"]
 	path = openvpn-build
 	url = https://github.com/mullvad/openvpn-build.git
+	branch = mullvad-patches
 [submodule "libmnl"]
 	path = libmnl
 	url = git://git.netfilter.org/libmnl

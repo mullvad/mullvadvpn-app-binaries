@@ -47,13 +47,32 @@ Repeat the process above for the `openvpn-build`. Note: The upstream tags are no
 ### Building on macOS
 
 Before building, one has to ensure that the build host has all the required
-dependencies installed, as outlined in [OpenVPN's buildslave documentation].
+dependencies installed:
 
-Building the OpenVPN binary should be as simple as running `make openvpn`.
+``` bash
+brew install automake autoconf libtool pkg-config
+```
 
-#### ARM64/Apple Silicon
+Building the OpenVPN binary should be as simple as running:
 
-Cross-compile from Intel macOS by adding the `TARGET="aarch64-apple-darwin"` option, i.e.:
+``` bash
+make openvpn
+```
+
+##### Cross compiling
+
+###### Intel (x86)
+
+Cross-compile from ARM64/Apple Silicon to Intel (x86) by adding the `TARGET="x86_64-apple-darwin"` option, i.e.:
+
+```bash
+make openvpn TARGET="x86_64-apple-darwin"
+```
+
+###### ARM64/Apple Silicon
+
+Cross-compile from Intel (x86) to ARM64/Apple Silicon by adding the `TARGET="aarch64-apple-darwin"` option, i.e.:
+
 ```bash
 make openvpn TARGET="aarch64-apple-darwin"
 ```
