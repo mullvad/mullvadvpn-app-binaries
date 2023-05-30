@@ -6,7 +6,7 @@ WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 STRIP = strip
 
 OPENSSL_CONFIGURE_SCRIPT = ./config
-OPENSSL_VERSION = 1.1.1t
+OPENSSL_VERSION = 3.0.8
 OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 \
 	no-md4 no-seed no-cast no-camellia no-idea enable-ec_nistp_64_gcc_128 enable-rfc3779
 # To stop OpenSSL from loading C:\etc\ssl\openvpn.cnf (and equivalent) on start.
