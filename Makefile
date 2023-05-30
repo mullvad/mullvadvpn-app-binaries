@@ -6,12 +6,13 @@ WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 STRIP = strip
 
 OPENSSL_CONFIGURE_SCRIPT = ./config
-OPENSSL_VERSION = 1.1.1t
+OPENSSL_VERSION = 3.0.8
 OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 no-rc5 \
 	no-md4 no-seed no-cast no-camellia no-idea enable-ec_nistp_64_gcc_128 enable-rfc3779
 # To stop OpenSSL from loading C:\etc\ssl\openvpn.cnf (and equivalent) on start.
 # Prevents escalation attack to SYSTEM user.
 OPENSSL_CONFIG += no-autoload-config
+OPENSSL_LIB_DIR = $(BUILD_DIR)/lib64
 
 OPENVPN_VERSION = 2.6.0
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-plugin-down-root \
@@ -36,6 +37,7 @@ ifeq ($(UNAME_S),Linux)
 	HOST = "$(UNAME_M)-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)
+	OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
 	MACOSX_DEPLOYMENT_TARGET = "10.13"
 	HOST = "$(UNAME_M)-apple-darwin"
 endif
@@ -117,7 +119,7 @@ openvpn: openssl libnl
 		LIBNL_GENL_CFLAGS="-I$(PWD)/libnl/include" \
 		LIBNL_GENL_LIBS="-L$(PWD)/libnl/lib/.libs -lnl-genl-3" \
 		OPENSSL_CFLAGS="-I$(BUILD_DIR)/include" \
-		OPENSSL_LIBS="-L$(BUILD_DIR)/lib -lssl -lcrypto -lpthread -ldl" ; \
+		OPENSSL_LIBS="-L$(OPENSSL_LIB_DIR) -lssl -lcrypto -lpthread -ldl" ; \
 	$(MAKE) clean ; \
 	$(MAKE) ; \
 	$(MAKE) install
