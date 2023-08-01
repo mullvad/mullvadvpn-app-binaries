@@ -37,9 +37,11 @@ ifeq ($(UNAME_S),Linux)
 	HOST = "$(UNAME_M)-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)
-	OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
-	MACOSX_DEPLOYMENT_TARGET = "10.13"
-	HOST = "$(UNAME_M)-apple-darwin"
+	ifeq ($(UNAME_M), arm64)
+		HOST = "aarch64-apple-darwin"
+	else
+		HOST = "$(UNAME_M)-apple-darwin"
+	endif
 endif
 ifneq (,$(findstring MINGW,$(UNAME_S)))
 	HOST = "x86_64-pc-windows-msvc"
@@ -49,26 +51,21 @@ ifndef $(TARGET)
 	TARGET = $(HOST)
 endif
 
-ifeq ($(TARGET),aarch64-apple-darwin)
-	MACOSX_DEPLOYMENT_TARGET = "11.0"
-	ifneq ($(HOST),aarch64-apple-darwin)
-		OPENSSL_CONFIGURE_SCRIPT = ./Configure
-		PLATFORM_OPENSSL_CONFIG += darwin64-arm64-cc
-		CFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
-		LDFLAGS = -arch arm64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
-		PLATFORM_OPENVPN_CONFIG = --host=aarch64-apple-darwin
+ifeq ($(UNAME_S),Darwin)
+	OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
+	OPENSSL_CONFIGURE_SCRIPT = ./Configure
+	PLATFORM_OPENVPN_CONFIG = --host=$(TARGET)
+	ifeq ($(TARGET),x86_64-apple-darwin)
+		TARGET_ARCH = "x86_64"
+		MACOSX_DEPLOYMENT_TARGET = "10.13"
 	endif
-endif
-
-ifeq ($(TARGET),x86_64-apple-darwin)
-	MACOSX_DEPLOYMENT_TARGET = "11.0"
-	ifneq ($(HOST),	x86_64-apple-darwin)
-		OPENSSL_CONFIGURE_SCRIPT = ./Configure
-		PLATFORM_OPENSSL_CONFIG += darwin64-x86_64-cc
-		CFLAGS = -arch x86_64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
-		LDFLAGS = -arch x86_64 -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
-		PLATFORM_OPENVPN_CONFIG = --host=x86_64-apple-darwin
+	ifeq ($(TARGET),aarch64-apple-darwin)
+		TARGET_ARCH = "arm64"
+		MACOSX_DEPLOYMENT_TARGET = "11.0"
 	endif
+	PLATFORM_OPENSSL_CONFIG += "darwin64-$(TARGET_ARCH)-cc"
+	CFLAGS = -arch $(TARGET_ARCH) -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
+	LDFLAGS = -arch $(TARGET_ARCH) -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 endif
 
 ifeq ($(TARGET),aarch64-unknown-linux-gnu)
