@@ -39,7 +39,11 @@ endif
 ifeq ($(UNAME_S),Darwin)
 	OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
 	MACOSX_DEPLOYMENT_TARGET = "10.13"
-	HOST = "$(UNAME_M)-apple-darwin"
+	ifeq ($(UNAME_M), arm64)
+		HOST = "aarch64-apple-darwin"
+	else
+		HOST = "$(UNAME_M)-apple-darwin"
+	endif
 endif
 ifneq (,$(findstring MINGW,$(UNAME_S)))
 	HOST = "x86_64-pc-windows-msvc"
