@@ -31,9 +31,8 @@ LIBNFTNL_CFLAGS = -g -O2
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)
 
+# Compute host platform
 ifeq ($(UNAME_S),Linux)
-	PLATFORM_OPENSSL_CONFIG = -static
-	PLATFORM_OPENVPN_CONFIG = --enable-dco --disable-iproute2
 	HOST = "$(UNAME_M)-unknown-linux-gnu"
 endif
 ifeq ($(UNAME_S),Darwin)
@@ -47,10 +46,12 @@ ifneq (,$(findstring MINGW,$(UNAME_S)))
 	HOST = "x86_64-pc-windows-msvc"
 endif
 
+# Compute target platform
 ifndef $(TARGET)
 	TARGET = $(HOST)
 endif
 
+# Compute build flags for host+target combination
 ifeq ($(UNAME_S),Darwin)
 	OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
 	OPENSSL_CONFIGURE_SCRIPT = ./Configure
@@ -68,21 +69,25 @@ ifeq ($(UNAME_S),Darwin)
 	LDFLAGS = -arch $(TARGET_ARCH) -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 endif
 
-ifeq ($(TARGET),aarch64-unknown-linux-gnu)
-	OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
-	ifneq ($(HOST),aarch64-unknown-linux-gnu)
-		export CC := aarch64-linux-gnu-gcc
-		STRIP = aarch64-linux-gnu-strip
-		OPENSSL_CONFIGURE_SCRIPT = ./Configure
-		PLATFORM_OPENSSL_CONFIG += linux-aarch64
-		PLATFORM_OPENVPN_CONFIG += --host=aarch64-linux
-		LIBMNL_CONFIG += --host=aarch64-linux
-		LIBNFTNL_CONFIG += --host=aarch64-linux
-		LIBNL_CONFIG += --host=aarch64-linux
+ifeq ($(UNAME_S),Linux)
+	PLATFORM_OPENSSL_CONFIG = -static
+	PLATFORM_OPENVPN_CONFIG = --enable-dco --disable-iproute2
+	ifeq ($(TARGET),aarch64-unknown-linux-gnu)
+		OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
+		ifneq ($(HOST),aarch64-unknown-linux-gnu)
+			export CC := aarch64-linux-gnu-gcc
+			STRIP = aarch64-linux-gnu-strip
+			OPENSSL_CONFIGURE_SCRIPT = ./Configure
+			PLATFORM_OPENSSL_CONFIG += linux-aarch64
+			PLATFORM_OPENVPN_CONFIG += --host=aarch64-linux
+			LIBMNL_CONFIG += --host=aarch64-linux
+			LIBNFTNL_CONFIG += --host=aarch64-linux
+			LIBNL_CONFIG += --host=aarch64-linux
+		endif
+	else
+		# ARM doesn't support 'mcmodel=large'
+		LIBNFTNL_CFLAGS += -mcmodel=large
 	endif
-else
-	# ARM doesn't support 'mcmodel=large'
-	LIBNFTNL_CFLAGS += -mcmodel=large
 endif
 
 .PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl
