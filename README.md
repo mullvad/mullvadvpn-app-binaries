@@ -90,7 +90,7 @@ Building `openvpn.exe` for Windows is done by cross-compiling from Linux using t
    ```
 
 1. Sign `openvpn.exe` - Do this by copying `openvpn.exe` to the Windows machine with
-   the certificate and run:
+   the certificate and run the following in *powershell*:
    ```bash
    signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 \
        /d "Mullvad VPN" \
