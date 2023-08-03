@@ -47,14 +47,24 @@ Repeat the process above for the `openvpn-build`. Note: The upstream tags are no
 ### Building on macOS
 
 Before building, one has to ensure that the build host has all the required
-dependencies installed, as outlined in [OpenVPN's buildslave documentation].
+dependencies installed:
 
-Building the OpenVPN binary should be as simple as running `make openvpn`.
+``` bash
+brew install automake autoconf libtool pkg-config
+```
 
-#### ARM64/Apple Silicon
+Building the OpenVPN binary for your current architecture should be as simple as running:
 
-Cross-compile from Intel macOS by adding the `TARGET="aarch64-apple-darwin"` option, i.e.:
+``` bash
+make openvpn
+```
+
+#### Cross compiling
+
+To cross compile for another architecture than your host's, just supply the `TARGET` argument:
+
 ```bash
+make openvpn TARGET="x86_64-apple-darwin"
 make openvpn TARGET="aarch64-apple-darwin"
 ```
 
@@ -80,7 +90,7 @@ Building `openvpn.exe` for Windows is done by cross-compiling from Linux using t
    ```
 
 1. Sign `openvpn.exe` - Do this by copying `openvpn.exe` to the Windows machine with
-   the certificate and run:
+   the certificate and run the following in *powershell*:
    ```bash
    signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 \
        /d "Mullvad VPN" \
