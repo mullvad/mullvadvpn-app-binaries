@@ -14,7 +14,7 @@ OPENSSL_CONFIG = no-weak-ssl-ciphers no-ssl3 no-ssl3-method no-bf no-rc2 no-rc4 
 OPENSSL_CONFIG += no-autoload-config
 OPENSSL_LIB_DIR = $(BUILD_DIR)/lib64
 
-OPENVPN_VERSION = 2.6.0
+OPENVPN_VERSION = 2.6.8
 OPENVPN_CONFIG = --enable-static --disable-shared --disable-debug --disable-plugin-down-root \
 	--disable-management --disable-port-share --disable-systemd --disable-dependency-tracking \
 	--disable-pkcs11 --disable-plugin-auth-pam --enable-plugins \
