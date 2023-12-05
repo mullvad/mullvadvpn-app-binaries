@@ -49,24 +49,23 @@ Repeat the process above for the `openvpn-build`. Note: The upstream tags are no
 Before building, one has to ensure that the build host has all the required
 dependencies installed:
 
-``` bash
+```bash
 brew install automake autoconf libtool pkg-config
 ```
 
-Building the OpenVPN binary for your current architecture should be as simple as running:
+Building the OpenVPN binary should be as simple as running:
 
-``` bash
-make openvpn
+```bash
+make openvpn TARGET="aarch64-apple-darwin"
 ```
 
-#### Cross compiling
-
-To cross compile for another architecture than your host's, just supply the `TARGET` argument:
+or
 
 ```bash
 make openvpn TARGET="x86_64-apple-darwin"
-make openvpn TARGET="aarch64-apple-darwin"
 ```
+
+depending on the desired target architecture.
 
 ### Building on Linux
 
