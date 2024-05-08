@@ -1,7 +1,7 @@
 
 BUILD_DIR = $(PWD)/build
-WINDOWS_BUILDROOT = openvpn-build/generic/tmp
-WINDOWS_SOURCEROOT = openvpn-build/generic/sources
+OPENVPN_WINDOWS_BUILDROOT = openvpn-build/generic/tmp
+OPENVPN_WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 
 STRIP = strip
 
@@ -141,11 +141,11 @@ openvpn: openssl libnl
 	cp $(BUILD_DIR)/sbin/openvpn $(TARGET)/
 
 openvpn_windows: clean-submodules
-	rm -rf "$(WINDOWS_BUILDROOT)"
-	mkdir -p $(WINDOWS_BUILDROOT)
-	mkdir -p $(WINDOWS_SOURCEROOT)
-	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/openssl-$(OPENSSL_VERSION)
-	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
+	rm -rf "$(OPENVPN_WINDOWS_BUILDROOT)"
+	mkdir -p $(OPENVPN_WINDOWS_BUILDROOT)
+	mkdir -p $(OPENVPN_WINDOWS_SOURCEROOT)
+	ln -sf $(PWD)/openssl $(OPENVPN_WINDOWS_BUILDROOT)/openssl-$(OPENSSL_VERSION)
+	ln -sf $(PWD)/openvpn $(OPENVPN_WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
 	cd openvpn; autoreconf -fiv
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		OPENVPN_VERSION="$(OPENVPN_VERSION)" \
