@@ -53,6 +53,7 @@ endif
 
 # Compute build flags for host+target combination
 ifeq ($(UNAME_S),Darwin)
+	export GOOS := darwin
 	OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
 	OPENSSL_CONFIGURE_SCRIPT = ./Configure
 	PLATFORM_OPENVPN_CONFIG = --host=$(TARGET)
@@ -70,6 +71,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 ifeq ($(UNAME_S),Linux)
+	export GOOS := linux
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-dco --disable-iproute2
 	ifeq ($(TARGET),aarch64-unknown-linux-gnu)
@@ -90,12 +92,24 @@ ifeq ($(UNAME_S),Linux)
 	endif
 endif
 
-.PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl
+ifneq (,$(findstring windows,$(TARGET)))
+	export GOOS := windows
+	export GOARCH := amd64
+endif
+
+ifneq (,$(findstring aarch64,$(TARGET)))
+	export GOARCH := arm64
+else
+	export GOARCH := amd64
+endif
+
+.PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl apisocks5
 
 help:
 	@echo "Please run a more specific target"
 	@echo "'make openvpn' will build a statically linked OpenVPN binary"
 	@echo "'make libnftnl' will build static libraries of libmnl and libnftnl and copy to linux/"
+	@echo "'make apisocks5' will build the apisocks5 program and copy to ./$TARGET/"
 
 clean: clean-build clean-submodules
 
@@ -160,6 +174,11 @@ openvpn_windows: clean-submodules
 		IMAGEROOT="$(BUILD_DIR)" \
 		./openvpn-build/generic/build
 	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
+
+apisocks5:
+	cd apisocks5;\
+		go build -o ../$(TARGET)/ &&\
+		$(STRIP) ../$(TARGET)/apisocks5*
 
 ifneq (,$(findstring unknown-linux-gnu,$(TARGET)))
 
