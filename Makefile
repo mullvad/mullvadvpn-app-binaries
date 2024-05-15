@@ -53,7 +53,6 @@ endif
 
 # Compute build flags for host+target combination
 ifeq ($(UNAME_S),Darwin)
-	export GOOS := darwin
 	OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
 	OPENSSL_CONFIGURE_SCRIPT = ./Configure
 	PLATFORM_OPENVPN_CONFIG = --host=$(TARGET)
@@ -71,7 +70,6 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 ifeq ($(UNAME_S),Linux)
-	export GOOS := linux
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-dco --disable-iproute2
 	ifeq ($(TARGET),aarch64-unknown-linux-gnu)
@@ -90,17 +88,6 @@ ifeq ($(UNAME_S),Linux)
 		# ARM doesn't support 'mcmodel=large'
 		LIBNFTNL_CFLAGS += -mcmodel=large
 	endif
-endif
-
-ifneq (,$(findstring windows,$(TARGET)))
-	export GOOS := windows
-	export GOARCH := amd64
-endif
-
-ifneq (,$(findstring aarch64,$(TARGET)))
-	export GOARCH := arm64
-else
-	export GOARCH := amd64
 endif
 
 .PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl apisocks5
@@ -175,10 +162,33 @@ openvpn_windows: clean-submodules
 		./openvpn-build/generic/build
 	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
 
+ifeq ($(TARGET),x86_64-pc-windows-msvc)
+
 apisocks5:
-	cd apisocks5;\
-		go build -o ../$(TARGET)/ &&\
-		$(STRIP) ../$(TARGET)/apisocks5*
+	$(MAKE) -C apisocks5 release-windows-amd64
+	cp apisocks5/apisocks5.exe ./$(TARGET)/
+
+else
+
+# map betweeen our target format and the apisocks5 makefile rules
+ifeq ($(TARGET),x86_64-unknown-linux-gnu)
+APISOCKS_TARGET := release-linux-amd64
+endif
+ifeq ($(TARGET),aarch64-unknown-linux-gnu)
+APISOCKS_TARGET := release-linux-arm64
+endif
+ifeq ($(TARGET),x86_64-apple-darwin)
+APISOCKS_TARGET := release-darwin-amd64
+endif
+ifeq ($(TARGET),aarch64-apple-darwin)
+APISOCKS_TARGET := release-darwin-arm64
+endif
+
+apisocks5:
+	$(MAKE) -C apisocks5 $(APISOCKS_TARGET)
+	cp apisocks5/apisocks5 ./$(TARGET)/
+
+endif
 
 ifneq (,$(findstring unknown-linux-gnu,$(TARGET)))
 
@@ -190,6 +200,7 @@ libnl:
 	$(MAKE) clean; \
 	$(MAKE)
 
+.PHONY: libmnl
 libmnl:
 	@echo "Building libmnl"
 	mkdir -p $(TARGET)
