@@ -1,9 +1,9 @@
 # To build the image:
 # podman build . -t mullvadvpn-app-binaries
 
-# Debian 10 is the oldest supported distro. It has the oldest glibc that we support
-# This checksum points to a 10.13-slim image.
-FROM debian@sha256:557ee531b81ce380d012d83b7bb56211572e5d6088d3e21a3caef7d7ed7f718b
+# Debian 11 is the oldest supported distro. It has the oldest glibc that we support.
+# This checksum points to a 11.6-slim image.
+FROM debian@sha256:77f46c1cf862290e750e913defffb2828c889d291a93bdd10a7a0597720948fc
 
 LABEL org.opencontainers.image.source=https://github.com/mullvad/mullvadvpn-app-binaries
 LABEL org.opencontainers.image.description="Mullvad VPN app extra binaries build container"
