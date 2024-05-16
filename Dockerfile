@@ -20,18 +20,12 @@ RUN apt-get update -y && apt-get install -y \
 
 
 # Install the Go compiler
-RUN if [ "$(uname -m)" = "x86_64" ]; then \
-        curl -fLO https://go.dev/dl/go1.22.3.linux-amd64.tar.gz &&\
-        echo "8920ea521bad8f6b7bc377b4824982e011c19af27df88a815e3586ea895f1b36  go1.22.3.linux-amd64.tar.gz" \
-            | sha256sum --check - && \
-        tar -C /usr/local/ -xzf go1.22.3.linux-amd64.tar.gz; \
-    elif [ "$(uname -m)" = "aarch64" ]; then \
-        curl -fLO https://go.dev/dl/go1.22.3.linux-arm64.tar.gz &&\
-        echo "6c33e52a5b26e7aa021b94475587fce80043a727a54ceb0eee2f9fc160646434  go1.22.3.linux-arm64.tar.gz" \
-            | sha256sum --check - && \
-        tar -C /usr/local/ -xzf go1.22.3.linux-arm64.tar.gz; \
-    fi
 ENV PATH=$PATH:/usr/local/go/bin
-RUN go version
+ENV GO_FILENAME=go1.22.3.linux-amd64.tar.gz
+ENV GO_FILEHASH=8920ea521bad8f6b7bc377b4824982e011c19af27df88a815e3586ea895f1b36
+RUN curl -fLO https://go.dev/dl/${GO_FILENAME} &&\
+    echo "${GO_FILEHASH}  ${GO_FILENAME}" | sha256sum --check - &&\
+    tar -C /usr/local/ -xzf go1.22.3.linux-amd64.tar.gz &&\
+    go version
 
 WORKDIR /build
