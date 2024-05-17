@@ -53,7 +53,7 @@ endif
 
 # Compute build flags for host+target combination
 ifeq ($(UNAME_S),Darwin)
-	export GOOS := darwin
+	GOOS = darwin
 	OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
 	OPENSSL_CONFIGURE_SCRIPT = ./Configure
 	PLATFORM_OPENVPN_CONFIG = --host=$(TARGET)
@@ -71,7 +71,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 ifeq ($(UNAME_S),Linux)
-	export GOOS := linux
+	GOOS = linux
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-dco --disable-iproute2
 	ifeq ($(TARGET),aarch64-unknown-linux-gnu)
@@ -93,14 +93,14 @@ ifeq ($(UNAME_S),Linux)
 endif
 
 ifneq (,$(findstring windows,$(TARGET)))
-	export GOOS := windows
-	export GOARCH := amd64
+	GOOS = windows
+	GOARCH = amd64
 endif
 
 ifneq (,$(findstring aarch64,$(TARGET)))
-	export GOARCH := arm64
+	GOARCH = arm64
 else
-	export GOARCH := amd64
+	GOARCH = amd64
 endif
 
 .PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl apisocks5
@@ -177,7 +177,7 @@ openvpn_windows: clean-submodules
 
 apisocks5:
 	cd apisocks5;\
-		go build -o ../$(TARGET)/ &&\
+		GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ../$(TARGET)/ &&\
 		$(STRIP) ../$(TARGET)/apisocks5*
 
 ifneq (,$(findstring unknown-linux-gnu,$(TARGET)))
