@@ -24,6 +24,7 @@ The easiest way to build the binaries is by using the container image specified 
 podman build . -t mullvadvpn-app-binaries
 ```
 
+
 ## OpenVPN
 
 The `openvpn` submodule is tracking our [`mullvad-patches`] branch that contain a few custom
@@ -100,12 +101,29 @@ Building `openvpn.exe` for Windows is done by cross-compiling from Linux using t
    ```
 
 
-
 ## OpenSSL
 OpenSSL is a transitive dependency for OpenVPN.
 When bumping the submodule to a new OpenSSL release. Make sure to only point to a release tag,
 and not a random commit. Also verify that said tag is properly signed by one of the keys listed
 here: https://www.openssl.org/community/otc.html
+
+
+## apisocks5
+This is a small SOCKS5 proxy designed to be used in conjunction with the Mullvad VPN app for
+accessing the Mullvad API from restricted locations.
+See [mullvad/apisocks5](https://github.com/mullvad/apisocks5).
+
+Build instructions:
+```bash
+# on linux (x86_64)
+./container-run.sh make apisocks5 TARGET="x86_64-unknown-linux-gnu"
+./container-run.sh make apisocks5 TARGET="aarch64-unknown-linux-gnu"
+./container-run.sh make apisocks5 TARGET="x86_64-pc-windows-msvc"
+
+# on macos
+# TODO: build instructions for x86 and arm
+```
+
 
 ## `libmnl` and `libnftnl`
 
@@ -120,11 +138,13 @@ Cross-compile both libraries on x64 Linux by setting the appropriate `TARGET`:
 ./container-run.sh make libnftnl TARGET="aarch64-unknown-linux-gnu"
 ```
 
+
 ## libnl
 
 `libnl` is a dependency of OpenVPN, specifically DCO on Linux.
 When bumping the submodule, point to a release tag, and verify that the tag is signed by
 `49EA7C670E0850E7419514F629C2366E4DFC5728`.
+
 
 ## Updating Wintun
 
