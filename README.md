@@ -119,9 +119,8 @@ Build instructions:
 ./container-run.sh make apisocks5 TARGET="x86_64-unknown-linux-gnu"
 ./container-run.sh make apisocks5 TARGET="aarch64-unknown-linux-gnu"
 ./container-run.sh make apisocks5 TARGET="x86_64-pc-windows-msvc"
-
-# on macos
-# TODO: build instructions for x86 and arm
+./container-run.sh make apisocks5 TARGET="x86_64-apple-darwin"
+./container-run.sh make apisocks5 TARGET="aarch64-apple-darwin"
 ```
 
 

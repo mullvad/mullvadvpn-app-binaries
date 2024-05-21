@@ -25,7 +25,7 @@ ENV GO_FILENAME=go1.22.3.linux-amd64.tar.gz
 ENV GO_FILEHASH=8920ea521bad8f6b7bc377b4824982e011c19af27df88a815e3586ea895f1b36
 RUN curl -fLO https://go.dev/dl/${GO_FILENAME} &&\
     echo "${GO_FILEHASH}  ${GO_FILENAME}" | sha256sum --check - &&\
-    tar -C /usr/local/ -xzf go1.22.3.linux-amd64.tar.gz &&\
+    tar -C /usr/local/ -xzf ${GO_FILENAME} &&\
     go version
 
 WORKDIR /build
