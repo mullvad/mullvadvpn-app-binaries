@@ -179,6 +179,8 @@ openvpn_windows: clean-submodules
 	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
 
 apisocks5:
+	# GOOS and GOARCH enable cross-compiling
+	# ldflags -s and -w produce a stipped binary (https://pkg.go.dev/cmd/link)
 	cd apisocks5;\
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags="-s -w" -o ../$(TARGET)/
 
