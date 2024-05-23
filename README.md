@@ -123,6 +123,8 @@ Build instructions:
 ./container-run.sh make apisocks5 TARGET="aarch64-apple-darwin"
 ```
 
+When bumping the submodule to a new apisocks5 release. Make sure to only point to a release tag,
+and not a random commit. Also verify that said tag is properly signed by a trusted party at Mullvad.
 
 ## `libmnl` and `libnftnl`
 
