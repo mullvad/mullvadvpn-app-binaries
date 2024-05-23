@@ -1,7 +1,7 @@
 
 BUILD_DIR = $(PWD)/build
-WINDOWS_BUILDROOT = openvpn-build/generic/tmp
-WINDOWS_SOURCEROOT = openvpn-build/generic/sources
+OPENVPN_WINDOWS_BUILDROOT = openvpn-build/generic/tmp
+OPENVPN_WINDOWS_SOURCEROOT = openvpn-build/generic/sources
 
 STRIP = strip
 
@@ -90,12 +90,29 @@ ifeq ($(UNAME_S),Linux)
 	endif
 endif
 
-.PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl
+ifneq (,$(findstring darwin,$(TARGET)))
+	GOOS = darwin
+endif
+ifneq (,$(findstring linux,$(TARGET)))
+	GOOS = linux
+endif
+ifneq (,$(findstring windows,$(TARGET)))
+	GOOS = windows
+endif
+
+ifneq (,$(findstring aarch64,$(TARGET)))
+	GOARCH = arm64
+else
+	GOARCH = amd64
+endif
+
+.PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl apisocks5
 
 help:
 	@echo "Please run a more specific target"
 	@echo "'make openvpn' will build a statically linked OpenVPN binary"
 	@echo "'make libnftnl' will build static libraries of libmnl and libnftnl and copy to linux/"
+	@echo "'make apisocks5' will build the apisocks5 program and copy to ./$TARGET/"
 
 clean: clean-build clean-submodules
 
@@ -141,11 +158,11 @@ openvpn: openssl libnl
 	cp $(BUILD_DIR)/sbin/openvpn $(TARGET)/
 
 openvpn_windows: clean-submodules
-	rm -rf "$(WINDOWS_BUILDROOT)"
-	mkdir -p $(WINDOWS_BUILDROOT)
-	mkdir -p $(WINDOWS_SOURCEROOT)
-	ln -sf $(PWD)/openssl $(WINDOWS_BUILDROOT)/openssl-$(OPENSSL_VERSION)
-	ln -sf $(PWD)/openvpn $(WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
+	rm -rf "$(OPENVPN_WINDOWS_BUILDROOT)"
+	mkdir -p $(OPENVPN_WINDOWS_BUILDROOT)
+	mkdir -p $(OPENVPN_WINDOWS_SOURCEROOT)
+	ln -sf $(PWD)/openssl $(OPENVPN_WINDOWS_BUILDROOT)/openssl-$(OPENSSL_VERSION)
+	ln -sf $(PWD)/openvpn $(OPENVPN_WINDOWS_BUILDROOT)/openvpn-$(OPENVPN_VERSION)
 	cd openvpn; autoreconf -fiv
 	EXTRA_OPENVPN_CONFIG="$(OPENVPN_CONFIG)" \
 		OPENVPN_VERSION="$(OPENVPN_VERSION)" \
@@ -160,6 +177,12 @@ openvpn_windows: clean-submodules
 		IMAGEROOT="$(BUILD_DIR)" \
 		./openvpn-build/generic/build
 	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
+
+apisocks5:
+	# GOOS and GOARCH enable cross-compiling
+	# ldflags -s and -w produce a stipped binary (https://pkg.go.dev/cmd/link)
+	cd apisocks5;\
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags="-s -w" -o ../$(TARGET)/
 
 ifneq (,$(findstring unknown-linux-gnu,$(TARGET)))
 

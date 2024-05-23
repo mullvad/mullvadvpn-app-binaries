@@ -22,3 +22,6 @@
 [submodule "libnl"]
 	path = libnl
 	url = https://github.com/thom311/libnl
+[submodule "apisocks5"]
+	path = apisocks5
+	url = https://github.com/mullvad/apisocks5.git
