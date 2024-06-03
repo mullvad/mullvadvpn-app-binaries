@@ -2,7 +2,6 @@
 setlocal
 
 set SIG_THUMBPRINT=DF98E075A012ED8C86FBCF14854B8F9555CB3D45
-set DEST_DIR=%~dp0%..\x86_64-pc-windows-msvc\wintun
 
 :getwintun
 	rmdir /s /q .deps 2> NUL
@@ -13,17 +12,8 @@ set DEST_DIR=%~dp0%..\x86_64-pc-windows-msvc\wintun
 	tar -xf wintun.zip || goto :error
 	cd .. || goto :error
 
-:verify
-	echo [+] Verifying wintun.dll signature
-	signtool verify /v /pa .deps\wintun\bin\amd64\wintun.dll || goto :error
-	for /f %%a in ('powershell -command "(Get-AuthenticodeSignature -FilePath .deps\wintun\bin\amd64\wintun.dll).SignerCertificate.Thumbprint"') ^
-do if not "%%a"=="%SIG_THUMBPRINT%" goto :thumbprinterror
-
-:movefile
-	echo [+] Moving wintun.dll to %DEST_DIR%
-	move /y .deps\wintun\bin\amd64\wintun.dll %DEST_DIR%\wintun.dll || goto :error
-	echo [+] Moving wintun.h to %DEST_DIR%
-	move /y .deps\wintun\include\wintun.h %DEST_DIR%\wintun.h || goto :error
+	call :verify_and_copy x86_64 amd64 || goto :error
+	call :verify_and_copy aarch64 arm64 || goto :error
 
 :cleanup
 	echo [+] Cleaning up temporary files
@@ -32,6 +22,20 @@ do if not "%%a"=="%SIG_THUMBPRINT%" goto :thumbprinterror
 :success
 	echo [+] Success.
 	exit /b 0
+
+:verify_and_copy
+	set DEST_DIR=%~dp0..\%1-pc-windows-msvc\wintun
+	set ARCH=%2
+	echo [+] Verifying wintun.dll signature
+	signtool verify /v /pa .deps\wintun\bin\%ARCH%\wintun.dll || goto :error
+	powershell -command "if ((Get-AuthenticodeSignature -FilePath .deps\wintun\bin\${env:ARCH}\wintun.dll).SignerCertificate.Thumbprint -ne $env:SIG_THUMBPRINT) { exit 1 }" || goto :thumbprinterror
+
+	mkdir %DEST_DIR%
+	echo [+] Moving wintun.dll to %DEST_DIR%
+	move /y .deps\wintun\bin\%ARCH%\wintun.dll %DEST_DIR%\wintun.dll || goto :error
+	echo [+] Moving wintun.h to %DEST_DIR%
+	copy /y .deps\wintun\include\wintun.h %DEST_DIR%\wintun.h || goto :error
+	goto :eof
 
 :download
 	echo [+] Downloading %1 (%2)
