@@ -215,6 +215,7 @@ libnftnl: libmnl
 		./configure $(LIBNFTNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
+	$(STRIP) libnftnl/src/.libs/libnftnl.a --strip-debug ; \
 	cp libnftnl/src/.libs/libnftnl.a $(TARGET)/
 
 else
