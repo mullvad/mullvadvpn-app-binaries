@@ -1,27 +1,27 @@
 [submodule "openvpn"]
 	path = openvpn
-	url = https://github.com/mullvad/openvpn
+	url = https://github.com/mullvad/openvpn.git
 [submodule "openssl"]
 	path = openssl
-	url = git://git.openssl.org/openssl.git
+	url = https://github.com/openssl/openssl.git
 [submodule "openvpn-build"]
 	path = openvpn-build
 	url = https://github.com/mullvad/openvpn-build.git
 [submodule "libmnl"]
 	path = libmnl
-	url = git://git.netfilter.org/libmnl
+	url = git://git.netfilter.org/libmnl.git
 [submodule "libnftnl"]
 	path = libnftnl
-	url = git://git.netfilter.org/libnftnl
+	url = git://git.netfilter.org/libnftnl.git
 [submodule "win-split-tunnel"]
 	path = win-split-tunnel
 	url = https://github.com/mullvad/win-split-tunnel.git
 [submodule "wireguard-nt"]
 	path = wireguard-nt
-	url = https://github.com/mullvad/wireguard-nt
+	url = https://github.com/mullvad/wireguard-nt.git
 [submodule "libnl"]
 	path = libnl
-	url = https://github.com/thom311/libnl
+	url = https://github.com/thom311/libnl.git
 [submodule "apisocks5"]
 	path = apisocks5
 	url = https://github.com/mullvad/apisocks5.git
