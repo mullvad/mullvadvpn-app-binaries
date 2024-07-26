@@ -119,6 +119,7 @@ Build instructions:
 ./container-run.sh make apisocks5 TARGET="x86_64-unknown-linux-gnu"
 ./container-run.sh make apisocks5 TARGET="aarch64-unknown-linux-gnu"
 ./container-run.sh make apisocks5 TARGET="x86_64-pc-windows-msvc"
+./container-run.sh make apisocks5 TARGET="aarch64-pc-windows-msvc"
 ./container-run.sh make apisocks5 TARGET="x86_64-apple-darwin"
 ./container-run.sh make apisocks5 TARGET="aarch64-apple-darwin"
 ```
@@ -151,8 +152,8 @@ When bumping the submodule, point to a release tag, and verify that the tag is s
 
 Only applicable to Windows.
 
-Wintun is found in `.\x86_64-pc-windows-msvc\wintun\wintun.dll`. The driver can be downloaded and verified
-by running the script `.\wireguard\download-wintun.bat`. This script downloads Wintun, verifies its
+Wintun is found in `.\<arch>-pc-windows-msvc\wintun\wintun.dll`. The driver can be downloaded and verified
+by running the script `.\wireguard\download-wintun.cmd`. This script downloads Wintun, verifies its
 checksum, and makes sure that wintun.dll is correctly signed.
 
 
@@ -160,7 +161,7 @@ checksum, and makes sure that wintun.dll is correctly signed.
 
 Only applicable to Windows.
 
-WireGuardNT can be found in `.\x86_64-pc-windows-msvc\wireguard-nt`. The `wireguard-nt`
+WireGuardNT can be found in `.\<arch>-pc-windows-msvc\wireguard-nt`. The `wireguard-nt`
 submodule contains a [fork](https://github.com/mullvad/wireguard-nt) that fixes multihop tunnels.
 To update it, pull the new tag from https://git.zx2c4.com/wireguard-nt, manually verify that the
 changes are sensible, and rebase the `mullvad-patches-build` branch on top of it. The new head of
@@ -179,7 +180,7 @@ The driver is developed by us, and is represented here as a submodule named `win
 
 Instructions for building and signing the driver are provided in said submodule.
 
-The built and signed driver, and associated files, reside under `x86_64-pc-windows-msvc\split-tunnel`.
+The built and signed driver, and associated files, reside under `<arch>\split-tunnel`.
 
 
 ## Storage of binaries
