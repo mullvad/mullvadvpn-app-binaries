@@ -127,6 +127,20 @@ Build instructions:
 When bumping the submodule to a new apisocks5 release. Make sure to only point to a release tag,
 and not a random commit. Also verify that said tag is properly signed by a trusted party at Mullvad.
 
+### Windows
+
+`apisocks5.exe` must be signed before being committed to this repository:
+
+```
+signtool sign \
+   /tr http://timestamp.digicert.com \
+   /td sha256 /fd sha256 \
+   /sha1 "<certificate-sha1-thumbprint>" \
+   /v apisocks5.dll
+```
+
+`signtool` is available in the Windows SDK.
+
 ## `libmnl` and `libnftnl`
 
 These libraries are only required for Linux and are required by our app to
