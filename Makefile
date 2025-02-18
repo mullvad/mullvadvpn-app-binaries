@@ -90,29 +90,12 @@ ifeq ($(UNAME_S),Linux)
 	endif
 endif
 
-ifneq (,$(findstring darwin,$(TARGET)))
-	GOOS = darwin
-endif
-ifneq (,$(findstring linux,$(TARGET)))
-	GOOS = linux
-endif
-ifneq (,$(findstring windows,$(TARGET)))
-	GOOS = windows
-endif
-
-ifneq (,$(findstring aarch64,$(TARGET)))
-	GOARCH = arm64
-else
-	GOARCH = amd64
-endif
-
-.PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl apisocks5
+.PHONY: help clean clean-build clean-submodules openssl openvpn openvpn_windows libmnl libnftnl libnl
 
 help:
 	@echo "Please run a more specific target"
 	@echo "'make openvpn' will build a statically linked OpenVPN binary"
 	@echo "'make libnftnl' will build static libraries of libmnl and libnftnl and copy to linux/"
-	@echo "'make apisocks5' will build the apisocks5 program and copy to ./$TARGET/"
 
 clean: clean-build clean-submodules
 
@@ -177,12 +160,6 @@ openvpn_windows: clean-submodules
 		IMAGEROOT="$(BUILD_DIR)" \
 		./openvpn-build/generic/build
 	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
-
-apisocks5:
-	# GOOS and GOARCH enable cross-compiling
-	# ldflags -s and -w produce a stipped binary (https://pkg.go.dev/cmd/link)
-	cd apisocks5;\
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags="-s -w" -o ../$(TARGET)/
 
 ifneq (,$(findstring unknown-linux-gnu,$(TARGET)))
 

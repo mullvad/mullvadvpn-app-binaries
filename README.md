@@ -108,39 +108,6 @@ and not a random commit. Also verify that said tag is properly signed by one of 
 here: https://www.openssl.org/community/otc.html
 
 
-## apisocks5
-This is a small SOCKS5 proxy designed to be used in conjunction with the Mullvad VPN app for
-accessing the Mullvad API from restricted locations.
-See [mullvad/apisocks5](https://github.com/mullvad/apisocks5).
-
-Build instructions:
-```bash
-# on linux (x86_64)
-./container-run.sh make apisocks5 TARGET="x86_64-unknown-linux-gnu"
-./container-run.sh make apisocks5 TARGET="aarch64-unknown-linux-gnu"
-./container-run.sh make apisocks5 TARGET="x86_64-pc-windows-msvc"
-./container-run.sh make apisocks5 TARGET="aarch64-pc-windows-msvc"
-./container-run.sh make apisocks5 TARGET="x86_64-apple-darwin"
-./container-run.sh make apisocks5 TARGET="aarch64-apple-darwin"
-```
-
-When bumping the submodule to a new apisocks5 release. Make sure to only point to a release tag,
-and not a random commit. Also verify that said tag is properly signed by a trusted party at Mullvad.
-
-### Windows
-
-`apisocks5.exe` must be signed before being committed to this repository:
-
-```
-signtool sign \
-   /tr http://timestamp.digicert.com \
-   /td sha256 /fd sha256 \
-   /sha1 "<certificate-sha1-thumbprint>" \
-   /v apisocks5.dll
-```
-
-`signtool` is available in the Windows SDK.
-
 ## `libmnl` and `libnftnl`
 
 These libraries are only required for Linux and are required by our app to
