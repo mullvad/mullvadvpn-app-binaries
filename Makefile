@@ -1,3 +1,5 @@
+# TODO: Had to do this as well:
+# CC=zig cc
 
 BUILD_DIR = $(PWD)/build
 OPENVPN_WINDOWS_BUILDROOT = openvpn-build/generic/tmp
@@ -25,7 +27,8 @@ LIBNFTNL_CONFIG = --enable-static --disable-shared
 
 LIBNL_CONFIG = --enable-static --disable-shared --enable-cli=no --disable-debug
 
-LIBNFTNL_CFLAGS = -g -O2
+LIBMNL_CFLAGS = -g -O2 -fpie
+LIBNFTNL_CFLAGS = -g -O2 -fpie
 
 # You likely need GNU Make for this to work.
 UNAME_S := $(shell uname -s)
@@ -33,7 +36,8 @@ UNAME_M := $(shell uname -m)
 
 # Compute host platform
 ifeq ($(UNAME_S),Linux)
-	HOST = "$(UNAME_M)-unknown-linux-gnu"
+	#HOST = "$(UNAME_M)-unknown-linux-gnu"
+	HOST = "$(UNAME_M)-unknown-linux-musl"
 endif
 ifeq ($(UNAME_S),Darwin)
 	ifeq ($(UNAME_M), arm64)
@@ -72,9 +76,9 @@ endif
 ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-dco --disable-iproute2
-	ifeq ($(TARGET),aarch64-unknown-linux-gnu)
+	ifeq ($(TARGET),aarch64-unknown-linux-musl)
 		OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
-		ifneq ($(HOST),aarch64-unknown-linux-gnu)
+		ifneq ($(HOST),aarch64-unknown-linux-musl)
 			export CC := aarch64-linux-gnu-gcc
 			STRIP = aarch64-linux-gnu-strip
 			OPENSSL_CONFIGURE_SCRIPT = ./Configure
@@ -155,13 +159,13 @@ openvpn_windows: clean-submodules
 		EXTRA_TARGET_LDFLAGS="-Wl,-Bstatic" \
 		OPT_OPENVPN_CFLAGS="-O2 -flto" \
 		CHOST=x86_64-w64-mingw32 \
-		CBUILD=x86_64-pc-linux-gnu \
+		CBUILD=x86_64-pc-linux-musl \
 		DO_STATIC=1 \
 		IMAGEROOT="$(BUILD_DIR)" \
 		./openvpn-build/generic/build
 	cp openvpn/src/openvpn/openvpn.exe ./x86_64-pc-windows-msvc/
 
-ifneq (,$(findstring unknown-linux-gnu,$(TARGET)))
+ifneq (,$(findstring unknown-linux-musl,$(TARGET)))
 
 libnl:
 	@echo "Building libnl"
@@ -176,6 +180,7 @@ libmnl:
 	mkdir -p $(TARGET)
 	cd libmnl; \
 	./autogen.sh; \
+	CFLAGS="$(LIBMNL_CFLAGS)" \
 	./configure $(LIBMNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
