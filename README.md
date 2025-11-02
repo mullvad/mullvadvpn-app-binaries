@@ -121,6 +121,11 @@ Cross-compile both libraries on x64 Linux by setting the appropriate `TARGET`:
 ./container-run.sh make libnftnl TARGET="aarch64-unknown-linux-gnu"
 ```
 
+#### ARMv7
+
+```bash
+./container-run.sh make libnftnl TARGET="armv7-unknown-linux-musleabihf"
+```
 
 ## libnl
 

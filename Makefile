@@ -1,6 +1,3 @@
-# TODO: Had to do this as well:
-# CC=zig cc
-
 BUILD_DIR = $(PWD)/build
 OPENVPN_WINDOWS_BUILDROOT = openvpn-build/generic/tmp
 OPENVPN_WINDOWS_SOURCEROOT = openvpn-build/generic/sources
@@ -76,17 +73,17 @@ endif
 ifeq ($(UNAME_S),Linux)
 	PLATFORM_OPENSSL_CONFIG = -static
 	PLATFORM_OPENVPN_CONFIG = --enable-dco --disable-iproute2
-	ifeq ($(TARGET),aarch64-unknown-linux-musl)
+	ifeq ($(TARGET),armv7-unknown-linux-musleabihf)
 		OPENSSL_LIB_DIR = $(BUILD_DIR)/lib
-		ifneq ($(HOST),aarch64-unknown-linux-musl)
-			export CC := aarch64-linux-gnu-gcc
-			STRIP = aarch64-linux-gnu-strip
-			OPENSSL_CONFIGURE_SCRIPT = ./Configure
-			PLATFORM_OPENSSL_CONFIG += linux-aarch64
-			PLATFORM_OPENVPN_CONFIG += --host=aarch64-linux
-			LIBMNL_CONFIG += --host=aarch64-linux
-			LIBNFTNL_CONFIG += --host=aarch64-linux
-			LIBNL_CONFIG += --host=aarch64-linux
+		ifneq ($(HOST),armv7-unknown-linux-musleabihf)
+			export CC := /home/markus/apps/armv7l-linux-musleabihf-cross/bin/armv7l-linux-musleabihf-gcc
+			#LIBMNL_CONFIG += --host=armv7l-unknown-linux-musl
+			#LIBNFTNL_CONFIG += --host=armv7l-unknown-linux-musl
+			LIBMNL_CONFIG += --build=x86_64-pc-linux-gnu --host=armv7l-unknown-linux-musl
+			LIBNFTNL_CONFIG += --build=x86_64-pc-linux-gnu --host=armv7l-unknown-linux-musl
+
+			#LIBMNL_CONFIG += --build=x86_64-pc-linux-gnu --host=arm-linux-musleabihf
+			#LIBNFTNL_CONFIG += --build=x86_64-pc-linux-gnu --host=arm-linux-musleabihf
 		endif
 	else
 		# ARM doesn't support 'mcmodel=large'
