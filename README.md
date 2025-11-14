@@ -76,7 +76,7 @@ The built and signed driver, and associated files, reside under `<arch>\split-tu
 
 ## Storage of binaries
 
-This repository also holds the built binaries for the platforms we need. These exist under directories
+This repository holds the built binaries for the platforms we need. These exist under directories
 named after the target triplet they are intended for.
 
 
