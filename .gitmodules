@@ -1,12 +1,3 @@
-[submodule "openvpn"]
-	path = openvpn
-	url = https://github.com/mullvad/openvpn.git
-[submodule "openssl"]
-	path = openssl
-	url = https://github.com/openssl/openssl.git
-[submodule "openvpn-build"]
-	path = openvpn-build
-	url = https://github.com/mullvad/openvpn-build.git
 [submodule "libmnl"]
 	path = libmnl
 	url = git://git.netfilter.org/libmnl.git
@@ -19,6 +10,3 @@
 [submodule "wireguard-nt"]
 	path = wireguard-nt
 	url = https://github.com/mullvad/wireguard-nt.git
-[submodule "libnl"]
-	path = libnl
-	url = https://github.com/thom311/libnl.git
