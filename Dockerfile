@@ -14,6 +14,7 @@ RUN apt-get update -y && apt-get install -y \
     pkg-config make autoconf libtool \
     bison flex \
     gcc \
+    musl-tools \
     gcc-aarch64-linux-gnu \
     gcc-mingw-w64 mingw-w64-common \
     && rm -rf /var/lib/apt/lists/*
