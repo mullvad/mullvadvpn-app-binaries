@@ -1,0 +1,37 @@
+# To build the image:
+# podman build . -t mullvadvpn-app-binaries
+
+# This checksum points to a debian 13 image.
+FROM debian@sha256:bfc36aecdece0387418759dba474aa856c026ca8087da3606b41b90ab0509c99
+
+LABEL org.opencontainers.image.source=https://github.com/mullvad/mullvadvpn-app-binaries
+LABEL org.opencontainers.image.description="Mullvad VPN app extra binaries build container"
+LABEL org.opencontainers.image.licenses=GPL-3.0
+
+# Install packages from a fixed point in time on snapshot.debian.org, so that every build of
+# this image installs the exact same package versions. This helps make the image reproducible.
+# Bump the timestamp to pick up newer packages. snapshot.debian.org resolves it to the latest
+# snapshot taken at or before that time, separately for each archive.
+ARG DEBIAN_SNAPSHOT=20261109T083251Z
+COPY setup-debian-snapshot.sh /tmp/
+RUN /tmp/setup-debian-snapshot.sh && rm /tmp/setup-debian-snapshot.sh
+
+RUN apt-get update -y && apt-get install -y \
+    git curl wget unzip bzip2 xz-utils \
+    pkg-config make autoconf libtool \
+    bison flex \
+    musl-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download and install musl cross-compilers
+# Using musl.cc pre-built static toolchains
+RUN mkdir -p /opt/toolchains && cd /opt/toolchains && \
+    curl -L -o x86_64-linux-musl-cross.tgz https://musl.cc/x86_64-linux-musl-cross.tgz && \
+    curl -L -o aarch64-linux-musl-cross.tgz https://musl.cc/aarch64-linux-musl-cross.tgz && \
+    curl -L -o riscv64-linux-musl-cross.tgz https://musl.cc/riscv64-linux-musl-cross.tgz && \
+    tar -xzf x86_64-linux-musl-cross.tgz && \
+    tar -xzf aarch64-linux-musl-cross.tgz && \
+    tar -xzf riscv64-linux-musl-cross.tgz && \
+    rm -f x86_64-linux-musl-cross.tgz aarch64-linux-musl-cross.tgz riscv64-linux-musl-cross.tgz
+
+WORKDIR /build
