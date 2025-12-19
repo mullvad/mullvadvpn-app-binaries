@@ -24,7 +24,6 @@ The easiest way to build the binaries is by using the container image specified 
 podman build . -t mullvadvpn-app-binaries
 ```
 
-
 ## `libmnl` and `libnftnl`
 
 These libraries are only required for Linux and are required by our app to
@@ -48,6 +47,18 @@ git submodule update --init
 make libnftnl
 ```
 
+### musl
+
+Both libraries can be compiled with musl-libc. Simply replace the `gnu` suffix with `musl`
+
+#### ARM64
+
+```bash
+# x86_64 musl
+./container-run.sh make libnftnl TARGET="x86_64-unknown-linux-musl"
+# aarch64 musl
+./container-run.sh make libnftnl TARGET="aarch64-unknown-linux-musl"
+```
 
 ## Updating Wintun
 
