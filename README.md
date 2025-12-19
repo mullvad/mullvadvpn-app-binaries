@@ -24,13 +24,16 @@ The easiest way to build the binaries is by using the container image specified 
 podman build . -t mullvadvpn-app-binaries
 ```
 
+### TODO: Install a musl cross toolchain
+See https://www.openwall.com/lists/musl/2017/11/23/2 for context.
+
 
 ## `libmnl` and `libnftnl`
 
 These libraries are only required for Linux and are required by our app to
 apply firewall rules. To produce the required libraries, run `./container-run.sh make libnftnl`.
 
-#### ARM64
+### ARM64
 
 Cross-compile both libraries on x64 Linux by setting the appropriate `TARGET`:
 
@@ -38,6 +41,18 @@ Cross-compile both libraries on x64 Linux by setting the appropriate `TARGET`:
 ./container-run.sh make libnftnl TARGET="aarch64-unknown-linux-gnu"
 ```
 
+### musl
+
+Both libraries can be compiled with musl-libc. Simply replace the `gnu` suffix with `musl`
+
+#### ARM64
+
+```bash
+# x86_64 musl
+./container-run.sh make libnftnl TARGET="x86_64-unknown-linux-musl"
+# aarch64 musl
+./container-run.sh make libnftnl TARGET="aarch64-unknown-linux-musl"
+```
 
 ## Updating Wintun
 

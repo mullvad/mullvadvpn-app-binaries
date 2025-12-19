@@ -33,11 +33,18 @@ ifeq ($(UNAME_S),Linux)
 			LIBMNL_CONFIG += --host=aarch64-linux
 			LIBNFTNL_CONFIG += --host=aarch64-linux
 		endif
-	else
-		# ARM doesn't support 'mcmodel=large'
-		LIBNFTNL_CFLAGS += -mcmodel=large
+	else ifeq ($(TARGET),x86_64-unknown-linux-musl)
+		ifneq ($(HOST),x86_64-unknown-linux-musl)
+			#export CC := x86_64-unknown-linux-musl
+			export CC := musl-gcc -static
+			LIBMNL_CONFIG += --host=x86_64-unknown-linux-musl
+			LIBNFTNL_CONFIG += --host=x86_64-unknown-linux-musl
+		endif
 	endif
 endif
+# TODO: Check for target triple
+# ARM doesn't support 'mcmodel=large'
+# LIBNFTNL_CFLAGS += -mcmodel=large
 
 .PHONY: help clean clean-build libmnl libnftnl
 
@@ -50,13 +57,14 @@ clean: clean-build
 clean-build:
 	rm -rf $(BUILD_DIR)
 
-ifneq (,$(findstring unknown-linux-gnu,$(TARGET)))
+ifneq (,$(findstring unknown-linux,$(TARGET)))
 
 libmnl:
 	@echo "Building libmnl"
 	mkdir -p $(TARGET)
 	cd libmnl; \
 	./autogen.sh; \
+	CFLAGS="$(LIBMNL_CFLAGS)" \
 	./configure $(LIBMNL_CONFIG); \
 	$(MAKE) clean; \
 	$(MAKE)
