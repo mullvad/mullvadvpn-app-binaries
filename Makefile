@@ -40,6 +40,12 @@ ifeq ($(UNAME_S),Linux)
 			LIBMNL_CONFIG += --host=x86_64-unknown-linux-musl
 			LIBNFTNL_CONFIG += --host=x86_64-unknown-linux-musl
 		endif
+	else ifeq ($(TARGET),armv7-unknown-linux-musleabihf)
+		ifneq ($(HOST),)
+			export CC := arm-openwrt-linux-muslgnueabi-gcc
+			LIBMNL_CONFIG += --host=armv7-unknown-linux-musleabihf
+			LIBNFTNL_CONFIG += --host=armv7-unknown-linux-musleabihf
+		endif
 	endif
 endif
 # TODO: Check for target triple

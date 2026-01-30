@@ -27,6 +27,24 @@ podman build . -t mullvadvpn-app-binaries
 ### TODO: Install a musl cross toolchain
 See https://www.openwall.com/lists/musl/2017/11/23/2 for context.
 
+#### Step 1 - obtain
+
+Obtain the OpenWRT SDK from https://downloads.openwrt.org/releases/24.10.4/targets/armsr/armv7/:
+```bash
+wget https://downloads.openwrt.org/releases/24.10.4/targets/armsr/armv7/openwrt-sdk-24.10.4-armsr-armv7_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst
+zstd -d openwrt-sdk-24.10.4-armsr-armv7_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst ^C
+tar -xvf openwrt-sdk-24.10.4-armsr-armv7_gcc-13.3.0_musl_eabi.Linux-x86_64.tar^C
+```
+
+#### Step 2 - add to path
+
+Locate the toolchain binaries in the staging_dir/toolchain-architecture_gcc-compilerver_uClibc-libcver/bin/ directory
+Add that directory to the PATH environment variable:
+```bash
+PATH=$PATH:$(pwd)/openwrt-sdk-24.10.4-armsr-armv7_gcc-13.3.0_musl_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a15+neon-vfpv4_gcc-13.3.0_musl_eabi/bin/
+export PATH
+```
+
 
 ## `libmnl` and `libnftnl`
 
