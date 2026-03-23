@@ -30,12 +30,22 @@ podman build . -t mullvadvpn-app-binaries
 These libraries are only required for Linux and are required by our app to
 apply firewall rules. To produce the required libraries, run `./container-run.sh make libnftnl`.
 
-#### ARM64
+#### ARM64 and RISC-V
 
 Cross-compile both libraries on x64 Linux by setting the appropriate `TARGET`:
 
 ```bash
+git submodule update --init
 ./container-run.sh make libnftnl TARGET="aarch64-unknown-linux-gnu"
+./container-run.sh make libnftnl TARGET="riscv64gc-unknown-linux-gnu"
+```
+
+## Build without container image
+
+```bash
+sudo apt-get install make autoconf libtool pkg-config gcc
+git submodule update --init
+make libnftnl
 ```
 
 

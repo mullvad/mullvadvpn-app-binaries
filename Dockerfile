@@ -15,6 +15,7 @@ RUN apt-get update -y && apt-get install -y \
     bison flex \
     gcc \
     gcc-aarch64-linux-gnu \
+    gcc-riscv64-linux-gnu \
     gcc-mingw-w64 mingw-w64-common \
     && rm -rf /var/lib/apt/lists/*
 

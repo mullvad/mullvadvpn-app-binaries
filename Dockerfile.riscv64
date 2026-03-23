@@ -1,0 +1,16 @@
+# To build the image:
+# podman build . -f Dockerfile.riscv64 -t mullvadvpn-app-binaries
+
+# riscv64/ubuntu:22.04
+FROM ubuntu@sha256:de1e49bc158b945d94db626933f4377ff05e1709912b9ff28ccf0632280ff04b
+
+LABEL org.opencontainers.image.source=https://github.com/mullvad/mullvadvpn-app-binaries
+LABEL org.opencontainers.image.description="Mullvad VPN app extra binaries build container"
+LABEL org.opencontainers.image.licenses=GPL-3.0
+
+RUN apt-get update -y && apt-get install -y \
+    make autoconf libtool pkg-config \
+    gcc gcc-riscv64-linux-gnu \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build

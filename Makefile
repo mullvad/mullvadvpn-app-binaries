@@ -13,7 +13,10 @@ UNAME_M := $(shell uname -m)
 
 # Compute host platform
 ifeq ($(UNAME_S),Linux)
-	HOST = "$(UNAME_M)-unknown-linux-gnu"
+	ifeq ($(UNAME_M),riscv64)
+		UNAME_M = riscv64gc
+	endif
+	HOST = $(UNAME_M)-unknown-linux-gnu
 endif
 ifneq (,$(findstring MINGW,$(UNAME_S)))
 	HOST = "x86_64-pc-windows-msvc"
@@ -33,8 +36,15 @@ ifeq ($(UNAME_S),Linux)
 			LIBMNL_CONFIG += --host=aarch64-linux
 			LIBNFTNL_CONFIG += --host=aarch64-linux
 		endif
+	else ifeq ($(TARGET),riscv64gc-unknown-linux-gnu)
+		ifneq ($(HOST),riscv64gc-unknown-linux-gnu)
+			export CC := riscv64-linux-gnu-gcc
+			STRIP = riscv64-linux-gnu-strip
+			LIBMNL_CONFIG += --host=riscv64-linux
+			LIBNFTNL_CONFIG += --host=riscv64-linux
+		endif
 	else
-		# ARM doesn't support 'mcmodel=large'
+		# ARM and RISC-V don't support 'mcmodel=large'
 		LIBNFTNL_CFLAGS += -mcmodel=large
 	endif
 endif
