@@ -35,10 +35,17 @@ ifeq ($(UNAME_S),Linux)
 		endif
 	else ifeq ($(TARGET),x86_64-unknown-linux-musl)
 		ifneq ($(HOST),x86_64-unknown-linux-musl)
-			#export CC := x86_64-unknown-linux-musl
-			export CC := musl-gcc -static
-			LIBMNL_CONFIG += --host=x86_64-unknown-linux-musl
-			LIBNFTNL_CONFIG += --host=x86_64-unknown-linux-musl
+			export CC := /opt/toolchains/x86_64-linux-musl-cross/bin/x86_64-linux-musl-gcc
+			STRIP := /opt/toolchains/x86_64-linux-musl-cross/bin/x86_64-linux-musl-strip
+			LIBMNL_CONFIG += --host=x86_64-linux-musl
+			LIBNFTNL_CONFIG += --host=x86_64-linux-musl
+		endif
+	else ifeq ($(TARGET),aarch64-unknown-linux-musl)
+		ifneq ($(HOST),aarch64-unknown-linux-musl)
+			export CC := /opt/toolchains/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc
+			STRIP := /opt/toolchains/aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip
+			LIBMNL_CONFIG += --host=aarch64-linux-musl
+			LIBNFTNL_CONFIG += --host=aarch64-linux-musl
 		endif
 	else ifeq ($(TARGET),armv7-unknown-linux-musleabihf)
 		ifneq ($(HOST),)

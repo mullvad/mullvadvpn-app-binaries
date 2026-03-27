@@ -15,4 +15,6 @@ exec podman run --rm -it \
     -v "${SCRIPT_DIR}/aarch64-pc-windows-msvc":/build/aarch64-pc-windows-msvc:Z \
     -v "${SCRIPT_DIR}/x86_64-unknown-linux-gnu":/build/x86_64-unknown-linux-gnu:Z \
     -v "${SCRIPT_DIR}/aarch64-unknown-linux-gnu":/build/aarch64-unknown-linux-gnu:Z \
+    -v "${SCRIPT_DIR}/x86_64-unknown-linux-musl":/build/x86_64-unknown-linux-musl:Z \
+    -v "${SCRIPT_DIR}/aarch64-unknown-linux-musl":/build/aarch64-unknown-linux-musl:Z \
     mullvadvpn-app-binaries /bin/sh -c -- "$*"
