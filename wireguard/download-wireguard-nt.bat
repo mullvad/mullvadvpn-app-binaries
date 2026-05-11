@@ -1,13 +1,13 @@
 @echo off
 setlocal
 
-set SIG_THUMBPRINT=DF98E075A012ED8C86FBCF14854B8F9555CB3D45
+set SIG_THUMBPRINT=1b3afa5e2a76bb51f00020002dccadb165689c33
 
 :getwgnt
 	rmdir /s /q .deps 2> NUL
 	mkdir .deps || goto :error
 	cd .deps || goto :error
-	call :download wireguard-nt.zip https://download.wireguard.com/wireguard-nt/wireguard-nt-0.4.zip || goto :error
+	call :download wireguard-nt.zip https://download.wireguard.com/wireguard-nt/wireguard-nt-1.1.zip || goto :error
 	echo [+] Extracting wireguard.dll
 	tar -xf wireguard-nt.zip || goto :error
 	cd .. || goto :error

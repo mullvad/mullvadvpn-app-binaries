@@ -62,14 +62,10 @@ checksum, and makes sure that wintun.dll is correctly signed.
 
 Only applicable to Windows.
 
-WireGuardNT can be found in `.\<arch>-pc-windows-msvc\wireguard-nt`. The `wireguard-nt`
-submodule contains a [fork](https://github.com/mullvad/wireguard-nt) that fixes multihop tunnels.
-To update it, pull the new tag from https://git.zx2c4.com/wireguard-nt, manually verify that the
-changes are sensible, and rebase the `mullvad-patches-build` branch on top of it. The new head of
-`mullvad-patches-build` should be tagged as `<original tag name>-mullvad`, for example
-`0.7-mullvad`. This tag should be signed and pushed to the fork repository.
 
-Follow the instructions in `MULLVAD_BUILD.md` in said submodule to build and sign the driver.
+WireGuardNT is found in `.\<arch>-pc-windows-msvc\wireguard-nt`. The driver can be downloaded and verified
+by running the script `.\wireguard\download-wireguard.cmd`. This script downloads WireGuardNT, verifies its
+checksum, and makes sure that wireguard.dll is correctly signed.
 
 
 ## Split tunnel driver
