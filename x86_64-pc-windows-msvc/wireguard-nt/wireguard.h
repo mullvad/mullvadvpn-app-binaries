@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 OR MIT
  *
- * Copyright (C) 2018-2021 WireGuard LLC. All Rights Reserved.
+ * Copyright (C) 2018-2026 WireGuard LLC. All Rights Reserved.
  */
 
 #pragma once
@@ -209,6 +209,12 @@ BOOL(WINAPI WIREGUARD_GET_ADAPTER_STATE_FUNC)
 
 #define WIREGUARD_KEY_LENGTH 32
 
+typedef enum
+{
+    WIREGUARD_ALLOWED_IP_REMOVE = 1 << 0 /**< Remove the specified allowed IP instead of adding it to the peer. */
+} WIREGUARD_ALLOWED_IP_FLAG;
+DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_ALLOWED_IP_FLAG)
+
 typedef struct _WIREGUARD_ALLOWED_IP WIREGUARD_ALLOWED_IP;
 struct ALIGNED(8) _WIREGUARD_ALLOWED_IP
 {
@@ -216,9 +222,10 @@ struct ALIGNED(8) _WIREGUARD_ALLOWED_IP
     {
         IN_ADDR V4;
         IN6_ADDR V6;
-    } Address;                    /**< IP address */
-    ADDRESS_FAMILY AddressFamily; /**< Address family, either AF_INET or AF_INET6 */
-    BYTE Cidr;                    /**< CIDR of allowed IPs */
+    } Address;                       /**< IP address */
+    ADDRESS_FAMILY AddressFamily;    /**< Address family, either AF_INET or AF_INET6 */
+    BYTE Cidr;                       /**< CIDR of allowed IPs */
+    WIREGUARD_ALLOWED_IP_FLAG Flags; /**< Bitwise combination of flags */
 };
 
 typedef enum
@@ -229,9 +236,9 @@ typedef enum
     WIREGUARD_PEER_HAS_ENDPOINT = 1 << 3,             /**< The Endpoint field is set */
     WIREGUARD_PEER_REPLACE_ALLOWED_IPS = 1 << 5,      /**< Remove all allowed IPs before adding new ones */
     WIREGUARD_PEER_REMOVE = 1 << 6,                   /**< Remove specified peer */
-    WIREGUARD_PEER_UPDATE = 1 << 7,                   /**< Do not add a new peer */
-    WIREGUARD_PEER_HAS_CONSTANT_PACKET_SIZE = 1 << 8  /**< The ConstantPacketSize field is set */
+    WIREGUARD_PEER_UPDATE_ONLY = 1 << 7               /**< Do not add a new peer */
 } WIREGUARD_PEER_FLAG;
+DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_PEER_FLAG)
 
 typedef struct _WIREGUARD_PEER WIREGUARD_PEER;
 struct ALIGNED(8) _WIREGUARD_PEER
@@ -246,16 +253,16 @@ struct ALIGNED(8) _WIREGUARD_PEER
     DWORD64 RxBytes;                         /**< Number of bytes received */
     DWORD64 LastHandshake;                   /**< Time of the last handshake, in 100ns intervals since 1601-01-01 UTC */
     DWORD AllowedIPsCount;                   /**< Number of allowed IP structs following this struct */
-    BOOLEAN ConstantPacketSize;              /**< Constant packet size. Smaller packets are padded up to the MTU */
 };
 
 typedef enum
 {
-    WIREGUARD_INTERFACE_HAS_PUBLIC_KEY = (1 << 0),  /**< The PublicKey field is set */
-    WIREGUARD_INTERFACE_HAS_PRIVATE_KEY = (1 << 1), /**< The PrivateKey field is set */
-    WIREGUARD_INTERFACE_HAS_LISTEN_PORT = (1 << 2), /**< The ListenPort field is set */
-    WIREGUARD_INTERFACE_REPLACE_PEERS = (1 << 3)    /**< Remove all peers before adding new ones */
+    WIREGUARD_INTERFACE_HAS_PUBLIC_KEY = 1 << 0,  /**< The PublicKey field is set */
+    WIREGUARD_INTERFACE_HAS_PRIVATE_KEY = 1 << 1, /**< The PrivateKey field is set */
+    WIREGUARD_INTERFACE_HAS_LISTEN_PORT = 1 << 2, /**< The ListenPort field is set */
+    WIREGUARD_INTERFACE_REPLACE_PEERS = 1 << 3    /**< Remove all peers before adding new ones */
 } WIREGUARD_INTERFACE_FLAG;
+DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_INTERFACE_FLAG)
 
 typedef struct _WIREGUARD_INTERFACE WIREGUARD_INTERFACE;
 struct ALIGNED(8) _WIREGUARD_INTERFACE
@@ -302,56 +309,6 @@ BOOL(WINAPI WIREGUARD_GET_CONFIGURATION_FUNC)
 (_In_ WIREGUARD_ADAPTER_HANDLE Adapter,
  _Out_writes_bytes_all_(*Bytes) WIREGUARD_INTERFACE *Config,
  _Inout_ DWORD *Bytes);
-
-/* Forward declare types defined in daita.h */
-struct _DAITA_ACTION;
-typedef struct _DAITA_ACTION DAITA_ACTION;
-
-struct _DAITA_EVENT;
-typedef struct _DAITA_EVENT DAITA_EVENT;
-
-/**
- * Enable DAITA for the given WireGuard device.
- *
- * @param Adapter            Adapter handle obtained with WireGuardCreateAdapter or WireGuardOpenAdapter
- *
- * @param EventsCapacity     Maximum number of events to store in the internal buffer.
- *
- * @param ActionsCapacity    Maximum number of actions to store in the internal buffer.
- */
-typedef _Must_inspect_result_
-_Return_type_success_(return != FALSE)
-BOOL(WINAPI WIREGUARD_DAITA_ACTIVATE_FUNC)(_In_ WIREGUARD_ADAPTER_HANDLE Adapter, SIZE_T EventsCapacity, SIZE_T ActionsCapacity);
-
-/**
- * Event object that is signaled when there are DAITA events to receive using WireGuardDaitaReceiveEvents.
- */
-typedef _Must_inspect_result_
-_Return_type_success_(return != NULL)
-_Post_maybenull_
-HANDLE(WINAPI WIREGUARD_DAITA_EVENT_DATA_AVAILABLE_FUNC)(_In_ WIREGUARD_ADAPTER_HANDLE Adapter);
-
-/**
- * Retrieves DAITA events.
- *
- * @param Events    A buffer that can contain DAITA_EVENT_BUFFER_CAPACITY events (DAITA_EVENT_RING_BUFFER_SIZE bytes).
- *
- * @return The function returns the number of events read into Events. If an error occurs, the return value
- *         is zero and GetLastError returns the last error. If there are no items to read,
- *         GetLastError returns ERROR_NO_MORE_ITEMS.
- */
-typedef _Must_inspect_result_
-SIZE_T(WINAPI WIREGUARD_DAITA_RECEIVE_EVENTS_FUNC)
-(_In_ WIREGUARD_ADAPTER_HANDLE Adapter, _Inout_ DAITA_EVENT *Events);
-
-/* Sends a DAITA action.
- *
- * @return Iff the function succeeds, the return value is nonzero. To get extended error information, call GetLastError.
- *         GetLastError returns ERROR_INSUFFICIENT_BUFFER is the underlying buffer is full.
- */
-typedef _Must_inspect_result_
-_Return_type_success_(return != FALSE)
-BOOL(WINAPI WIREGUARD_DAITA_SEND_ACTION_FUNC)(_In_ WIREGUARD_ADAPTER_HANDLE Adapter, _In_ const DAITA_ACTION *Action);
 
 #pragma warning(pop)
 
